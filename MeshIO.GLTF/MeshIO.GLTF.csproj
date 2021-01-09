@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="IO\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MeshIO\MeshIO.csproj" />
+  </ItemGroup>
+
+</Project>
