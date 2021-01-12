@@ -13,6 +13,10 @@ C# 3D library.
 - Read dwg files (WIP)
 - Write dwg files
 
+**Notes:**
+
+- This project uses https://github.com/DomCR/CSUtilities
+
 # MeshIO.FBX
 
 Based upon FBXWriter by Hamish Milne.
