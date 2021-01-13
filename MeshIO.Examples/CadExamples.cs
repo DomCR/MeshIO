@@ -22,8 +22,14 @@ namespace MeshIO.Examples
 		public static void ReadHeader()
 		{
 			DwgReader reader = new DwgReader(Utils.GetFileDirectoryPath()
-				+ m_filePaths[ACadVersion.AC1018]);
+				+ m_filePaths[ACadVersion.AC1021]);
 			DwgFileHeader fheader = reader.ReadFileHeader();
+		}
+		public static void ReadSummaryInfo()
+		{
+			DwgReader reader = new DwgReader(Utils.GetFileDirectoryPath()
+				+ m_filePaths[ACadVersion.AC1032]);
+			reader.ReadSummaryInfo();
 		}
 	}
 }

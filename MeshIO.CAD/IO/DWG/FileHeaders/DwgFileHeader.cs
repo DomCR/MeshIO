@@ -5,7 +5,7 @@ using System.Text;
 
 namespace MeshIO.CAD.IO
 {
-	public class DwgFileHeader
+	public abstract class DwgFileHeader
 	{
 		public ACadVersion AcadVersion { get; }
 		public DwgFileHeader() { }

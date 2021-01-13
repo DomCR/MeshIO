@@ -90,21 +90,6 @@ namespace MeshIO.CAD.IO
 			return numArray;
 		}
 
-		public DateTime ReadDateTime()
-		{
-			ReadBitLong();
-			ReadBitLong();
-
-			throw new NotImplementedException();
-		}
-		public TimeSpan ReadTimeSpan()
-		{
-			ReadBitLong();
-			ReadBitLong();
-
-			throw new NotImplementedException();
-		}
-
 		#region Read BIT CODES AND DATA DEFINITIONS
 		/// <inheritdoc/>
 		public bool ReadBit()
@@ -573,7 +558,6 @@ namespace MeshIO.CAD.IO
 			return (ushort)(num | (uint)(ushort)((uint)m_lastByte << 8));
 		}
 		#endregion
-
 		//*******************************************************************
 		protected byte applyShiftToLasByte()
 		{

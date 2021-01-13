@@ -44,8 +44,14 @@ namespace MeshIO.CAD
 			this.m_documentToRead = new CadDocument();
 			this.m_documentToRead.Filename = this.m_filename;
 
-
+			//Read the different sections of the file
+			ReadFileHeader();
+			ReadSummaryInfo();
 		}
+		/// <summary>
+		/// Read the file header data.
+		/// </summary>
+		/// <returns></returns>
 		public DwgFileHeader ReadFileHeader()
 		{
 			//Reset the stream position at the begining
@@ -53,7 +59,7 @@ namespace MeshIO.CAD
 
 			//0x00	6	“ACXXXX” version string
 			ACadVersion version = CadUtils.GetVersionFromName(m_fileStream.ReadString(6, Encoding.ASCII));
-			this.m_fileHeader = DwgFileHeader.GetFileHeader(version);
+			m_fileHeader = DwgFileHeader.GetFileHeader(version);
 
 			//Get the stream reader
 			IDwgStreamHandler sreader = DwgStreamHanlder.GetStreamReader(m_fileHeader.AcadVersion, this.m_fileStream.Stream);
@@ -97,12 +103,83 @@ namespace MeshIO.CAD
 
 			return m_fileHeader;
 		}
+		/// <summary>
+		/// Read the summary info of the dwg file.
+		/// </summary>
+		/// <returns></returns>
+		public CadSummaryInfo ReadSummaryInfo()
+		{
+			m_fileHeader = m_fileHeader ?? ReadFileHeader();
+
+			//Older versions than 2004 don't have summaryinfo in it's file
+			if (m_fileHeader.AcadVersion < ACadVersion.AC1018)
+				return null;
+
+			var sectionHandler = getSectionStream("AcDb:SummaryInfo");
+			if (sectionHandler == null)
+				return null;
+
+			CadSummaryInfo summary = new CadSummaryInfo();
+
+			//This section contains summary information about the drawing. 
+			//Strings are encoded as a 16-bit length, followed by the character bytes (0-terminated).
+
+			//String	2 + n	Title
+			summary.Title = sectionHandler.ReadTextUnicode();
+			//String	2 + n	Subject
+			summary.Subject = sectionHandler.ReadTextUnicode();
+			//String	2 + n	Author
+			summary.Author = sectionHandler.ReadTextUnicode();
+			//String	2 + n	Keywords
+			summary.Keywords = sectionHandler.ReadTextUnicode();
+			//String	2 + n	Comments
+			summary.Comments = sectionHandler.ReadTextUnicode();
+			//String	2 + n	LastSavedBy
+			summary.LastSavedBy = sectionHandler.ReadTextUnicode();
+			//String	2 + n	RevisionNumber
+			summary.RevisionNumber = sectionHandler.ReadTextUnicode();
+			//String	2 + n	RevisionNumber
+			summary.HyperlinkBase = sectionHandler.ReadTextUnicode();
+
+			//?	8	Total editing time(ODA writes two zero Int32’s)
+			sectionHandler.ReadInt();
+			sectionHandler.ReadInt();
+
+			//TODO: Implement the int conversion to date time
+			//Julian date	8	Create date time
+			sectionHandler.ReadInt();
+			sectionHandler.ReadInt();
+			//Julian date	8	Modified date time
+			sectionHandler.ReadInt();
+			sectionHandler.ReadInt();
+
+			//Int16	2 + 2 * (2 + n)	Property count, followed by PropertyCount key/value string pairs.
+			summary.Properties.Clear();
+			var nproperties = sectionHandler.ReadShort();
+			for (int i = 0; i < nproperties; i++)
+			{
+				string propName = sectionHandler.ReadTextUnicode();
+				string propValue = sectionHandler.ReadTextUnicode();
+
+				//Add the property
+				summary.Properties.Add(propName, propValue);
+			}
+
+			//Int32	4	Unknown(write 0)
+			sectionHandler.ReadInt();
+			//Int32	4	Unknown(write 0)
+			sectionHandler.ReadInt();
+
+			return summary;
+		}
 		/// <inheritdoc/>
 		public void Dispose()
 		{
 			this.m_fileStream.Dispose();
 		}
 		//**************************************************************************
+
+		#region File Header reading methods
 		/// <summary>
 		/// Read the file header for the AC1012 to AC1015 (R13-R15) versions of the header.
 		/// </summary>
@@ -127,7 +204,7 @@ namespace MeshIO.CAD
 			{
 				//Record number (raw byte) | Seeker (raw long) | Size (raw long)
 				DwgSectionLocatorRecord record = new DwgSectionLocatorRecord();
-				record.Number = (int)sreader.ReadByte();
+				record.Number = sreader.ReadByte();
 				record.Seeker = sreader.ReadRawLong();
 				record.Size = sreader.ReadRawLong();
 
@@ -283,7 +360,7 @@ namespace MeshIO.CAD
 			{
 				DwgSectionDescriptor descriptor = new DwgSectionDescriptor();
 				//0x00	8	Size of section(OdUInt64)
-				descriptor.Size = streamIO.ReadULong();
+				descriptor.CompressedSize = streamIO.ReadULong();
 				/*0x08	4	Page count(PageCount). Note that there can be more pages than PageCount,
 							as PageCount is just the number of pages written to file.
 							If a page contains zeroes only, that page is not written to file.
@@ -295,11 +372,11 @@ namespace MeshIO.CAD
 				*/
 				descriptor.PageCount = streamIO.ReadInt<LittleEndianConverter>();
 				//0x0C	4	Max Decompressed Size of a section page of this type(normally 0x7400)
-				descriptor.DecompressedSize = streamIO.ReadInt<LittleEndianConverter>();
+				descriptor.DecompressedSize = (ulong)streamIO.ReadInt<LittleEndianConverter>();
 				//0x10	4	Unknown(long)
 				streamIO.ReadInt<LittleEndianConverter>();
 				//0x14	4	Compressed(1 = no, 2 = yes, normally 2)
-				descriptor.Compressed = streamIO.ReadInt<LittleEndianConverter>();
+				descriptor.CompressedCode = streamIO.ReadInt<LittleEndianConverter>();
 				//0x18	4	Section Id(starts at 0). The first section(empty section) is numbered 0, consecutive sections are numbered descending from(the number of sections – 1) down to 1.
 				descriptor.SectionId = streamIO.ReadInt<LittleEndianConverter>();
 				//0x1C	4	Encrypted(0 = no, 1 = yes, 2 = unknown)
@@ -315,11 +392,11 @@ namespace MeshIO.CAD
 					//0x00	4	Page number(index into SectionPageMap), starts at 1
 					localmap.PageNumber = streamIO.ReadInt<LittleEndianConverter>();
 					//0x04	4	Data size for this page(compressed size).
-					localmap.CompressedSize = streamIO.ReadInt<LittleEndianConverter>();
+					localmap.CompressedSize = (ulong)streamIO.ReadInt<LittleEndianConverter>();
 					//0x08	8	Start offset for this page(OdUInt64).If this start offset is smaller than the sum of the decompressed size of all previous pages, then this page is to be preceded by zero pages until this condition is met.
 					localmap.Offset = streamIO.ReadULong();
 
-					//same decompressed size and seeker
+					//same decompressed size and seeker (temporal values)
 					localmap.DecompressedSize = descriptor.DecompressedSize;
 					localmap.Seeker = fileheader.Records[localmap.PageNumber].Seeker;
 
@@ -327,7 +404,7 @@ namespace MeshIO.CAD
 					//If a logical section of the file (the database objects, for example) exceeds this size, then it is broken up into pages of size 0x7400.
 
 					//Add empty local section to fill the gap between them
-					for (; currPosition < localmap.Offset; currPosition += (ulong)descriptor.DecompressedSize)
+					for (; currPosition < localmap.Offset; currPosition += descriptor.DecompressedSize)
 					{
 						DwgLocalSectionMap emptySection = new DwgLocalSectionMap();
 						emptySection.IsEmpty = true;
@@ -339,11 +416,11 @@ namespace MeshIO.CAD
 					}
 
 					descriptor.LocalSections.Add(localmap);
-					currPosition += (ulong)descriptor.DecompressedSize;
+					currPosition += descriptor.DecompressedSize;
 				}
 
 				//Add empty local section to fill the gap between the descriptors
-				for (; currPosition < descriptor.Size; currPosition += (ulong)descriptor.DecompressedSize)
+				for (; currPosition < descriptor.CompressedSize; currPosition += descriptor.DecompressedSize)
 				{
 					DwgLocalSectionMap emptySection = new DwgLocalSectionMap();
 					emptySection.IsEmpty = true;
@@ -355,16 +432,16 @@ namespace MeshIO.CAD
 				}
 
 				//Get the final size for the local section
-				uint sizeLeft = (uint)(descriptor.Size % (ulong)descriptor.DecompressedSize);
+				uint sizeLeft = (uint)(descriptor.CompressedSize % descriptor.DecompressedSize);
 				if (sizeLeft > 0U && descriptor.LocalSections.Count > 0)
-					descriptor.LocalSections[descriptor.LocalSections.Count - 1].DecompressedSize = (int)sizeLeft;
+					descriptor.LocalSections[descriptor.LocalSections.Count - 1].DecompressedSize = sizeLeft;
 
 				fileheader.Descriptors.Add(descriptor.Name, descriptor);
 			}
 			#endregion
 		}
-		private void getPageHeaderData(IDwgStreamHandler sreader, 
-			out long sectionType, 
+		private void getPageHeaderData(IDwgStreamHandler sreader,
+			out long sectionType,
 			out long decompressedSize,
 			out long compressedSize,
 			out long compressionType,
@@ -399,7 +476,8 @@ namespace MeshIO.CAD
 			//(starting from 0x3D8 until the end). The first 0x3D8 bytes 
 			//should be decoded using Reed-Solomon (255, 239) decoding, with a factor of 3.
 			byte[] compressedData = sreader.ReadBytes(0x400);
-			byte[] decodedData = this.reedSolomonDecoding(compressedData, 3, 239);
+			byte[] decodedData = new byte[3 * 239]; //factor * blockSize
+			this.reedSolomonDecoding(compressedData, decodedData, 3, 239);
 
 			//0x00	8	CRC
 			long crc = LittleEndianConverter.Instance.ToInt64(decodedData, 0);
@@ -501,6 +579,119 @@ namespace MeshIO.CAD
 				//0x108	8	Header CRC64
 				HeaderCRC64 = decompressed.ReadULong()
 			};
+
+			//Prepare the page data stream to read
+			byte[] arr = getPageBuffer(
+				fileheader.CompressedMetadata.PagesMapOffset,
+				fileheader.CompressedMetadata.PagesMapSizeCompressed,
+				fileheader.CompressedMetadata.PagesMapSizeUncompressed,
+				fileheader.CompressedMetadata.PagesMapCorrectionFactor,
+				239, sreader.StreamToRead);
+
+			//Read the page data
+			StreamIO pageDataStream = new StreamIO(arr);
+
+			long offset = 0;
+			while (pageDataStream.Position < pageDataStream.Length)
+			{
+				long size = pageDataStream.ReadLong();
+				long id = System.Math.Abs(pageDataStream.ReadLong());
+				fileheader.Records.Add((int)id, new DwgSectionLocatorRecord((int)id, (int)offset, (int)size));
+
+				//Add the size to the current offset
+				offset += size;
+			}
+
+			//Prepare the section map data stream to read
+			arr = getPageBuffer(
+				(ulong)fileheader.Records[(int)fileheader.CompressedMetadata.SectionsMapId].Seeker,
+				fileheader.CompressedMetadata.SectionsMapSizeCompressed,
+				fileheader.CompressedMetadata.SectionsMapSizeUncompressed,
+				fileheader.CompressedMetadata.SectionsMapCorrectionFactor,
+				239, sreader.StreamToRead);
+
+			//Section map stream
+			StreamIO sectionMapStream = new StreamIO(arr);
+
+			while (sectionMapStream.Position < sectionMapStream.Length)
+			{
+				DwgSectionDescriptor section = new DwgSectionDescriptor();
+				//0x00	8	Data size
+				section.CompressedSize = sectionMapStream.ReadULong<LittleEndianConverter>();
+				//0x08	8	Max size
+				section.DecompressedSize = sectionMapStream.ReadULong<LittleEndianConverter>();
+				//0x10	8	Encryption
+				section.Encrypted = (int)sectionMapStream.ReadULong<LittleEndianConverter>();
+				//0x18	8	HashCode
+				section.HashCode = sectionMapStream.ReadULong<LittleEndianConverter>();
+				//0x20	8	SectionNameLength
+				int sectionNameLength = (int)sectionMapStream.ReadLong<LittleEndianConverter>();
+				//0x28	8	Unknown
+				sectionMapStream.ReadULong<LittleEndianConverter>();
+				//0x30	8	Encoding
+				section.Encoding = sectionMapStream.ReadULong<LittleEndianConverter>();
+				//0x38	8	NumPages.This is the number of pages present 
+				//			in the file for the section, but this does not include 
+				//			pages that contain zeroes only.A page that contains zeroes 
+				//			only is not written to file.If a page’s data offset is 
+				//			smaller than the sum of the decompressed size of all previous 
+				//			pages, then it is to be preceded by a zero page with a size 
+				//			that is equal to the difference between these two numbers.
+				section.PageCount = (int)sectionMapStream.ReadULong<LittleEndianConverter>();
+
+				//Read the name
+				if (sectionNameLength > 0)
+				{
+					section.Name = sectionMapStream.ReadString(sectionNameLength, Encoding.Unicode);
+					//Remove the empty characters
+					section.Name = section.Name.Replace("\0", "");
+				}
+
+				ulong currentOffset = 0;
+				for (int index = 0; index < section.PageCount; ++index)
+				{
+					DwgLocalSectionMap page = new DwgLocalSectionMap();
+					//8	Page data offset.If a page’s data offset is 
+					//	smaller than the sum of the decompressed size
+					//	of all previous pages, then it is to be preceded 
+					//	by a zero page with a size that is equal to the 
+					//	difference between these two numbers.
+					page.Offset = sectionMapStream.ReadULong<LittleEndianConverter>();
+					//8	Page Size
+					page.Size = sectionMapStream.ReadLong<LittleEndianConverter>(); //1408
+																					//8	Page Id
+					page.PageNumber = (int)sectionMapStream.ReadLong<LittleEndianConverter>();  //6
+																								//8	Page Uncompressed Size
+					page.DecompressedSize = sectionMapStream.ReadULong<LittleEndianConverter>();
+					//8	Page Compressed Size
+					page.CompressedSize = sectionMapStream.ReadULong<LittleEndianConverter>();
+					//8	Page Compressed Size
+					page.Checksum = sectionMapStream.ReadULong<LittleEndianConverter>();
+					//8	Page Compressed Size
+					page.CRC = sectionMapStream.ReadULong<LittleEndianConverter>();
+
+					//Create an empty page to fill the gap
+					if (currentOffset < page.Offset)
+					{
+						ulong decompressedSize = page.Offset - currentOffset;
+						DwgLocalSectionMap emptyPage = new DwgLocalSectionMap();
+						emptyPage.IsEmpty = true;
+						emptyPage.Offset = currentOffset;
+						emptyPage.CompressedSize = 0;
+						emptyPage.DecompressedSize = decompressedSize;
+
+						//Add the empty local section to the current descriptor
+						section.LocalSections.Add(emptyPage);
+					}
+
+					//Add the page to the section
+					section.LocalSections.Add(page);
+					//Move the offset
+					currentOffset = page.Offset + page.DecompressedSize;
+				}
+				if (sectionNameLength > 0)
+					fileheader.Descriptors.Add(section.Name, section);
+			}
 		}
 		/// <summary>
 		/// Read the metadata from the file.
@@ -513,7 +704,7 @@ namespace MeshIO.CAD
 			sreader.Advance(5);
 
 			//0x0B	1	Maintenance release version
-			fileheader.AcadMaintenanceVersion = (int)sreader.ReadByte();
+			fileheader.AcadMaintenanceVersion = sreader.ReadByte();
 			//0x0C	1	Byte 0x00, 0x01, or 0x03
 			sreader.Advance(1);
 			//0x0D	4	Preview address(long), points to the image page + page header size(0x20).
@@ -548,18 +739,225 @@ namespace MeshIO.CAD
 			//Get to offset 0x80
 			sreader.Advance(80);
 		}
+		#endregion
+
+		//**************************************************************************
+		private IDwgStreamHandler getSectionStream(string sectionName)
+		{
+			Stream sectionStream = null;
+			//Get the section buffer
+			switch (m_fileHeader.AcadVersion)
+			{
+				case ACadVersion.Unknown:
+					throw new Exception();
+				case ACadVersion.MC0_0:
+				case ACadVersion.AC1_2:
+				case ACadVersion.AC1_4:
+				case ACadVersion.AC1_50:
+				case ACadVersion.AC2_10:
+				case ACadVersion.AC1002:
+				case ACadVersion.AC1003:
+				case ACadVersion.AC1004:
+				case ACadVersion.AC1006:
+				case ACadVersion.AC1009:
+					throw new NotSupportedException();
+				case ACadVersion.AC1012:
+				case ACadVersion.AC1014:
+				case ACadVersion.AC1015:
+					sectionStream = getSectionBuffer15(m_fileHeader as DwgFileHeader15, sectionName);
+					break;
+				case ACadVersion.AC1018:
+					sectionStream = getSectionBuffer18(m_fileHeader as DwgFileHeader18, sectionName);
+					break;
+				case ACadVersion.AC1021:
+					sectionStream = getSectionBuffer21(m_fileHeader as DwgFileHeader21, sectionName);
+					break;
+				case ACadVersion.AC1024:
+				case ACadVersion.AC1027:
+				case ACadVersion.AC1032:
+					//Check if it works...
+					sectionStream = getSectionBuffer18(m_fileHeader as DwgFileHeader18, sectionName);
+					break;
+				default:
+					break;
+			}
+
+			//Section not found
+			if (sectionStream == null)
+				return null;
+
+			return DwgStreamHanlder.GetStreamReader(m_fileHeader.AcadVersion, sectionStream);
+			//return sectionStream;
+		}
+		private Stream getSectionBuffer15(DwgFileHeader15 fileheader, string sectionName)
+		{
+			Stream stream = null;
+
+			//Get the section locator
+			var sectionLocator = DwgSectionUtils.GetSectionLocatorByName(sectionName);
+
+			if (sectionLocator < 0)
+				//There is no section for this version
+				return null;
+
+			if (fileheader.Records.TryGetValue(sectionLocator, out DwgSectionLocatorRecord record))
+			{
+				//set the stream position
+				stream = m_fileStream.Stream;
+				stream.Position = record.Seeker;
+			}
+
+			return stream;
+		}
+		private Stream getSectionBuffer18(DwgFileHeader18 fileheader, string sectionName)
+		{
+			Stream stream = null;
+
+			if (!fileheader.Descriptors.TryGetValue(sectionName, out DwgSectionDescriptor descriptor))
+				return null;
+
+			//get the total size of the page
+			MemoryStream memoryStream = new MemoryStream((int)descriptor.DecompressedSize * descriptor.LocalSections.Count);
+			foreach (DwgLocalSectionMap section in descriptor.LocalSections)
+			{
+				if (section.IsEmpty)
+				{
+					//Page is empty, fill the gap with 0s
+					for (int index = 0; index < (int)section.DecompressedSize; ++index)
+					{
+						memoryStream.WriteByte((byte)0);
+					}
+				}
+				else
+				{
+					//Get the page section header
+					IDwgStreamHandler sreader = DwgStreamHanlder.GetStreamReader(fileheader.AcadVersion, m_fileStream.Stream);
+					sreader.Position = section.Seeker;
+					//Get the header data
+					decryptHeaderDataSection(section, sreader);
+
+					if (descriptor.IsCompressed)
+					{
+						//Page is compressed
+						Dwg2004LZ77.DecompressToDest(m_fileStream.Stream, memoryStream);
+					}
+					else
+					{
+						//Read the stream normally
+						byte[] buffer = new byte[section.CompressedSize];
+						sreader.StreamToRead.Read(buffer, 0, (int)section.CompressedSize);
+						memoryStream.Write(buffer, 0, (int)section.CompressedSize);
+					}
+				}
+			}
+
+			//Reset the stream
+			memoryStream.Position = 0L;
+			stream = (Stream)memoryStream;
+
+			return stream;
+		}
+		private void decryptHeaderDataSection(DwgLocalSectionMap section, IDwgStreamHandler sreader)
+		{
+			int secMask = 0x4164536B ^ (int)sreader.Position;
+
+			//0x00	4	Section page type, since it’s always a data section: 0x4163043b
+			var pageType = sreader.ReadRawLong() ^ secMask;
+			//0x04	4	Section number
+			var sectionNumber = sreader.ReadRawLong() ^ secMask;
+			//0x08	4	Data size (compressed)
+			section.CompressedSize = (ulong)(sreader.ReadRawLong() ^ secMask);
+			//0x0C	4	Page Size (decompressed)
+			section.PageSize = sreader.ReadRawLong() ^ secMask;
+			//0x10	4	Start Offset (in the decompressed buffer)
+			var startOffset = sreader.ReadRawLong() ^ secMask;
+			//0x14	4	Page header Checksum (section page checksum calculated from unencoded header bytes, with the data checksum as seed)
+			var checksum = sreader.ReadRawLong() ^ secMask;
+			section.Offset = (ulong)(checksum + startOffset);
+
+			//0x18	4	Data Checksum (section page checksum calculated from compressed data bytes, with seed 0)
+			section.Checksum = (uint)(sreader.ReadRawLong() ^ secMask);
+			//0x1C	4	Unknown (ODA writes a 0)
+			var oda = (uint)(sreader.ReadRawLong() ^ secMask);
+		}
+		private Stream getSectionBuffer21(DwgFileHeader21 fileheader, string sectionName)
+		{
+			Stream stream = null;
+
+			if (!fileheader.Descriptors.TryGetValue(sectionName, out DwgSectionDescriptor section))
+				return null;
+
+			//Get the total lenght of all uncompressed pages
+			ulong totalLength = 0;
+			foreach (DwgLocalSectionMap page in section.LocalSections)
+				totalLength += page.DecompressedSize;
+
+			//Total buffer for the page
+			byte[] pagesBuffer = new byte[totalLength];
+
+			foreach (DwgLocalSectionMap page in section.LocalSections)
+			{
+				if (page.IsEmpty)
+				{
+					//Page is empty, fill the gap with 0s
+					for (int i = 0; i < (int)page.DecompressedSize; ++i)
+						pagesBuffer[i] = (byte)0;
+				}
+				else
+				{
+					//Get the page data
+					DwgSectionLocatorRecord pageData = fileheader.Records[page.PageNumber];
+
+					//Set the pointer on the current page
+					m_fileStream.Position = pageData.Seeker + 1152L;
+
+					//Get the page data
+					byte[] pageBytes = new byte[pageData.Size];
+					m_fileStream.Stream.Read(pageBytes, 0, (int)pageData.Size);
+
+					if (section.Encoding == 4)
+					{
+						//Encoded page, use reed solomon
+
+						//Avoid shifted bits
+						ulong v = page.CompressedSize + 7L;
+						ulong v1 = v & 0b11111111_11111111_11111111_11111000L;
+
+						int alignedPageSize = (int)((v1 + 251 - 1) / 251);
+						byte[] arr = new byte[alignedPageSize * 251];
+
+						this.reedSolomonDecoding(pageBytes, arr, alignedPageSize, 251);
+						pageBytes = arr;
+					}
+
+					if ((long)page.CompressedSize != (long)page.DecompressedSize)
+					{
+						//Page is compressed
+						byte[] arr = new byte[page.DecompressedSize];
+						DwgR21LZ77.Decompress(pageBytes, 0U, (uint)page.CompressedSize, arr);
+						pageBytes = arr;
+					}
+
+					for (int i = 0; i < (int)page.DecompressedSize; ++i)
+						pagesBuffer[i] = pageBytes[i];
+				}
+			}
+
+			stream = (Stream)new MemoryStream(pagesBuffer, 0, pagesBuffer.Length, false, true);
+
+			return stream;
+		}
 		/// <summary>
 		/// Apply a simple reed Solomon decoding to a byte array.
 		/// </summary>
 		/// <param name="encoded"></param>
 		/// <param name="factor"></param>
 		/// <param name="blockSize"></param>
-		private byte[] reedSolomonDecoding(byte[] encoded, int factor, int blockSize)
+		private void reedSolomonDecoding(byte[] encoded, byte[] buffer, int factor, int blockSize)
 		{
-			byte[] decoded = new byte[factor * blockSize];
 			int index = 0;
 			int n = 0;
-			int length = decoded.Length;
+			int length = buffer.Length;
 			for (int i = 0; i < factor; ++i)
 			{
 				int cindex = n;
@@ -570,15 +968,50 @@ namespace MeshIO.CAD
 					int offset = index + size;
 					while (index < offset)
 					{
-						decoded[index] = encoded[cindex];
+						buffer[index] = encoded[cindex];
 						++index;
 						cindex += factor;
 					}
 				}
 				++n;
 			}
+		}
+		/// <summary>
+		/// Get the buffer to read the dwg page.
+		/// </summary>
+		/// <param name="pageOffset"></param>
+		/// <param name="compressedSize"></param>
+		/// <param name="uncompressedSize"></param>
+		/// <param name="correctionFactor"></param>
+		/// <param name="blockSize"></param>
+		/// <param name="stream"></param>
+		/// <returns></returns>
+		private byte[] getPageBuffer(ulong pageOffset, ulong compressedSize, ulong uncompressedSize,
+			ulong correctionFactor, int blockSize, Stream stream)
+		{
+			//Avoid shifted bits
+			ulong v = compressedSize + 7L;
+			ulong v1 = v & 0b11111111_11111111_11111111_11111000L;
 
-			return decoded;
+			uint totalSize = (uint)(v1 * correctionFactor);
+
+			int factor = (int)(totalSize + blockSize - 1L) / blockSize;
+			int lenght = factor * byte.MaxValue;
+
+			byte[] buffer = new byte[lenght];
+
+			//Relative to data page map 1, add 0x480 to get stream position
+			stream.Position = (long)(0x480 + pageOffset);
+			stream.Read(buffer, 0, lenght);
+
+			byte[] compressedData = new byte[(int)totalSize];
+			this.reedSolomonDecoding(buffer, compressedData, factor, blockSize);
+
+			byte[] decompressedData = new byte[uncompressedSize];
+
+			DwgR21LZ77.Decompress(compressedData, 0U, (uint)compressedSize, decompressedData);
+
+			return decompressedData;
 		}
 	}
 }
