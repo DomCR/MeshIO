@@ -119,6 +119,11 @@ namespace MeshIO.CAD.IO
 		/// </summary>
 		/// <returns></returns>
 		XYZ Read3BitDouble();
+		/// <summary>
+		/// RC : raw char (not compressed)
+		/// </summary>
+		/// <returns></returns>
+		char ReadRawChar();
 
 		/// <summary>
 		/// RL : raw long (not compressed) 

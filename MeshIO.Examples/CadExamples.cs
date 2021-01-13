@@ -19,6 +19,12 @@ namespace MeshIO.Examples
 			{ ACadVersion.AC1027, $"{m_folder}\\drawing_2013.dwg"},
 			{ ACadVersion.AC1032, $"{m_folder}\\drawing_2018.dwg"},
 		};
+		public static void Read()
+		{
+			DwgReader reader = new DwgReader(Utils.GetFileDirectoryPath()
+				+ m_filePaths[ACadVersion.AC1021]);
+			reader.Read();
+		}
 		public static void ReadHeader()
 		{
 			DwgReader reader = new DwgReader(Utils.GetFileDirectoryPath()
@@ -30,6 +36,20 @@ namespace MeshIO.Examples
 			DwgReader reader = new DwgReader(Utils.GetFileDirectoryPath()
 				+ m_filePaths[ACadVersion.AC1032]);
 			reader.ReadSummaryInfo();
+		}
+		public static void ReadPreview()
+		{
+			DwgReader reader = new DwgReader(Utils.GetFileDirectoryPath()
+				+ m_filePaths[ACadVersion.AC1014]);
+
+			reader.ReadPreview();
+		}
+		public static void ReadClasses()
+		{
+			DwgReader reader = new DwgReader(Utils.GetFileDirectoryPath()
+				+ m_filePaths[ACadVersion.AC1018]);
+
+			reader.ReadClasses();
 		}
 	}
 }

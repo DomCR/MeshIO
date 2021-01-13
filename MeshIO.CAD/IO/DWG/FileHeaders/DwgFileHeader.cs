@@ -8,6 +8,9 @@ namespace MeshIO.CAD.IO
 	public abstract class DwgFileHeader
 	{
 		public ACadVersion AcadVersion { get; }
+		public long PreviewAddress { get; set; } = -1;
+		public int AcadMaintenanceVersion { get; set; }
+
 		public DwgFileHeader() { }
 		public DwgFileHeader(ACadVersion version)
 		{
@@ -55,34 +58,32 @@ namespace MeshIO.CAD.IO
 	public class DwgFileHeader15 : DwgFileHeader
 	{
 		public CodePage DrawingCodePage { get; set; }
-		public long PreviewAddress { get; set; }
-		public int AcadMaintenanceVersion { get; set; }
 
 		public Dictionary<int, DwgSectionLocatorRecord> Records { get; set; } = new Dictionary<int, DwgSectionLocatorRecord>();
-		public DwgFileHeader15() :base() { }
+		public DwgFileHeader15() : base() { }
 		public DwgFileHeader15(ACadVersion version) : base(version) { }
 	}
 	public class DwgFileHeader18 : DwgFileHeader15
 	{
-		public byte DwgVersion { get;  set; }
-		public byte AppReleaseVersion { get;  set; }
-		public long SummaryInfoAddr { get;  set; }
-		public long SecurityType { get;  set; }
-		public long VbaProjectAddr { get;  set; }
-		public int RootTreeNodeGap { get;  set; }
-		public int GapArraySize { get;  set; }
-		public uint CRCSeed { get;  set; }
-		public int LastPageId { get;  set; }
-		public long LastSectionAddr { get;  set; }
-		public ulong SecondHeaderAddr { get;  set; }
-		public int GapAmount { get;  set; }
-		public int SectionAmount { get;  set; }
-		public uint SectionPageMapId { get;  set; }
-		public ulong PageMapAddress { get;  set; }
-		public uint SectionMapId { get;  set; }
-		public uint SectionArrayPageSize { get;  set; }
-		public int RigthGap { get;  set; }
-		public int LeftGap { get;  set; }
+		public byte DwgVersion { get; set; }
+		public byte AppReleaseVersion { get; set; }
+		public long SummaryInfoAddr { get; set; }
+		public long SecurityType { get; set; }
+		public long VbaProjectAddr { get; set; }
+		public int RootTreeNodeGap { get; set; }
+		public int GapArraySize { get; set; }
+		public uint CRCSeed { get; set; }
+		public int LastPageId { get; set; }
+		public long LastSectionAddr { get; set; }
+		public ulong SecondHeaderAddr { get; set; }
+		public int GapAmount { get; set; }
+		public int SectionAmount { get; set; }
+		public uint SectionPageMapId { get; set; }
+		public ulong PageMapAddress { get; set; }
+		public uint SectionMapId { get; set; }
+		public uint SectionArrayPageSize { get; set; }
+		public int RigthGap { get; set; }
+		public int LeftGap { get; set; }
 
 		public Dictionary<string, DwgSectionDescriptor> Descriptors { get; set; } = new Dictionary<string, DwgSectionDescriptor>();
 

@@ -10,7 +10,7 @@ namespace MeshIO.CAD.IO
 {
 	internal abstract class DwgStreamHanlder : StreamIO, IDwgStreamHandler
 	{
-		public Encoding Encoding { get; set; }
+		public Encoding Encoding { get; set; } = Encoding.Default;
 		public Stream StreamToRead { get { return m_stream; } }
 		public int BitShift { get; set; }
 		public override long Position
@@ -25,7 +25,7 @@ namespace MeshIO.CAD.IO
 		protected byte m_lastByte;
 		public DwgStreamHanlder(Stream stream, bool resetPosition) : base(stream, resetPosition) { }
 		//*******************************************************************
-		public static IDwgStreamHandler GetStreamReader(ACadVersion version, Stream stream, bool resetPositon = false)
+		public static IDwgStreamHandler GetStreamHandler(ACadVersion version, Stream stream, bool resetPositon = false)
 		{
 			switch (version)
 			{
@@ -250,7 +250,11 @@ namespace MeshIO.CAD.IO
 		{
 			return new XYZ(ReadBitDouble(), ReadBitDouble(), ReadBitDouble());
 		}
-
+		/// <inheritdoc/>
+		public char ReadRawChar()
+		{
+			return (char)ReadByte();
+		}
 		/// <inheritdoc/>
 		public long ReadRawLong()
 		{

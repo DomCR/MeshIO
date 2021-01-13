@@ -8,7 +8,9 @@ namespace MeshIO.Examples
 		static void Main(string[] args)
 		{
 			//FbxExamples.AsciiToBinary();
-			CadExamples.ReadSummaryInfo();
+			CadExamples.ReadClasses();
+
+			CadExamples.Read();
 		}
 	}
 }

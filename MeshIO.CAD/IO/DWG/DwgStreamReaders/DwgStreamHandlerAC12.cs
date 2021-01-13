@@ -20,7 +20,15 @@ namespace MeshIO.CAD.IO
 		public DwgStreamHandlerAC15(Stream stream, bool resetPosition) : base(stream, resetPosition) { }
 		public override string ReadVariableText()
 		{
-			throw new NotImplementedException();
+			short length = ReadBitShort();
+			string str;
+			if (length > 0)
+			{
+				str = ReadString(length, Encoding).Replace("\0", "");
+			}
+			else
+				str = string.Empty;
+			return str;
 		}
 	}
 	internal class DwgStreamHandlerAC18 : DwgStreamHandlerAC15
@@ -28,7 +36,7 @@ namespace MeshIO.CAD.IO
 		public DwgStreamHandlerAC18(Stream stream, bool resetPosition) : base(stream, resetPosition) { }
 		public override string ReadTextUnicode()
 		{
-			short textLength = this.ReadShort<LittleEndianConverter>();
+			short textLength = ReadShort<LittleEndianConverter>();
 			string value;
 			if (textLength == 0)
 			{
@@ -43,17 +51,13 @@ namespace MeshIO.CAD.IO
 			}
 			return value;
 		}
-		public override string ReadVariableText()
-		{
-			return this.ReadTextUnicode();
-		}
 	}
 	internal class DwgStreamHandlerAC21 : DwgStreamHandlerAC18
 	{
 		public DwgStreamHandlerAC21(Stream stream, bool resetPosition) : base(stream, resetPosition) { }
 		public override string ReadTextUnicode()
 		{
-			short textLength = this.ReadShort<LittleEndianConverter>();
+			short textLength = ReadShort<LittleEndianConverter>();
 			string value;
 			if (textLength == 0)
 			{
@@ -70,7 +74,7 @@ namespace MeshIO.CAD.IO
 		}
 		public override string ReadVariableText()
 		{
-			return this.ReadTextUnicode();
+			return ReadTextUnicode();
 		}
 	}
 	internal class DwgStreamHandlerAC24 : DwgStreamHandlerAC21

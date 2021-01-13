@@ -16,4 +16,9 @@ namespace MeshIO.CAD
 		public string HyperlinkBase { get; set; }
 		public Dictionary<string, string> Properties { get; set; } = new Dictionary<string, string>();
 	}
+
+	public class DwgPreview
+	{
+
+	}
 }

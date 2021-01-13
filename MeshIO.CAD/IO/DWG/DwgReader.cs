@@ -62,7 +62,7 @@ namespace MeshIO.CAD
 			m_fileHeader = DwgFileHeader.GetFileHeader(version);
 
 			//Get the stream reader
-			IDwgStreamHandler sreader = DwgStreamHanlder.GetStreamReader(m_fileHeader.AcadVersion, this.m_fileStream.Stream);
+			IDwgStreamHandler sreader = DwgStreamHanlder.GetStreamHandler(m_fileHeader.AcadVersion, this.m_fileStream.Stream);
 
 			//Read the file header
 			switch (m_fileHeader.AcadVersion)
@@ -106,6 +106,9 @@ namespace MeshIO.CAD
 		/// <summary>
 		/// Read the summary info of the dwg file.
 		/// </summary>
+		/// <remarks>
+		/// Refers to AcDb:SummaryInfo data section.
+		/// </remarks>
 		/// <returns></returns>
 		public CadSummaryInfo ReadSummaryInfo()
 		{
@@ -115,7 +118,7 @@ namespace MeshIO.CAD
 			if (m_fileHeader.AcadVersion < ACadVersion.AC1018)
 				return null;
 
-			var sectionHandler = getSectionStream("AcDb:SummaryInfo");
+			IDwgStreamHandler sectionHandler = getSectionStream("AcDb:SummaryInfo");
 			if (sectionHandler == null)
 				return null;
 
@@ -171,6 +174,104 @@ namespace MeshIO.CAD
 			sectionHandler.ReadInt();
 
 			return summary;
+		}
+		/// <summary>
+		/// Read the preview image of the dwg file.
+		/// </summary>
+		/// <remarks>
+		/// Refers to AcDb:Preview data section.
+		/// </remarks>
+		/// <returns></returns>
+		public DwgPreview ReadPreview()
+		{
+			m_fileHeader = m_fileHeader ?? ReadFileHeader();
+
+			//Check if the preview exist
+			if (m_fileHeader.PreviewAddress < 0)
+				return null;
+
+			IDwgStreamHandler sectionHandler = DwgStreamHanlder.GetStreamHandler(m_fileHeader.AcadVersion, m_fileStream.Stream);
+			sectionHandler.Position = m_fileHeader.PreviewAddress;
+
+			//{0x1F,0x25,0x6D,0x07,0xD4,0x36,0x28,0x28,0x9D,0x57,0xCA,0x3F,0x9D,0x44,0x10,0x2B }
+			byte[] sentinel = sectionHandler.ReadSentinel();
+			//overall size	RL	overall size of image area
+			long overallSize = sectionHandler.ReadRawLong();
+			//imagespresent RC counter indicating what is present here
+			byte imagespresent = (byte)sectionHandler.ReadRawChar();
+
+			for (int i = 0; i < imagespresent; i++)
+			{
+				//Code RC code indicating what follows
+				byte code = (byte)sectionHandler.ReadRawChar();
+				switch (code)
+				{
+					case 1:
+						//header data start RL start of header data
+						long headerDataStart = sectionHandler.ReadRawLong();
+						//header data size RL size of header data
+						long headerDataSize = sectionHandler.ReadRawLong();
+						break;
+					case 2:
+						//start of bmp RL start of bmp data
+						long startOfBmp = sectionHandler.ReadRawLong();
+						//size of bmp RL size of bmp data
+						long sizeBmp = sectionHandler.ReadRawLong();
+						break;
+					case 3:
+						//start of wmf RL start of wmf data
+						long startOfWmf = sectionHandler.ReadRawLong();
+						//size of wmf RL size of wmf data
+						long sizeWmf = sectionHandler.ReadRawLong();
+						break;
+				}
+			}
+
+			//TODO: Implement the image reading
+			return null;
+		}
+		/// <summary>
+		///
+		/// </summary>
+		/// <remarks>
+		/// Refers to AcDb:Classes data section.
+		/// </remarks>
+		/// <returns></returns>
+		public List<DxfClass> ReadClasses()
+		{
+			m_fileHeader = m_fileHeader ?? ReadFileHeader();
+
+			IDwgStreamHandler sreader = getSectionStream("AcDb:Classes");
+
+			//R13 R15
+			switch (m_fileHeader.AcadVersion)
+			{
+				case ACadVersion.Unknown:
+					throw new Exception();
+				case ACadVersion.MC0_0:
+				case ACadVersion.AC1_2:
+				case ACadVersion.AC1_4:
+				case ACadVersion.AC1_50:
+				case ACadVersion.AC2_10:
+				case ACadVersion.AC1002:
+				case ACadVersion.AC1003:
+				case ACadVersion.AC1004:
+				case ACadVersion.AC1006:
+				case ACadVersion.AC1009:
+					throw new NotSupportedException();
+				case ACadVersion.AC1012:
+				case ACadVersion.AC1014:
+				case ACadVersion.AC1015:
+				case ACadVersion.AC1018:
+					return readClasses15(sreader);
+				case ACadVersion.AC1021:
+				case ACadVersion.AC1024:
+				case ACadVersion.AC1027:
+				case ACadVersion.AC1032:
+					return readClasses18(sreader);
+				default:
+					return null;
+			}
 		}
 		/// <inheritdoc/>
 		public void Dispose()
@@ -741,10 +842,141 @@ namespace MeshIO.CAD
 		}
 		#endregion
 
+		private List<DxfClass> readClasses15(IDwgStreamHandler sreader)
+		{
+			//SN : 0x8D 0xA1 0xC4 0xB8 0xC4 0xA9 0xF8 0xC5 0xC0 0xDC 0xF4 0x5F 0xE7 0xCF 0xB6 0x8A
+			byte[] sn = sreader.ReadSentinel();
+			//RL : size of class data area.
+			long size = sreader.ReadRawLong();
+			long endSection = sreader.Position + size;
+
+			if (m_fileHeader.AcadVersion == ACadVersion.AC1018)
+			{
+				//BS : Maxiumum class number
+				sreader.ReadBitShort();
+				//RC: 0x00
+				sreader.ReadRawChar();
+				//RC: 0x00
+				sreader.ReadRawChar();
+				//B : true
+				sreader.ReadBit();
+			}
+
+			List<DxfClass> classes = new List<DxfClass>();
+			//We read sets of these until we exhaust the data.
+			while (sreader.Position < endSection)
+			{
+				DxfClass dxfClass = new DxfClass();
+				//BS : classnum
+				dxfClass.ClassNumber = sreader.ReadBitShort();
+				//BS : version – in R14, becomes a flag indicating whether objects can be moved, edited, etc.
+				dxfClass.ProxyFlags = (ProxyFlags)sreader.ReadBitShort();
+				//TV : appname
+				dxfClass.ApplicationName = sreader.ReadVariableText();
+				//TV: cplusplusclassname
+				dxfClass.CPlusPlusClassName = sreader.ReadVariableText();
+				//TV : classdxfname
+				dxfClass.DxfName = sreader.ReadVariableText();
+				//B : wasazombie
+				dxfClass.WasAZombie = sreader.ReadBit();
+				//BS : itemclassid -- 0x1F2 for classes which produce entities, 0x1F3 for classes which produce objects.
+				dxfClass.ItemClassId = sreader.ReadBitShort();
+
+				if (m_fileHeader.AcadVersion == ACadVersion.AC1018)
+				{
+					//BL : Number of objects created of this type in the current DB(DXF 91).
+					sreader.ReadBitLong();
+					//BS : Dwg Version
+					sreader.ReadBitShort();
+					//BS : Maintenance release version.
+					sreader.ReadBitShort();
+					//BL : Unknown(normally 0L)
+					sreader.ReadBitLong();
+					//BL : Unknown(normally 0L)
+					sreader.ReadBitLong();
+				}
+
+				classes.Add(dxfClass);
+			}
+			//RS: CRC
+			short crc = sreader.ReadShort();
+			//0x72,0x5E,0x3B,0x47,0x3B,0x56,0x07,0x3A,0x3F,0x23,0x0B,0xA0,0x18,0x30,0x49,0x75
+			byte[] endsn = sreader.ReadSentinel();
+
+			return classes;
+		}
+
+		private List<DxfClass> readClasses18(IDwgStreamHandler interpreter)
+		{
+			//SN : 0x8D 0xA1 0xC4 0xB8 0xC4 0xA9 0xF8 0xC5 0xC0 0xDC 0xF4 0x5F 0xE7 0xCF 0xB6 0x8A
+			byte[] sn = interpreter.ReadSentinel();
+			//RL : size of class data area.
+			long size = interpreter.ReadRawLong();
+
+			//R2010+ (only present if the maintenance version is greater than 3!)
+			if (m_fileHeader.AcadVersion >= ACadVersion.AC1024 && m_fileHeader.AcadMaintenanceVersion > 3
+				|| m_fileHeader.AcadVersion > ACadVersion.AC1027)
+			{
+				//RL : unknown, possibly the high 32 bits of a 64-bit size?
+				long unknown = interpreter.ReadRawLong();
+			}
+
+			var endSection = interpreter.ReadRawLong();
+			//B : flag ??
+			var flag = interpreter.ReadBit();
+			if (flag)
+				throw new NotImplementedException();
+
+			List<DxfClass> classes = new List<DxfClass>();
+			while (interpreter.PositionInBits() < endSection)
+			{
+				DxfClass dxfClass = new DxfClass();
+				//BS: classnum
+				dxfClass.ClassNumber = interpreter.ReadBitShort();
+				//BS : Proxy flags:
+				dxfClass.ProxyFlags = (ProxyFlags)interpreter.ReadBitShort();
+
+				//B : wasazombie
+				dxfClass.WasAZombie = interpreter.ReadBit();
+				//BS : itemclassid-- 0x1F2 for classes which produce entities, 0x1F3 for classes which produce objects.
+				dxfClass.ItemClassId = interpreter.ReadBitShort();
+
+				//BL : Number of objects created of this type in the current DB(DXF 91).
+				interpreter.ReadBitLong();
+				//BS : Dwg Version
+				interpreter.ReadBitLong();
+				//BS : Maintenance release version.
+				interpreter.ReadBitLong();
+				//BL : Unknown(normally 0L)
+				interpreter.ReadBitLong();
+				//BL : Unknown(normally 0L)
+				interpreter.ReadBitLong();
+
+				classes.Add(dxfClass);
+			}
+
+			//Set the position 
+			interpreter.SetPositionInBits(endSection);
+
+			//Read the names (in same order)
+			foreach (DxfClass dxfClass in classes)
+			{
+				//TV: appname
+				dxfClass.ApplicationName = interpreter.ReadVariableText();
+				//TV : cplusplusclassname
+				dxfClass.CPlusPlusClassName = interpreter.ReadVariableText();
+				//TV : classdxfname
+				dxfClass.DxfName = interpreter.ReadVariableText();
+			}
+
+			return classes;
+		}
+
 		//**************************************************************************
 		private IDwgStreamHandler getSectionStream(string sectionName)
 		{
 			Stream sectionStream = null;
+			Encoding encoding = null;
 			//Get the section buffer
 			switch (m_fileHeader.AcadVersion)
 			{
@@ -765,6 +997,7 @@ namespace MeshIO.CAD
 				case ACadVersion.AC1014:
 				case ACadVersion.AC1015:
 					sectionStream = getSectionBuffer15(m_fileHeader as DwgFileHeader15, sectionName);
+					encoding = TextEncoding.GetListedEncoding((m_fileHeader as DwgFileHeader15).DrawingCodePage);
 					break;
 				case ACadVersion.AC1018:
 					sectionStream = getSectionBuffer18(m_fileHeader as DwgFileHeader18, sectionName);
@@ -786,7 +1019,13 @@ namespace MeshIO.CAD
 			if (sectionStream == null)
 				return null;
 
-			return DwgStreamHanlder.GetStreamReader(m_fileHeader.AcadVersion, sectionStream);
+			IDwgStreamHandler streamHandler = DwgStreamHanlder.GetStreamHandler(m_fileHeader.AcadVersion, sectionStream);
+
+			//Set the encoding if needed
+			if (encoding != null)
+				streamHandler.Encoding = encoding;
+
+			return streamHandler;
 			//return sectionStream;
 		}
 		private Stream getSectionBuffer15(DwgFileHeader15 fileheader, string sectionName)
@@ -831,7 +1070,7 @@ namespace MeshIO.CAD
 				else
 				{
 					//Get the page section header
-					IDwgStreamHandler sreader = DwgStreamHanlder.GetStreamReader(fileheader.AcadVersion, m_fileStream.Stream);
+					IDwgStreamHandler sreader = DwgStreamHanlder.GetStreamHandler(fileheader.AcadVersion, m_fileStream.Stream);
 					sreader.Position = section.Seeker;
 					//Get the header data
 					decryptHeaderDataSection(section, sreader);
