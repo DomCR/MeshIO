@@ -47,6 +47,7 @@ namespace MeshIO.CAD
 			//Read the different sections of the file
 			ReadFileHeader();
 			ReadSummaryInfo();
+			ReadClasses();
 		}
 		/// <summary>
 		/// Read the file header data.
@@ -234,6 +235,19 @@ namespace MeshIO.CAD
 		///
 		/// </summary>
 		/// <remarks>
+		/// Refers to AcDb:Header data section.
+		/// </remarks>
+		/// <returns></returns>
+		public CadHeader ReadHeader()
+		{
+			m_fileHeader = m_fileHeader ?? ReadFileHeader();
+
+			throw new NotImplementedException();
+		}
+		/// <summary>
+		///
+		/// </summary>
+		/// <remarks>
 		/// Refers to AcDb:Classes data section.
 		/// </remarks>
 		/// <returns></returns>
@@ -272,6 +286,133 @@ namespace MeshIO.CAD
 				default:
 					return null;
 			}
+		}
+		/// <summary>
+		///
+		/// </summary>
+		/// <remarks>
+		/// Refers to AcDb:Handles data section.
+		/// </remarks>
+		/// <returns></returns>
+		public Dictionary<ulong, long> ReadHandles()
+		{
+			m_fileHeader = m_fileHeader ?? ReadFileHeader();
+
+			IDwgStreamHandler interpreter = getSectionStream("AcDb:Handles");
+
+			//Handle map, handle | loc
+			Dictionary<ulong, long> objectMap = new Dictionary<ulong, long>();
+
+			//Repeat until section size==2 (the last empty (except the CRC) section):
+			while (true)
+			{
+				//Set the "last handle" to all 0 and the "last loc" to 0L;
+				ulong lasthandle = 0;
+				long lastloc = 0;
+
+				//Short: size of this section. Note this is in BIGENDIAN order (MSB first)
+				int size = interpreter.ReadShort<BigEndianConverter>();
+				if (size == 2)
+					break;
+
+				long startPos = interpreter.Position;
+				int maxSectionOffset = size - 2;
+				//Note that each section is cut off at a maximum length of 2032.
+				if (maxSectionOffset > 2032)
+					maxSectionOffset = 2032;
+
+				long lastPosition = startPos + maxSectionOffset;
+
+				//Repeat until out of data for this section:
+				while (interpreter.Position < lastPosition)
+				{
+					//offset of this handle from last handle as modular char.
+					ulong offset = (ulong)interpreter.ReadModularChar();
+					lasthandle += offset;
+
+					//offset of location in file from last loc as modular char. (note
+					//that location offsets can be negative, if the terminating byte
+					//has the 4 bit set).
+					lastloc += interpreter.ReadModularChar();
+
+					if (offset > 0)
+					{
+						objectMap[lasthandle] = lastloc;
+					}
+					else
+					{
+						//repeated object, do something?
+					}
+				}
+
+				//CRC (most significant byte followed by least significant byte)
+				uint crc = ((uint)interpreter.ReadByte() << 8) + interpreter.ReadByte();
+			}
+
+			return objectMap;
+		}
+		/// <summary>
+		/// Method only needed for versions <see cref="ACadVersion.AC1015"/> or lower.
+		/// </summary>
+		/// <remarks>
+		/// Refers to AcDb:ObjFreeSpace data section.
+		/// </remarks>
+		/// <returns>the offset where the object section is</returns>
+		public uint ReadObjFreeSpace()
+		{
+			m_fileHeader = m_fileHeader ?? ReadFileHeader();
+
+			if (m_fileHeader.AcadVersion < ACadVersion.AC1018)
+				return 0;
+
+			IDwgStreamHandler sreader = getSectionStream("AcDb:ObjFreeSpace");
+
+			//Int32				4	0
+			//UInt32			4	Approximate number of objects in the drawing(number of handles).
+			//Julian datetime	8	If version > R14 then system variable TDUPDATE otherwise TDUUPDATE.
+			sreader.Advance(16);
+
+			//UInt32	4	Offset of the objects section in the stream.
+			return sreader.ReadUInt();
+		}
+		/// <summary>
+		///
+		/// </summary>
+		/// <remarks>
+		/// Refers to AcDb:AcDbObjects data section.
+		/// </remarks>
+		/// <returns></returns>
+		public void ReadObjects()
+		{
+			Dictionary<ulong, long> map = ReadHandles();
+
+			IDwgStreamHandler sreader = null;
+			if (m_fileHeader.AcadVersion <= ACadVersion.AC1015)
+			{
+				sreader = DwgStreamHanlder.GetStreamHandler(m_fileHeader.AcadVersion, m_fileStream.Stream);
+				sreader.Position = ReadObjFreeSpace();
+			}
+			else
+			{
+				sreader = getSectionStream("AcDb:ObjFreeSpace");
+			}
+
+			throw new NotImplementedException();
+		}
+		/// <summary>
+		///
+		/// </summary>
+		/// <remarks>
+		/// Refers to AcDb:Template data section.
+		/// </remarks>
+		/// <returns></returns>
+		public void ReadTemplate()
+		{
+			m_fileHeader = m_fileHeader ?? ReadFileHeader();
+
+			IDwgStreamHandler interpreter = getSectionStream("AcDb:Template");
+
+			throw new NotImplementedException();
 		}
 		/// <inheritdoc/>
 		public void Dispose()
@@ -1064,7 +1205,7 @@ namespace MeshIO.CAD
 					//Page is empty, fill the gap with 0s
 					for (int index = 0; index < (int)section.DecompressedSize; ++index)
 					{
-						memoryStream.WriteByte((byte)0);
+						memoryStream.WriteByte(0);
 					}
 				}
 				else
@@ -1092,7 +1233,7 @@ namespace MeshIO.CAD
 
 			//Reset the stream
 			memoryStream.Position = 0L;
-			stream = (Stream)memoryStream;
+			stream = memoryStream;
 
 			return stream;
 		}
@@ -1140,7 +1281,7 @@ namespace MeshIO.CAD
 				{
 					//Page is empty, fill the gap with 0s
 					for (int i = 0; i < (int)page.DecompressedSize; ++i)
-						pagesBuffer[i] = (byte)0;
+						pagesBuffer[i] = 0;
 				}
 				else
 				{
@@ -1182,7 +1323,7 @@ namespace MeshIO.CAD
 				}
 			}
 
-			stream = (Stream)new MemoryStream(pagesBuffer, 0, pagesBuffer.Length, false, true);
+			stream = new MemoryStream(pagesBuffer, 0, pagesBuffer.Length, false, true);
 
 			return stream;
 		}

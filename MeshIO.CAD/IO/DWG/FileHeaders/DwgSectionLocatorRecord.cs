@@ -35,6 +35,10 @@ namespace MeshIO.CAD.IO
 					return 1;
 				case "AcDb:Handles":
 					return 2;
+				case "AcDb:ObjFreeSpace":
+					return 3;
+				case "AcDb:Template":
+					return 4;
 				//No record id for this sections
 				case "AcDb:SummaryInfo":
 				case "AcDb:AcDbObjects":

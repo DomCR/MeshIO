@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CSUtilities.Converters;
+using System;
 using System.IO;
 using System.Text;
 
@@ -43,7 +44,7 @@ namespace MeshIO.CAD.IO
 		OT : Object type
 	 */
 
-	public interface IDwgStreamHandler
+	internal interface IDwgStreamHandler
 	{
 		/// <summary>
 		/// Encoding used to read the text.
@@ -65,6 +66,8 @@ namespace MeshIO.CAD.IO
 
 		byte ReadByte();
 		short ReadShort();
+		short ReadShort<T>() where T : IEndianConverter, new();
+
 		int ReadInt();
 		uint ReadUInt();
 

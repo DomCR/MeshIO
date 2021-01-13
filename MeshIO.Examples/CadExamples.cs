@@ -51,5 +51,12 @@ namespace MeshIO.Examples
 
 			reader.ReadClasses();
 		}
+		public static void ReadHandles()
+		{
+			DwgReader reader = new DwgReader(Utils.GetFileDirectoryPath()
+				+ m_filePaths[ACadVersion.AC1014]);
+
+			reader.ReadHandles();
+		}
 	}
 }
