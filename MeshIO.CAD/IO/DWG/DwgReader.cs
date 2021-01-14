@@ -394,7 +394,7 @@ namespace MeshIO.CAD
 			}
 			else
 			{
-				sreader = getSectionStream("AcDb:ObjFreeSpace");
+				sreader = getSectionStream("AcDb:AcDbObjects");
 			}
 
 			throw new NotImplementedException();

@@ -7,6 +7,11 @@ C# 3D library.
 **Current features**:
 
 - Read dwg file header
+- Read dwg Summary Info Section
+- Read dwg Classes Section
+- Read dwg Handles
+- Read dwg ObjFreeSpace
+- Read dwg AcDbObjects (WIP)
 
 **Todo**:
 
