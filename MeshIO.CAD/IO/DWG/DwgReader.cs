@@ -19,6 +19,7 @@ namespace MeshIO.CAD
 		private CadDocument m_documentToRead;
 
 		private CadHeader m_cadHeader;
+		private CadObjectPointerCollection m_objectPointers;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="DwgReader" /> class.
@@ -26,8 +27,8 @@ namespace MeshIO.CAD
 		/// <param name="filename">The filename of the file to open.</param>
 		public DwgReader(string filename)
 		{
-			this.m_filename = filename;
-			this.m_fileStream = new StreamIO(filename);
+			m_filename = filename;
+			m_fileStream = new StreamIO(filename);
 		}
 		/// <summary>
 		/// Initializes a new instance of the <see cref="DwgReader" /> class.
@@ -35,19 +36,25 @@ namespace MeshIO.CAD
 		/// <param name="stream">The stream to read from.</param>
 		public DwgReader(Stream stream)
 		{
-			this.m_fileStream = new StreamIO(stream);
+			m_fileStream = new StreamIO(stream);
 		}
 		//**************************************************************************
 		public void Read()
 		{
 			//Setup the model
-			this.m_documentToRead = new CadDocument();
-			this.m_documentToRead.Filename = this.m_filename;
+			m_documentToRead = new CadDocument();
+			m_documentToRead.Filename = m_filename;
 
 			//Read the different sections of the file
-			ReadFileHeader();
-			ReadSummaryInfo();
+
+			//Read the header and get all the sections to be read
+			m_fileHeader = ReadFileHeader();
+			//AcDb:Header
+			m_cadHeader = ReadHeader();
+			//AcDb:Classes
 			ReadClasses();
+			//AcDb:SummaryInfo Section
+			CadSummaryInfo summary = ReadSummaryInfo();
 		}
 		/// <summary>
 		/// Read the file header data.
@@ -60,13 +67,13 @@ namespace MeshIO.CAD
 
 			//0x00	6	“ACXXXX” version string
 			ACadVersion version = CadUtils.GetVersionFromName(m_fileStream.ReadString(6, Encoding.ASCII));
-			m_fileHeader = DwgFileHeader.GetFileHeader(version);
+			DwgFileHeader fileHeader = DwgFileHeader.GetFileHeader(version);
 
 			//Get the stream reader
-			IDwgStreamHandler sreader = DwgStreamHanlder.GetStreamHandler(m_fileHeader.AcadVersion, this.m_fileStream.Stream);
+			IDwgStreamHandler sreader = DwgStreamHanlder.GetStreamHandler(fileHeader.AcadVersion, m_fileStream.Stream);
 
 			//Read the file header
-			switch (m_fileHeader.AcadVersion)
+			switch (fileHeader.AcadVersion)
 			{
 				case ACadVersion.Unknown:
 					throw new Exception();
@@ -84,25 +91,25 @@ namespace MeshIO.CAD
 				case ACadVersion.AC1012:
 				case ACadVersion.AC1014:
 				case ACadVersion.AC1015:
-					readFileHeaderAC15(m_fileHeader as DwgFileHeader15, sreader);
+					readFileHeaderAC15(fileHeader as DwgFileHeader15, sreader);
 					break;
 				case ACadVersion.AC1018:
-					readFileHeaderAC18(m_fileHeader as DwgFileHeader18, sreader);
+					readFileHeaderAC18(fileHeader as DwgFileHeader18, sreader);
 					break;
 				case ACadVersion.AC1021:
-					readFileHeaderAC21(m_fileHeader as DwgFileHeader21, sreader);
+					readFileHeaderAC21(fileHeader as DwgFileHeader21, sreader);
 					break;
 				case ACadVersion.AC1024:
 				case ACadVersion.AC1027:
 				case ACadVersion.AC1032:
 					//Check if it works...
-					readFileHeaderAC18(m_fileHeader as DwgFileHeader18, sreader);
+					readFileHeaderAC18(fileHeader as DwgFileHeader18, sreader);
 					break;
 				default:
 					break;
 			}
 
-			return m_fileHeader;
+			return fileHeader;
 		}
 		/// <summary>
 		/// Read the summary info of the dwg file.
@@ -241,8 +248,10 @@ namespace MeshIO.CAD
 		public CadHeader ReadHeader()
 		{
 			m_fileHeader = m_fileHeader ?? ReadFileHeader();
+			IDwgStreamHandler sreader = getSectionStream("AcDb:Header");
 
-			throw new NotImplementedException();
+			return DwgHeaderReader.Read(sreader, m_fileHeader.AcadVersion, 
+				m_fileHeader.AcadMaintenanceVersion, out m_objectPointers); ;
 		}
 		/// <summary>
 		///
@@ -385,6 +394,7 @@ namespace MeshIO.CAD
 		public void ReadObjects()
 		{
 			Dictionary<ulong, long> map = ReadHandles();
+			m_cadHeader = m_cadHeader ?? ReadHeader();
 
 			IDwgStreamHandler sreader = null;
 			if (m_fileHeader.AcadVersion <= ACadVersion.AC1015)
@@ -396,6 +406,8 @@ namespace MeshIO.CAD
 			{
 				sreader = getSectionStream("AcDb:AcDbObjects");
 			}
+
+
 
 			throw new NotImplementedException();
 		}
@@ -417,7 +429,7 @@ namespace MeshIO.CAD
 		/// <inheritdoc/>
 		public void Dispose()
 		{
-			this.m_fileStream.Dispose();
+			m_fileStream.Dispose();
 		}
 		//**************************************************************************
 
@@ -719,7 +731,7 @@ namespace MeshIO.CAD
 			//should be decoded using Reed-Solomon (255, 239) decoding, with a factor of 3.
 			byte[] compressedData = sreader.ReadBytes(0x400);
 			byte[] decodedData = new byte[3 * 239]; //factor * blockSize
-			this.reedSolomonDecoding(compressedData, decodedData, 3, 239);
+			reedSolomonDecoding(compressedData, decodedData, 3, 239);
 
 			//0x00	8	CRC
 			long crc = LittleEndianConverter.Instance.ToInt64(decodedData, 0);
@@ -1289,7 +1301,7 @@ namespace MeshIO.CAD
 					DwgSectionLocatorRecord pageData = fileheader.Records[page.PageNumber];
 
 					//Set the pointer on the current page
-					m_fileStream.Position = pageData.Seeker + 1152L;
+					m_fileStream.Position = pageData.Seeker + 0x480L;
 
 					//Get the page data
 					byte[] pageBytes = new byte[pageData.Size];
@@ -1306,7 +1318,7 @@ namespace MeshIO.CAD
 						int alignedPageSize = (int)((v1 + 251 - 1) / 251);
 						byte[] arr = new byte[alignedPageSize * 251];
 
-						this.reedSolomonDecoding(pageBytes, arr, alignedPageSize, 251);
+						reedSolomonDecoding(pageBytes, arr, alignedPageSize, 251);
 						pageBytes = arr;
 					}
 
@@ -1385,7 +1397,7 @@ namespace MeshIO.CAD
 			stream.Read(buffer, 0, lenght);
 
 			byte[] compressedData = new byte[(int)totalSize];
-			this.reedSolomonDecoding(buffer, compressedData, factor, blockSize);
+			reedSolomonDecoding(buffer, compressedData, factor, blockSize);
 
 			byte[] decompressedData = new byte[uncompressedSize];
 

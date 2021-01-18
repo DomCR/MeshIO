@@ -117,8 +117,8 @@ namespace MeshIO.CAD.IO.DWG
 			ushort retval = dx;
 			for (int index = 0; index < arr.Length; ++index)
 			{
-				byte al = (byte)((uint)arr[index] ^ (uint)(byte)((uint)retval & (uint)byte.MaxValue));
-				retval = (ushort)((uint)(ushort)((int)retval >> 8 & (int)byte.MaxValue) ^ (uint)CrcTable[(int)al & (int)byte.MaxValue]);
+				byte al = (byte)(arr[index] ^ (uint)(byte)(retval & (uint)byte.MaxValue));
+				retval = (ushort)((ushort)(retval >> 8 & byte.MaxValue) ^ (uint)CrcTable[al & byte.MaxValue]);
 			}
 			return retval;
 		}
@@ -167,8 +167,8 @@ namespace MeshIO.CAD.IO.DWG
 		//**************************************************************************
 		private ushort decode(ushort key, byte value)
 		{
-			int index = (int)value ^ (int)(byte)key;
-			key = (ushort)((uint)key >> 8 ^ (uint)CRC.CrcTable[index]);
+			int index = value ^ (byte)key;
+			key = (ushort)((uint)key >> 8 ^ CRC.CrcTable[index]);
 			return key;
 		}
 	}
@@ -202,10 +202,10 @@ namespace MeshIO.CAD.IO.DWG
 				randSeed += 0x269ec3;
 
 				byte values = (byte)(randSeed >> 0x10);
-				arr[index] = (byte)((uint)arr[index] ^ (uint)values);
+				arr[index] = (byte)(arr[index] ^ (uint)values);
 			}
 
-			StreamCRC = (Stream)new MemoryStream(arr);
+			StreamCRC = new MemoryStream(arr);
 
 			m_seed = ~seed;
 		}
@@ -227,7 +227,7 @@ namespace MeshIO.CAD.IO.DWG
 			
 			for (int index = offset; index < length; ++index)
 			{
-				m_seed = m_seed >> 8 ^ CRC.Crc32Table[((int)m_seed ^ (int)buffer[index]) & (int)byte.MaxValue];
+				m_seed = m_seed >> 8 ^ CRC.Crc32Table[((int)m_seed ^ buffer[index]) & byte.MaxValue];
 			}
 			
 			return nbytes;
@@ -247,7 +247,7 @@ namespace MeshIO.CAD.IO.DWG
 			int num = offset + count;
 
 			for (int index = offset; index < num; ++index)
-				m_seed = m_seed >> 8 ^ CRC.Crc32Table[((int)m_seed ^ (int)buffer[index]) & (int)byte.MaxValue];
+				m_seed = m_seed >> 8 ^ CRC.Crc32Table[((int)m_seed ^ buffer[index]) & byte.MaxValue];
 
 			StreamCRC.Write(buffer, offset, count);
 		}

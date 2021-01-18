@@ -5,7 +5,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="IO\DWG\DwgHeaderReader_backup.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="Exceptions\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="IO\DWG\DwgHeaderReader_backup.cs" />
   </ItemGroup>
 
   <ItemGroup>

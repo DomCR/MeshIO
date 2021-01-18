@@ -21,5 +21,10 @@ namespace MeshIO.CAD
 			else
 				return ACadVersion.Unknown;
 		}
+		public static Color CreateColorFromIndex(short index)
+		{
+			//TODO: get the color index form autocad 
+			return new Color();
+		}
 	}
 }

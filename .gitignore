@@ -353,3 +353,4 @@ MigrationBackup/
 /MeshIO.FBXTests/FbxSamples
 /MeshIO.CAD/_docs
 /MeshIO.FBXTests
+/MeshIO.CAD/IO/DWG/DwgHeaderReader_backup.cs

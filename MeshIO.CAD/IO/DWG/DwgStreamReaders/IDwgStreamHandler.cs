@@ -63,10 +63,19 @@ namespace MeshIO.CAD.IO
 		/// Current stream position.
 		/// </summary>
 		long Position { get; set; }
-
+		/// <summary>
+		/// Indicates that the handler is empty of information.
+		/// </summary>
+		bool IsEmpty { get; }
+		/// <summary>
+		/// Read a byte and store the value, apply the shift to correct the bit reading.
+		/// </summary>
+		/// <returns>Value of the last byte.</returns>
 		byte ReadByte();
 		short ReadShort();
 		short ReadShort<T>() where T : IEndianConverter, new();
+
+		long SetPositionByFlag(long position);
 
 		int ReadInt();
 		uint ReadUInt();
@@ -152,24 +161,16 @@ namespace MeshIO.CAD.IO
 		/// <summary>
 		/// H : handle reference(see the HANDLE REFERENCES section)
 		/// </summary>
-		/// <param name="storeReference"></param>
+		/// <param name="referenceHandle"></param>
 		/// <returns></returns>
-		ulong HandleReference(bool storeReference);
+		ulong HandleReference(ulong referenceHandle);
 		/// <summary>
 		/// H : handle reference(see the HANDLE REFERENCES section)
 		/// </summary>
 		/// <param name="referenceHandle"></param>
-		/// <param name="storeReference"></param>
-		/// <returns></returns>
-		ulong HandleReference(ulong referenceHandle, bool storeReference);
-		/// <summary>
-		/// H : handle reference(see the HANDLE REFERENCES section)
-		/// </summary>
-		/// <param name="referenceHandle"></param>
-		/// <param name="storeReference"></param>
 		/// <param name="reference"></param>
 		/// <returns></returns>
-		ulong HandleReference(ulong referenceHandle, bool storeReference, out ReferenceType reference);
+		ulong HandleReference(ulong referenceHandle, out ReferenceType reference);
 		/// <summary>
 		/// T : text (bitshort length, followed by the string).
 		/// </summary>
@@ -200,6 +201,19 @@ namespace MeshIO.CAD.IO
 		/// <returns></returns>
 		ObjectType ReadObjectType();
 		#endregion
+
+		/// <summary>
+		/// BL: Julian day
+		/// BL: Milliseconds into the day
+		/// </summary>
+		/// <returns></returns>
+		DateTime ReadDateTime();
+		/// <summary>
+		/// BL: Days
+		/// BL: Milliseconds into the day
+		/// </summary>
+		/// <returns></returns>
+		TimeSpan ReadTimeSpan();
 
 		/// <summary>
 		/// Get the absolute position in the stream in bits.

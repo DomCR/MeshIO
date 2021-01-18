@@ -22,6 +22,7 @@ namespace MeshIO.CAD.IO
 				BitShift = 0;
 			}
 		}
+		public bool IsEmpty { get; private set; } = false;
 		protected byte m_lastByte;
 		public DwgStreamHanlder(Stream stream, bool resetPosition) : base(stream, resetPosition) { }
 		//*******************************************************************
@@ -62,10 +63,6 @@ namespace MeshIO.CAD.IO
 			return null;
 		}
 		//*******************************************************************
-		/// <summary>
-		/// Read a byte and store the value, apply the shift to correct the bit reading.
-		/// </summary>
-		/// <returns>Value fo the last byte.</returns>
 		public override byte ReadByte()
 		{
 			if (BitShift == 0)
@@ -88,6 +85,37 @@ namespace MeshIO.CAD.IO
 			byte[] numArray = new byte[length];
 			applyShiftToArr(length, numArray);
 			return numArray;
+		}
+		public long SetPositionByFlag(long position)
+		{
+			//Pag 104
+			this.SetPositionInBits(position);
+			
+			//String stream present bit (last bit in pre-handles section).
+			bool flag = this.ReadBit();
+
+			long startPositon = position;
+			if (flag)
+			{
+				//String stream present
+				long length;
+				long size;
+				//If 1, then the “endbit” location should be decremented by 16 bytes
+				this.applyFlagToPosition(position, out length, out size);
+
+				startPositon = length - size;
+
+				this.SetPositionInBits(startPositon);
+			}
+			else
+			{
+				//Mark as empty
+				IsEmpty = true;
+				//There is no information, set the position to the end
+				Position = Stream.Length;
+			}
+
+			return startPositon;
 		}
 
 		#region Read BIT CODES AND DATA DEFINITIONS
@@ -215,10 +243,10 @@ namespace MeshIO.CAD.IO
 			ulong value = 0;
 			byte size = read3bits();
 
-			for (int index = 0; index < size; ++index)
+			for (int i = 0; i < size; ++i)
 			{
 				ulong b = ReadByte();
-				value += b << (index << 3);
+				value += b << (i << 3);
 			}
 
 			return (long)value;
@@ -230,7 +258,7 @@ namespace MeshIO.CAD.IO
 			switch (Read2Bits())
 			{
 				case 0:
-					value = ReadDouble();
+					value = ReadDouble<LittleEndianConverter>();
 					break;
 				case 1:
 					value = 1.0;
@@ -360,20 +388,15 @@ namespace MeshIO.CAD.IO
 		/// <inheritdoc/>
 		public ulong HandleReference()
 		{
-			return HandleReference(false);
+			return HandleReference(0UL,  out ReferenceType _);
 		}
 		/// <inheritdoc/>
-		public ulong HandleReference(bool storeReference)
+		public ulong HandleReference(ulong referenceHandle)
 		{
-			return HandleReference(0UL, storeReference, out ReferenceType _);
+			return HandleReference(referenceHandle, out ReferenceType _);
 		}
 		/// <inheritdoc/>
-		public ulong HandleReference(ulong referenceHandle, bool storeReference)
-		{
-			return HandleReference(referenceHandle, storeReference, out ReferenceType _);
-		}
-		/// <inheritdoc/>
-		public ulong HandleReference(ulong referenceHandle, bool storeReference, out ReferenceType reference)
+		public ulong HandleReference(ulong referenceHandle, out ReferenceType reference)
 		{
 			//|CODE (4 bits)|COUNTER (4 bits)|HANDLE or OFFSET|
 			byte form = ReadByte();
@@ -414,19 +437,14 @@ namespace MeshIO.CAD.IO
 				throw new Exception();
 			}
 
-			//TODO: implement the reference storage
-			if (storeReference)
-				throw new NotImplementedException();
-
 			return initialPos;
 		}
-
 		private ulong readHandle(int length)
 		{
 			byte[] raw = new byte[length];
 			byte[] arr = new byte[8];
 
-			if (StreamToRead.Read(raw, 0, length) < length)
+			if (StreamToRead.Read(raw, 0, length) < length)	//Error in header reader
 				throw new EndOfStreamException();
 
 			if (BitShift == 0)
@@ -486,6 +504,7 @@ namespace MeshIO.CAD.IO
 			return ReadBytes(16);
 		}
 
+		/// <inheritdoc/>
 		public Color ReadCmColor()
 		{
 			//CMC:
@@ -494,24 +513,45 @@ namespace MeshIO.CAD.IO
 			//BL: RGB value
 			int rgb = ReadBitLong();
 
-			byte num = ReadByte();
+			byte id = ReadByte();
 
 			string colorName = string.Empty;
 			//RC: Color Byte(&1 => color name follows(TV),
-			if ((num & 1) == 1)
+			if ((id & 1) == 1)
 				colorName = ReadVariableText();
 
 			string bookName = string.Empty;
 			//&2 => book name follows(TV))
-			if ((num & 2) == 2)
+			if ((id & 2) == 2)
 				bookName = ReadVariableText();
 
 			return new Color();
 		}
 
 		/// <inheritdoc/>
-		public virtual ObjectType ReadObjectType() => (ObjectType)ReadBitShort();
+		public virtual ObjectType ReadObjectType()
+		{
+			throw new NotImplementedException();
+			return (ObjectType)ReadBitShort();
+		}
 		#endregion
+
+		/// <inheritdoc/>
+		public DateTime ReadDateTime()
+		{
+			ReadBitLong();
+			ReadBitLong();
+
+			return new DateTime();
+		}
+		/// <inheritdoc/>
+		public TimeSpan ReadTimeSpan()
+		{
+			ReadBitLong();
+			ReadBitLong();
+
+			return new TimeSpan();
+		}
 
 		#region Stream pointer control
 		/// <inheritdoc/>
@@ -563,6 +603,38 @@ namespace MeshIO.CAD.IO
 		}
 		#endregion
 		//*******************************************************************
+		protected virtual void applyFlagToPosition(long lastPos, out long length, out long strDataSize)
+		{
+			//If 1, then the “endbit” location should be decremented by 16 bytes
+
+			length = lastPos - 16L;
+			this.SetPositionInBits(length);
+
+			//short should be read at location endbit – 128 (bits)
+			strDataSize = (long)this.ReadUShort();
+
+			//If this short has the 0x8000 bit set, 
+			//then decrement endbit by an additional 16 bytes,
+			//strip the 0x8000 bit off of strDataSize, and read 
+			//the short at this new location, calling it hiSize.
+			if (((ulong)strDataSize & 0x8000) <= 0UL)
+				return;
+
+			length -= 0x10;
+
+			this.SetPositionInBits(length);
+
+			strDataSize &= (long)short.MaxValue;
+
+			int hiSize = (int)this.ReadUShort();
+			//Then set strDataSize to (strDataSize | (hiSize << 15))
+			strDataSize += (hiSize & ushort.MaxValue) << 15;
+
+			//All unicode strings in this object are located in the “string stream”, 
+			//and should be read from this stream, even though the location of the 
+			//TV type fields in the object descriptions list these fields in among 
+			//the normal object data.
+		}
 		protected byte applyShiftToLasByte()
 		{
 			byte value = (byte)((uint)m_lastByte << BitShift);
