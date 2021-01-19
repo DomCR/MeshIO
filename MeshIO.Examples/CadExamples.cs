@@ -23,6 +23,7 @@ namespace MeshIO.Examples
 		{
 			DwgReader reader = new DwgReader(Utils.GetFileDirectoryPath()
 				+ m_filePaths[ACadVersion.AC1021]);
+
 			reader.Read();
 		}
 		public static void ReadFileHeader()

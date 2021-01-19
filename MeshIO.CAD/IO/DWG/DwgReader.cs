@@ -55,6 +55,8 @@ namespace MeshIO.CAD
 			ReadClasses();
 			//AcDb:SummaryInfo Section
 			CadSummaryInfo summary = ReadSummaryInfo();
+
+			ReadObjects();
 		}
 		/// <summary>
 		/// Read the file header data.
@@ -250,7 +252,7 @@ namespace MeshIO.CAD
 			m_fileHeader = m_fileHeader ?? ReadFileHeader();
 			IDwgStreamHandler sreader = getSectionStream("AcDb:Header");
 
-			return DwgHeaderReader.Read(sreader, m_fileHeader.AcadVersion, 
+			return DwgHeaderReader.Read(sreader, m_fileHeader.AcadVersion,
 				m_fileHeader.AcadMaintenanceVersion, out m_objectPointers); ;
 		}
 		/// <summary>
@@ -1059,67 +1061,73 @@ namespace MeshIO.CAD
 			return classes;
 		}
 
-		private List<DxfClass> readClasses18(IDwgStreamHandler interpreter)
+		private List<DxfClass> readClasses18(IDwgStreamHandler sreader)
 		{
 			//SN : 0x8D 0xA1 0xC4 0xB8 0xC4 0xA9 0xF8 0xC5 0xC0 0xDC 0xF4 0x5F 0xE7 0xCF 0xB6 0x8A
-			byte[] sn = interpreter.ReadSentinel();
+			byte[] sn = sreader.ReadSentinel();
 			//RL : size of class data area.
-			long size = interpreter.ReadRawLong();
+			long size = sreader.ReadRawLong();
 
 			//R2010+ (only present if the maintenance version is greater than 3!)
 			if (m_fileHeader.AcadVersion >= ACadVersion.AC1024 && m_fileHeader.AcadMaintenanceVersion > 3
 				|| m_fileHeader.AcadVersion > ACadVersion.AC1027)
 			{
 				//RL : unknown, possibly the high 32 bits of a 64-bit size?
-				long unknown = interpreter.ReadRawLong();
+				long unknown = sreader.ReadRawLong();
 			}
 
-			var endSection = interpreter.ReadRawLong();
-			//B : flag ??
-			var flag = interpreter.ReadBit();
-			if (flag)
-				throw new NotImplementedException();
+			long flagPos = sreader.PositionInBits() + sreader.ReadRawLong() - 1L;
+			long offset = sreader.PositionInBits();
+			long endSection = sreader.SetPositionByFlag(flagPos);
+
+			sreader.SetPositionInBits(offset);
+
+			//BL: 0x00
+			sreader.ReadBitLong();
+			//B : flag - to find the data string at the end of the section
+			sreader.ReadBit();
 
 			List<DxfClass> classes = new List<DxfClass>();
-			while (interpreter.PositionInBits() < endSection)
+			while (sreader.PositionInBits() < endSection)
 			{
 				DxfClass dxfClass = new DxfClass();
 				//BS: classnum
-				dxfClass.ClassNumber = interpreter.ReadBitShort();
+				dxfClass.ClassNumber = sreader.ReadBitShort();
 				//BS : Proxy flags:
-				dxfClass.ProxyFlags = (ProxyFlags)interpreter.ReadBitShort();
+				dxfClass.ProxyFlags = (ProxyFlags)sreader.ReadBitShort();
 
 				//B : wasazombie
-				dxfClass.WasAZombie = interpreter.ReadBit();
+				dxfClass.WasAZombie = sreader.ReadBit();
 				//BS : itemclassid-- 0x1F2 for classes which produce entities, 0x1F3 for classes which produce objects.
-				dxfClass.ItemClassId = interpreter.ReadBitShort();
+				dxfClass.ItemClassId = sreader.ReadBitShort();
 
 				//BL : Number of objects created of this type in the current DB(DXF 91).
-				interpreter.ReadBitLong();
+				sreader.ReadBitLong();
 				//BS : Dwg Version
-				interpreter.ReadBitLong();
+				sreader.ReadBitLong();
 				//BS : Maintenance release version.
-				interpreter.ReadBitLong();
+				sreader.ReadBitLong();
 				//BL : Unknown(normally 0L)
-				interpreter.ReadBitLong();
+				sreader.ReadBitLong();
 				//BL : Unknown(normally 0L)
-				interpreter.ReadBitLong();
+				sreader.ReadBitLong();
 
 				classes.Add(dxfClass);
 			}
 
 			//Set the position 
-			interpreter.SetPositionInBits(endSection);
+			sreader.SetPositionInBits(endSection);
 
 			//Read the names (in same order)
+			//X : String stream data
 			foreach (DxfClass dxfClass in classes)
 			{
 				//TV: appname
-				dxfClass.ApplicationName = interpreter.ReadVariableText();
+				dxfClass.ApplicationName = sreader.ReadVariableText();
 				//TV : cplusplusclassname
-				dxfClass.CPlusPlusClassName = interpreter.ReadVariableText();
+				dxfClass.CPlusPlusClassName = sreader.ReadVariableText();
 				//TV : classdxfname
-				dxfClass.DxfName = interpreter.ReadVariableText();
+				dxfClass.DxfName = sreader.ReadVariableText();
 			}
 
 			return classes;

@@ -53,6 +53,9 @@ namespace MeshIO.CAD.IO.DWG
 		public static CadHeader Read(IDwgStreamHandler shandler, ACadVersion version,
 			int acadMaintenanceVersion, out CadObjectPointerCollection objectPointers)
 		{
+			//Save the parameter handler in a local variable
+			mianHandler = shandler;
+
 			setVersionConditionals(version);
 
 			CadHeader header = new CadHeader(version);
@@ -76,9 +79,6 @@ namespace MeshIO.CAD.IO.DWG
 			//+R2007 Only:
 			if (R2007Plus)
 			{
-				//Save the parameter handler in a local variable
-				mianHandler = shandler;
-
 				//RL : Size in bits
 				long sizeInBits = shandler.ReadRawLong();
 
