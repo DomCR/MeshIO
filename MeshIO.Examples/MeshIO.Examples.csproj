@@ -6,7 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MeshIO.CAD\MeshIO.CAD.csproj" />
     <ProjectReference Include="..\MeshIO.FBX\MeshIO.FBX.csproj" />
   </ItemGroup>
 
