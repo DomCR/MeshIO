@@ -1,6 +1,8 @@
 ﻿using MeshIO.FBX.Attributes;
 using MeshIO.FBX.Nodes;
 using MeshIO.FBX.Nodes.Connections;
+using MeshIO.FBX.Nodes.Objects;
+using MeshIO.FBX.Nodes.Objects.NodeAttributes;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -17,19 +19,19 @@ namespace MeshIO.FBX
 	public class FbxRootDocument
 	{
 		[FbxChildNode("FBXHeaderExtension")]
-		public FbxHeader Header { get; set; }
+		public FbxHeader Header { get; set; } = new FbxHeader();
 		[FbxChildNode("GlobalSettings")]
-		public FbxGlobalSettings GlobalSettings { get; set; }
+		public FbxGlobalSettings GlobalSettings { get; set; } = new FbxGlobalSettings();
 		[FbxChildNode("Documents")]
-		public FbxDocumentCollection Documents { get; set; }
+		public FbxDocumentCollection Documents { get; set; } = new FbxDocumentCollection();
 		[FbxChildNode("References")]
-		public FbxReferenceCollection References { get; set; }
+		public FbxReferenceCollection References { get; set; } = new FbxReferenceCollection();
 		[FbxChildNode("Definitions")]
-		public FbxDefinitions Definitions { get; set; }
+		public FbxDefinitions Definitions { get; set; } = new FbxDefinitions();
 		[FbxChildNode("Objects")]
-		public FbxObjectCollection Objects { get; set; }
+		public FbxObjectCollection Objects { get; set; } = new FbxObjectCollection();
 		[FbxChildNode("Connections")]
-		public FbxConnectionColletion Connections { get; set; }
+		public FbxConnectionColletion Connections { get; set; } = new FbxConnectionColletion();
 		/// <summary>
 		/// Custom fbx nodes added by the user.
 		/// </summary>
@@ -41,7 +43,14 @@ namespace MeshIO.FBX
 		/// <summary>
 		/// Default constructor.
 		/// </summary>
-		public FbxRootDocument() { }
+		public FbxRootDocument()
+		{
+			//Add the default document
+			Documents.Add(new FbxDocumentInfo { RootNode = 0 });
+
+			//Add the global settings definition
+			Definitions.Add("GlobalSettings");
+		}
 		/// <summary>
 		/// Create a root document by referencing a fbx root node.
 		/// </summary>
@@ -62,7 +71,17 @@ namespace MeshIO.FBX
 		/// <returns></returns>
 		public FbxRoot CreateRootNode()
 		{
-			throw new NotImplementedException();
+			FbxRoot root = new FbxRoot();
+
+			root.Nodes.Add(Header.ToFbxNode());
+			root.Nodes.Add(GlobalSettings.ToFbxNode());
+			root.Nodes.Add(Documents.ToFbxNode());
+			root.Nodes.Add(References.ToFbxNode());
+			root.Nodes.Add(Definitions.ToFbxNode());
+			root.Nodes.Add(Objects.ToFbxNode());
+			root.Nodes.Add(Connections.ToFbxNode());
+
+			return root;
 		}
 		/// <summary>
 		/// Creates a fbx root node.
@@ -74,6 +93,40 @@ namespace MeshIO.FBX
 		public List<GElement> ExtractElements()
 		{
 			throw new NotImplementedException();
+		}
+		public void AddElement(GElement element)
+		{
+			AddElement(element, 0);
+		}
+		public void AddElement(GElement element, ulong containerId)
+		{
+			FbxModel model = new FbxModel(element);
+			Objects.Add(model);
+			Connections.Add(new FbxConnection(model.Id, containerId));
+			Definitions.Add(model.ClassName);
+
+			foreach (Geometries.Mesh g in element.Geometries)
+			{
+				FbxMesh fmesh = new FbxMesh(g);
+
+				Objects.Add(fmesh);
+				Connections.Add(new FbxConnection(fmesh.Id, model.Id));
+				Definitions.Add(fmesh.ClassName);
+			}
+
+			foreach (Material m in element.GetMaterials())
+			{
+				FbxMaterial fmaterial = new FbxMaterial(m);
+
+				Objects.Add(fmaterial);
+				Connections.Add(new FbxConnection(fmaterial.Id, model.Id));
+				Definitions.Add(fmaterial.ClassName);
+			}
+
+			foreach (GElement s in element.Subelements)
+			{
+				AddElement(s, model.Id);
+			}
 		}
 		//****************************************************************
 		private void createByAssignation(FbxRoot root)

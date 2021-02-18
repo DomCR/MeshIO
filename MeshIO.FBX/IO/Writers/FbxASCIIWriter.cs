@@ -12,7 +12,7 @@ namespace MeshIO.FBX.IO
 	public class FbxASCIIWriter
 	{
 		/// <summary>
-		/// The maximum line length in characters when outputting arrays
+		/// The maximum line length in characters when outputting arrays.
 		/// </summary>
 		/// <remarks>
 		/// Lines might end up being a few characters longer than this, visibly and otherwise,
@@ -153,11 +153,11 @@ namespace MeshIO.FBX.IO
 						var vstr = v.ToString();
 
 						//Get rid of the line limit
-						if (applyLineLimit && (sb.Length - lineStart) + vstr.Length >= MaxLineLength)
-						{
-							sb.Append('\n');
-							lineStart = sb.Length;
-						}
+						//if (applyLineLimit && (sb.Length - lineStart) + vstr.Length >= MaxLineLength)
+						//{
+						//	sb.Append('\n');
+						//	lineStart = sb.Length;
+						//}
 
 						sb.Append(vstr);
 						pFirst = false;

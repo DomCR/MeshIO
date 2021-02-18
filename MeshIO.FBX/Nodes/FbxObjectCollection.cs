@@ -9,6 +9,9 @@ namespace MeshIO.FBX.Nodes
 	{
 		public override string ClassName { get { return "Objects"; } }
 		//****************************************************************
+		public FbxObjectCollection() : base()
+		{
+		}
 		public FbxObjectCollection(FbxNode node) : base(node)
 		{
 
@@ -22,7 +25,7 @@ namespace MeshIO.FBX.Nodes
 		{
 			throw new NotImplementedException();
 		}
-		public List<FbxObject> GetFbxObjects<T>() where T : FbxObject
+		public List<T> GetFbxObjects<T>() where T : FbxObject
 		{
 			throw new NotImplementedException();
 		}

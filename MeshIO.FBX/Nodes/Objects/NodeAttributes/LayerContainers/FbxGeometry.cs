@@ -6,9 +6,10 @@ using System.Text;
 
 namespace MeshIO.FBX.Nodes.Objects
 {
-	public abstract class FbxGeometry : FbxNodeAttribute
+	public abstract class FbxGeometry : FbxLayerContainer
 	{
 		public override string ClassName { get { return "Geometry"; } }
+		public FbxGeometry() : base() { }
 		public FbxGeometry(FbxNode node) : base(node) { }
 		public static FbxGeometry Create(FbxNode node)
 		{

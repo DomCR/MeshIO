@@ -7,8 +7,8 @@ using System.Text;
 
 namespace MeshIO.FBX.Nodes
 {
-	public abstract class FbxNodeReferenceCollection<T> : FbxNodeReference
-		where T : FbxNodeReference
+	public abstract class FbxNodeReferenceCollection<T> : FbxEmitter
+		where T : FbxEmitter
 	{
 		protected List<T> m_children = new List<T>();
 		//****************************************************************
@@ -22,7 +22,7 @@ namespace MeshIO.FBX.Nodes
 		/// Add an item to the collection.
 		/// </summary>
 		/// <param name="item"></param>
-		public void Add(T item)
+		public virtual void Add(T item)
 		{
 			m_children.Add(item);
 		}
@@ -49,7 +49,7 @@ namespace MeshIO.FBX.Nodes
 		//****************************************************************
 		protected override void createByReflection(FbxNode node)
 		{
-			Dictionary<string, PropertyInfo> map = FbxNodeBuilder.CreateReferenceMap(this.GetType());
+			Dictionary<string, PropertyInfo> map = FbxNodeBuilder.CreateReferenceMap(GetType());
 
 			//Set the values into this document
 			foreach (FbxNode n in node.Nodes)

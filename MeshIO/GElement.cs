@@ -98,8 +98,8 @@ namespace MeshIO
 		{
 			//Setup a list with all the materials in the element
 			List<Material> materials = new List<Material>();
-			materials.AddRange(this.Geometries.Select(o => o.Material));
-			foreach (GElement item in this.Subelements)
+			materials.AddRange(Geometries.Select(o => o.Material));
+			foreach (GElement item in Subelements)
 			{
 				materials.AddRange(item.GetMaterials());
 			}

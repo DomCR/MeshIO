@@ -4,9 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace MeshIO.FBX.Nodes.Definitions
+namespace MeshIO.FBX.Nodes
 {
-	public class FbxPropertyTemplate : FbxNodeReference
+	public class FbxPropertyTemplate : FbxEmitter
 	{
 		public override string ClassName { get { return "PropertyTemplate"; } }
 		public string ElementName { get; set; }

@@ -6,13 +6,18 @@ using System.Text;
 namespace MeshIO.FBX.Nodes.Connections
 {
 	//TODO: fbx versions lower than 6000, the connection is made by the name
-	public class FbxConnection : FbxNodeReference
+	public class FbxConnection : FbxEmitter
 	{
 		public override string ClassName { get { return "C"; } }
 		public FbxConnectionType ConnectionType { get; set; }
 		public ulong Container { get; set; }
 		public ulong Element { get; set; }
 		public FbxConnection() { }
+		public FbxConnection(ulong element, ulong container)
+		{
+			Element = element;
+			Container = container;
+		}
 		public FbxConnection(FbxNode node)
 		{
 			if (Enum.TryParse<FbxConnectionType>(node.Properties[0].ToString(), out FbxConnectionType type))

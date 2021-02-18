@@ -5,7 +5,7 @@ using System.Text;
 namespace MeshIO.FBX.Nodes.Properties
 {
 	//P : ["PropName", "PropType", "Label(?)", "Flags", __values__, …]
-	public class FbxProperty : FbxNodeReference, IEquatable<FbxProperty>
+	public class FbxProperty : FbxEmitter, IEquatable<FbxProperty>
 	{
 		public override string ClassName { get { return "P"; } }
 		public string Name { get; set; }

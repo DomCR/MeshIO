@@ -21,7 +21,7 @@ namespace MeshIO.FBX.Nodes
 			{
 				byte[] buffer = new byte[8];
 				m_random.NextBytes(buffer);
-				return BitConverter.ToUInt64(buffer, 0);
+				return (ulong)Math.Abs(BitConverter.ToInt64(buffer, 0));
 			}
 		}
 	}

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MeshIO.FBX.Nodes.Objects.NodeAttributes
+namespace MeshIO.FBX.Nodes.Objects
 {
 	public abstract class FbxNodeAttribute : FbxObject
 	{
@@ -17,9 +17,7 @@ namespace MeshIO.FBX.Nodes.Objects.NodeAttributes
 			}
 		}
 		protected abstract FbxObjectType m_objectType { get; }
-		public FbxNodeAttribute(FbxNode node) : base(node)
-		{
-
-		}
+		public FbxNodeAttribute() : base() { }
+		public FbxNodeAttribute(FbxNode node) : base(node) { }
 	}
 }

@@ -1,4 +1,4 @@
-﻿namespace MeshIO.FBX.Nodes.Objects.NodeAttributes.Geometries.Layers
+﻿namespace MeshIO.FBX.Nodes.Objects.NodeAttributes.LayerContainers
 {
 	public enum ReferenceInformationType
 	{

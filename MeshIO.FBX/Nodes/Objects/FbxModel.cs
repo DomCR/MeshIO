@@ -14,12 +14,31 @@ namespace MeshIO.FBX.Nodes.Objects
 	public class FbxModel : FbxObject
 	{
 		public override string ClassName { get { return "Model"; } }
-		public bool Shading { get; set; }   //T for true, F for false
+		public bool Shading { get; set; }
 		public string Culling { get; set; }
+		public FbxModel() : base()
+		{
+			Shading = true;
+			Culling = "CullingOff";
+		}
 		public FbxModel(FbxNode node) : base(node)
 		{
 			Shading = (char)node["Shading"]?.Value == 'T';
 			Culling = (string)node["Culling"]?.Value;
+		}
+		public FbxModel(GElement element) : this()
+		{
+			Name = element.Name;
+		}
+
+		public override FbxNode ToFbxNode()
+		{
+			FbxNode node = base.ToFbxNode();
+
+			node.Nodes.Add(new FbxNode("Culling", Culling));
+			node.Nodes.Add(new FbxNode("Shading", Shading ? 'T' : 'F'));
+
+			return node;
 		}
 	}
 }

@@ -3,15 +3,28 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace MeshIO.FBX.Nodes.Definitions
+namespace MeshIO.FBX.Nodes
 {
-	public class FbxObjectType : FbxNodeReference
+	public class FbxObjectTypeNode : FbxEmitter
 	{
 		public override string ClassName { get { return "ObjectType"; } }
-
-		[FbxChildNode]
-		public int Count { get; }
-		[FbxChildNode]
+		public string TypeName { get; set; }
+		[FbxChildNode("Count")]
+		public int Count { get; set; }
+		[FbxChildNode("PropertyTemplate")]
 		public FbxPropertyTemplate PropertyTemplate { get; set; }
+		public FbxObjectTypeNode() : base()
+		{
+			Count = 1;
+		}
+
+		public override FbxNode ToFbxNode()
+		{
+			var node = base.ToFbxNode();
+
+			node.Properties.Add(TypeName);
+
+			return node;
+		}
 	}
 }

@@ -9,9 +9,9 @@ namespace MeshIO.FBX.Nodes.Properties
 	//Properties70:  { }	
 	//String format: Properties{0} 
 	//{0} = version
-	public class FbxPropertyCollection : FbxNodeReference, IEnumerable<FbxProperty>
+	public class FbxPropertyCollection : FbxEmitter, IEnumerable<FbxProperty>
 	{
-		public override string ClassName { get { return $"Properties{Version}"; } }
+		public override string ClassName { get { return $"Properties70"; } }
 		public FbxVersion Version { get; }
 
 		public int Count => m_properties.Count;

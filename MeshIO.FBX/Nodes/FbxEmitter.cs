@@ -14,7 +14,7 @@ namespace MeshIO.FBX.Nodes
 	/// <summary>
 	/// Represents a documented node in a fbx file.
 	/// </summary>
-	public abstract class FbxNodeReference : IFbxNodeReference, IFbxNamedNode
+	public abstract class FbxEmitter : IFbxNodeReference, IFbxNamedNode
 	{
 		public abstract string ClassName { get; }
 		/// <summary>
@@ -23,14 +23,18 @@ namespace MeshIO.FBX.Nodes
 		/// <remarks>
 		/// The addition of custom nodes may result into a file corruption.
 		/// </remarks>
+		[Obsolete("Temporal property to store the none implemented nodes.")]
 		public List<FbxNode> UserNodes { get; set; } = new List<FbxNode>();
 		//****************************************************************
-		public FbxNodeReference() { }
+		/// <summary>
+		/// Default constructor.
+		/// </summary>
+		public FbxEmitter() { }
 		/// <summary>
 		/// Create a node reference based on a node.
 		/// </summary>
 		/// <param name="node">Version by default <see cref="FbxVersion.v7400"/> </param>
-		public FbxNodeReference(FbxNode node)
+		public FbxEmitter(FbxNode node)
 		{
 			createByReflection(node);
 		}
@@ -39,7 +43,7 @@ namespace MeshIO.FBX.Nodes
 		/// </summary>
 		/// <param name="node"></param>
 		/// <param name="version"></param>
-		public FbxNodeReference(FbxNode node, FbxVersion version)
+		public FbxEmitter(FbxNode node, FbxVersion version)
 		{
 
 		}
@@ -63,6 +67,7 @@ namespace MeshIO.FBX.Nodes
 			throw new NotImplementedException();
 		}
 		//****************************************************************
+		[Obsolete("Fast method to develop, should disappear.")]
 		protected List<FbxNode> createNodeChildren()
 		{
 			List<FbxNode> children = new List<FbxNode>();
@@ -102,7 +107,7 @@ namespace MeshIO.FBX.Nodes
 			{
 				if (map.TryGetValue(n.Name, out PropertyInfo prop))
 				{
-					if (prop.PropertyType.BaseType == typeof(FbxNodeReference))
+					if (prop.PropertyType.BaseType == typeof(FbxEmitter))
 					{
 						//Create the node reference passing the node as parameter
 						object value = Activator.CreateInstance(prop.PropertyType, n);

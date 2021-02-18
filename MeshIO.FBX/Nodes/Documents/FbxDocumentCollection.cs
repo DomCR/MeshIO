@@ -3,17 +3,17 @@ using System;
 
 namespace MeshIO.FBX.Nodes
 {
-	public class FbxDocumentCollection: FbxNodeReferenceCollection<FbxDocument>
+	public class FbxDocumentCollection : FbxNodeReferenceCollection<FbxDocumentInfo>
 	{
 		public override string ClassName { get { return "Documents"; } }
-		[FbxChildNode]
+		[FbxChildNode("Count")]
 		public int Count { get { return m_children.Count; } }
 		public FbxDocumentCollection() { }
-		public FbxDocumentCollection(FbxNode node) 
+		public FbxDocumentCollection(FbxNode node)
 		{
 		}
 
-		protected override FbxDocument buildChild(FbxNode node)
+		protected override FbxDocumentInfo buildChild(FbxNode node)
 		{
 			throw new NotImplementedException();
 		}

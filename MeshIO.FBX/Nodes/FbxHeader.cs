@@ -12,13 +12,13 @@ namespace MeshIO.FBX.Nodes
 		SceneInfo: "SceneInfo::GlobalInfo", "UserData" { }
 	}
 	 */
-	public class FbxHeader : FbxNodeReference
+	public class FbxHeader : FbxEmitter
 	{
 		public override string ClassName { get { return "FBXHeaderExtension"; } }
 		[FbxChildNode("FBXHeaderVersion")]
-		public int FBXHeaderVersion { get; set; }
-		//[FbxChildNode("FBXVersion")]
-		public FbxVersion FBXVersion { get; set; } = FbxVersion.v7200;
+		public int FBXHeaderVersion { get; set; } = 1003;
+		[FbxChildNode("FBXVersion")]
+		public FbxVersion FBXVersion { get; set; } = FbxVersion.v7400;
 		[FbxChildNode("Creator")]
 		public string Creator { get; set; } = "MeshIO.FBX";
 		public FbxHeader() : base() { }
@@ -27,6 +27,16 @@ namespace MeshIO.FBX.Nodes
 			FBXHeaderVersion = (int)(node["FBXHeaderVersion"]?.Value);
 			FBXVersion = (FbxVersion)Enum.ToObject(typeof(FbxVersion), node["FBXVersion"]?.Value);
 			Creator = (string)(node["Creator"]?.Value);
+		}
+
+		public override FbxNode ToFbxNode()
+		{
+			var node = base.ToFbxNode();
+
+			node.Nodes.Add(new FbxNode("FBXVersion", (int)FBXVersion));
+			node.Nodes.Add(new FbxNode("Creator", Creator));
+
+			return node;
 		}
 	}
 }
