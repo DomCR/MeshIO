@@ -26,6 +26,16 @@ namespace MeshIO
 			_properties.Add(property.Name, property);
 		}
 
+		public void Remove(Property property)
+		{
+			this.Remove(property.Name);
+		}
+
+		public void Remove(string name)
+		{
+			_properties.Remove(name);
+		}
+
 		/// <inheritdoc/>
 		public IEnumerator<Property> GetEnumerator()
 		{
