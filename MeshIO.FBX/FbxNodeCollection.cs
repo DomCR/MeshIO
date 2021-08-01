@@ -6,7 +6,7 @@ namespace MeshIO.FBX
 	/// <summary>
 	/// Base class for nodes and documents
 	/// </summary>
-	public abstract class FbxNodeCollection 
+	public abstract class FbxNodeCollection : IEnumerable<FbxNode>
 	{
 		/// <summary>
 		/// The list of child/nested nodes
@@ -15,37 +15,15 @@ namespace MeshIO.FBX
 		/// A list with one or more null elements is treated differently than an empty list,
 		/// and represented differently in all FBX output files.
 		/// </remarks>
-		public List<FbxNode> Nodes { get; set; } = new List<FbxNode>();
+		public List<FbxNode> Nodes { get; } = new List<FbxNode>();
+
 		/// <summary>
-		/// Gets a named child node.
+		/// Gets a named child node
 		/// </summary>
 		/// <param name="name"></param>
-		/// <remarks>
-		/// This method is not useful for the multiple named nodes such as Objects, Connections...
-		/// </remarks>
 		/// <returns>The child node, or null</returns>
-		public FbxNode this[string name]
-		{
-			get { return Nodes.Find(n => n != null && n.Name == name); }
-			set
-			{
-				var child = Nodes.Find(n => n != null && n.Name == name);
-				//Set the value at the existing node
-				if (child != null)
-				{
-					Nodes[Nodes.IndexOf(child)] = value;
-					child = value;
-				}
-				//Node not found, add the current node
-				else
-					Nodes.Add(value);
-			}
-		}
-		/// <summary>
-		/// Default constructor. Initializes an empty node collection.
-		/// </summary>
-		public FbxNodeCollection() { }
-		//********************************************************************************************
+		public FbxNode this[string name] { get { return Nodes.Find(n => n != null && n.Name == name); } }
+
 		/// <summary>
 		/// Gets a child node, using a '/' separated path
 		/// </summary>
@@ -64,6 +42,16 @@ namespace MeshIO.FBX
 					break;
 			}
 			return n as FbxNode;
+		}
+
+		public IEnumerator<FbxNode> GetEnumerator()
+		{
+			return Nodes.GetEnumerator();
+		}
+
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			return Nodes.GetEnumerator();
 		}
 	}
 }

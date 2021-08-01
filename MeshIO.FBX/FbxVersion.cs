@@ -46,13 +46,7 @@
 		/// FBX 2016 version, adds large file (>2GB support), not compatible with older versions
 		/// </summary>
 		v7500 = 7500,
-		/// <summary>
-		/// 
-		/// </summary>
 		v7600 = 7600,
-		/// <summary>
-		/// 
-		/// </summary>
-		v7700 = 7700,
+		v7700 = 7700
 	}
 }

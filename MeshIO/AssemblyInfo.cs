@@ -15,6 +15,6 @@ using System.Runtime.InteropServices;
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM.
 
-[assembly: Guid("a280bcbb-dd99-4e0d-ba02-83eccf1e9ec1")]
+[assembly: Guid("9d28a275-f5b7-4403-8af4-b10241584094")]
 
 [assembly: InternalsVisibleTo("MeshIO.FBX")]

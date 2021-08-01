@@ -8,26 +8,18 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{DA7FF092-3DA1-4942-9FF6-B42F1CDBD0C6}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
+		.gitignore = .gitignore
 		links.txt = links.txt
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "CSUtilities", "..\CSUtilities\CSUtilities\CSUtilities.shproj", "{B4EF345D-52B9-47F1-AA2A-B4AE85F62EFC}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MeshIO.FBX", "MeshIO.FBX\MeshIO.FBX.csproj", "{FE3E6007-BC34-4E40-9C65-5FA5274AA3AA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MeshIO.FBXTests", "MeshIO.FBXTests\MeshIO.FBXTests.csproj", "{1D9790C4-1E7D-414D-9CC8-78E988830FB1}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MeshIO.Examples", "MeshIO.Examples\MeshIO.Examples.csproj", "{55281519-37E7-42BC-B467-9D3CED013C23}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{BC2E6285-0176-4B4C-85C3-52B9D71622AB}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MeshIO.GLTF", "MeshIO.GLTF\MeshIO.GLTF.csproj", "{D1EA3B08-85CC-4085-BAA1-C47040E7E621}"
 EndProject
 Global
-	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		..\CSUtilities\CSUtilities\CSUtilities.projitems*{b4ef345d-52b9-47f1-aa2a-b4ae85f62efc}*SharedItemsImports = 13
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
@@ -41,10 +33,6 @@ Global
 		{FE3E6007-BC34-4E40-9C65-5FA5274AA3AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FE3E6007-BC34-4E40-9C65-5FA5274AA3AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FE3E6007-BC34-4E40-9C65-5FA5274AA3AA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1D9790C4-1E7D-414D-9CC8-78E988830FB1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1D9790C4-1E7D-414D-9CC8-78E988830FB1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1D9790C4-1E7D-414D-9CC8-78E988830FB1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1D9790C4-1E7D-414D-9CC8-78E988830FB1}.Release|Any CPU.Build.0 = Release|Any CPU
 		{55281519-37E7-42BC-B467-9D3CED013C23}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{55281519-37E7-42BC-B467-9D3CED013C23}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{55281519-37E7-42BC-B467-9D3CED013C23}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -56,9 +44,6 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{1D9790C4-1E7D-414D-9CC8-78E988830FB1} = {BC2E6285-0176-4B4C-85C3-52B9D71622AB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B96D2DF1-9226-4CEE-BF70-43C8318F59DC}

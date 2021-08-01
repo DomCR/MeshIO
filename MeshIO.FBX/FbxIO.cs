@@ -1,144 +1,110 @@
-﻿using MeshIO.FBX.IO;
+﻿using MeshIO.FBX.Converters;
+using MeshIO.FBX.Readers;
+using MeshIO.Elements;
 using System;
 using System.IO;
 
 namespace MeshIO.FBX
 {
 	/// <summary>
-	/// Static read and write methods.
-	/// Comatible versions <see cref="FbxVersion"/>.
+	/// Static read and write methods
 	/// </summary>
 	public static class FbxIO
 	{
 		/// <summary>
-		/// Reads an FBX file.
+		/// Reads a binary FBX file
 		/// </summary>
 		/// <param name="path"></param>
-		/// <param name="errorLevel"></param>
-		/// <returns></returns>
-		public static FbxRoot ReadBinaryAsRootNode(string path, ErrorLevel errorLevel = ErrorLevel.Checked)
+		/// <returns>The top level document node</returns>
+		public static FbxRootNode ReadBinary(string path)
 		{
 			if (string.IsNullOrEmpty(path))
 				throw new ArgumentNullException(nameof(path));
 
-			FbxRoot root = null;
-
 			using (var stream = new FileStream(path, FileMode.Open))
 			{
-				root = new FbxBinaryReader(stream, errorLevel).Read();
+				var reader = new FbxBinaryParser(stream);
+				return reader.Parse();
 			}
-
-			return root;
 		}
+
 		/// <summary>
-		/// Reads an FBX file.
+		/// Reads an ASCII FBX file
 		/// </summary>
 		/// <param name="path"></param>
-		/// <param name="errorLevel"></param>
-		/// <returns></returns>
-		public static FbxRoot ReadAsciiAsRootNode(string path, ErrorLevel errorLevel = ErrorLevel.Checked)
+		/// <returns>The top level document node</returns>
+		public static FbxRootNode ReadAscii(string path)
 		{
 			if (string.IsNullOrEmpty(path))
 				throw new ArgumentNullException(nameof(path));
 
-			FbxRoot root = null;
-
 			using (var stream = new FileStream(path, FileMode.Open))
 			{
-				root = new FbxASCIIReader(stream, errorLevel).Read();
+				var reader = new FbxBinaryParser(stream);
+				return reader.Parse();
 			}
-
-			return root;
 		}
-		/// <summary>
-		/// Reads an FBX file.
-		/// </summary>
-		/// <param name="path"></param>
-		/// <param name="errorLevel"></param>
-		/// <returns></returns>
-		public static FbxRootDocument ReadBinary(string path, ErrorLevel errorLevel = ErrorLevel.Checked)
+
+		public static Scene Read(string path)
 		{
 			if (string.IsNullOrEmpty(path))
 				throw new ArgumentNullException(nameof(path));
 
-			FbxRootDocument rootDoc = null;
-
-			using (var stream = new FileStream(path, FileMode.Open))
+			using (FileStream stream = new FileStream(path, FileMode.Open))
 			{
-				FbxRoot root = new FbxBinaryReader(stream, errorLevel).Read();
-				rootDoc = new FbxRootDocument(root);
+				FbxBinaryParser reader = new FbxBinaryParser(stream);
+				var root = reader.Parse();
+				IParserConverter converter = BaseParserConverter.GetConverter(root);
+				return converter.ConvertScene();
 			}
 
-			return rootDoc;
+			throw new NotImplementedException();
 		}
+
 		/// <summary>
-		/// Reads an FBX file.
+		/// Writes an FBX document
 		/// </summary>
+		/// <param name="document">The top level document node</param>
 		/// <param name="path"></param>
-		/// <param name="errorLevel"></param>
-		/// <returns></returns>
-		public static FbxRootDocument ReadAscii(string path, ErrorLevel errorLevel = ErrorLevel.Checked)
+		public static void WriteBinary(FbxRootNode document, string path)
 		{
-			if (string.IsNullOrEmpty(path))
+			if (path == null)
 				throw new ArgumentNullException(nameof(path));
-
-			FbxRootDocument rootDoc = null;
-
-			using (var stream = new FileStream(path, FileMode.Open))
+			using (var stream = new FileStream(path, FileMode.Create))
 			{
-				FbxRoot root = new FbxASCIIReader(stream, errorLevel).Read();
-				rootDoc = new FbxRootDocument(root);
+				var writer = new FbxBinaryWriter(stream);
+				writer.Write(document);
 			}
-
-			return rootDoc;
 		}
+
 		/// <summary>
-		/// Writes an FBX file in binary.
+		/// Writes an FBX document
 		/// </summary>
-		/// <param name="root"></param>
+		/// <param name="document">The top level document node</param>
 		/// <param name="path"></param>
-		public static void WriteBinary(FbxRoot root, string path)
+		public static void WriteAscii(FbxRootNode document, string path)
 		{
 			if (path == null)
 				throw new ArgumentNullException(nameof(path));
 
 			using (var stream = new FileStream(path, FileMode.Create))
 			{
-				new FbxBinaryWriter(stream).Write(root);
+				var writer = new FbxAsciiWriter(stream);
+				writer.Write(document);
 			}
 		}
-		/// <summary>
-		/// Writes an FBX file in ASCII.
-		/// </summary>
-		/// <param name="root"></param>
-		/// <param name="path"></param>
-		public static void WriteAscii(FbxRoot root, string path)
-		{
-			if (path == null)
-				throw new ArgumentNullException(nameof(path));
 
-			using (var stream = new FileStream(path, FileMode.Create))
-			{
-				new FbxASCIIWriter(stream).Write(root);
-			}
-		}
 		/// <summary>
-		/// Writes an FBX file in binary.
+		/// Writes an FBX document
 		/// </summary>
-		/// <param name="doc">This method will update the document definitions.</param>
+		/// <param name="scene"></param>
 		/// <param name="path"></param>
-		public static void WriteBinary(FbxRootDocument doc, string path)
+		public static void WriteAscii(Scene scene, string path)
 		{
-			WriteBinary(doc.CreateRootNode(), path);
-		}
-		/// <summary>
-		/// Writes an FBX file in ASCII.
-		/// </summary>
-		/// <param name="doc">This method will update the document definitions.</param>
-		/// <param name="path"></param>
-		public static void WriteAscii(FbxRootDocument doc, string path)
-		{
-			WriteAscii(doc.CreateRootNode(), path);
+			IFbxConverter converter = BaseFbxConverter.GetConverter(scene, FbxVersion.v7400);
+			FbxRootNode root = converter.ToRootNode();
+
+			WriteAscii(root, path);
 		}
 	}
 }
