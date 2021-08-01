@@ -1,7 +1,6 @@
 ﻿using MeshIO.Elements;
 using MeshIO.Elements.Geometries;
 using MeshIO.Elements.Geometries.Layers;
-using MeshIO.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -43,6 +43,9 @@ namespace MeshIO.FBX
 			}
 		}
 
+		/// <summary>
+		/// Default constructor
+		/// </summary>
 		public FbxNode() : base() { }
 
 		public FbxNode(string name) : base()

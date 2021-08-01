@@ -23,7 +23,12 @@ namespace MeshIO.Elements.Geometries.Layers
 	public class LayerElementMaterial : LayerElement
 	{
 		public List<int> Materials { get; set; } = new List<int>();
-		public LayerElementMaterial(Geometry owner) : base(owner) { }
+		public LayerElementMaterial(Geometry owner) : base(owner)
+		{
+			MappingInformationType = MappingMode.AllSame;
+			ReferenceInformationType = ReferenceMode.IndexToDirect;
+			Materials.Add(0);
+		}
 	}
 
 	public class LayerElementBinormal : LayerElement

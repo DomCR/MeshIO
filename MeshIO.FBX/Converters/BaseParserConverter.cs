@@ -2,7 +2,6 @@
 using MeshIO.Elements.Geometries;
 using MeshIO.Elements.Geometries.Layers;
 using MeshIO.FBX.Exceptions;
-using MeshIO.Utils;
 using System;
 using System.Collections;
 using System.Collections.Generic;

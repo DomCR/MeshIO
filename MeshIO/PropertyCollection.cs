@@ -10,8 +10,11 @@ namespace MeshIO
 {
 	public class PropertyCollection : IEnumerable<Property>
 	{
-		private readonly List<Property> _properties = new List<Property>();
-		protected Element _owner;
+		public Property this[int index] { get { return _properties.Values.ElementAt(index); } }
+		public Property this[string name] { get { return _properties[name]; } }
+
+		private readonly Dictionary<string, Property> _properties = new Dictionary<string, Property>();
+		private Element _owner;
 
 		public PropertyCollection(Element owner)
 		{
@@ -20,17 +23,19 @@ namespace MeshIO
 
 		public void Add(Property property)
 		{
-			_properties.Add(property);
+			_properties.Add(property.Name, property);
 		}
 
+		/// <inheritdoc/>
 		public IEnumerator<Property> GetEnumerator()
 		{
-			return _properties.GetEnumerator();
+			return _properties.Values.GetEnumerator();
 		}
 
+		/// <inheritdoc/>
 		IEnumerator IEnumerable.GetEnumerator()
 		{
-			return _properties.GetEnumerator();
+			return _properties.Values.GetEnumerator();
 		}
 	}
 }

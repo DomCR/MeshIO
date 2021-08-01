@@ -24,31 +24,13 @@ namespace MeshIO.Elements
 		{
 			Name = string.Empty;
 			Properties = new PropertyCollection(this);
+
+			_id = Utils.CreateId();
 		}
 
 		public Element(string name) : this()
 		{
 			Name = name;
-		}
-
-		public Property GetProperty(string property)
-		{
-			throw new NotImplementedException();
-		}
-
-		public void RemoveProperty(string property)
-		{
-			throw new NotImplementedException();
-		}
-
-		public void RemoveProperty(Property property)
-		{
-			throw new NotImplementedException();
-		}
-
-		public void SetProperty(string property, object value)
-		{
-			throw new NotImplementedException();
 		}
 
 		public override string ToString()

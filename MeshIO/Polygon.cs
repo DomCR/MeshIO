@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MeshIO.Utils
+namespace MeshIO
 {
 	public abstract class Polygon
 	{
