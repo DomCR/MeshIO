@@ -10,8 +10,8 @@ namespace MeshIO.Elements
 	{
 		public bool? MultiLayer { get; set; }
 		public bool? MultiTake { get; set; }
-		public bool? Shading { get; set; }
-		public string Culling { get; set; }
+		public bool Shading { get; set; } = true;
+		public string Culling { get; set; } = "CullingOff";
 
 		public List<Element> Nodes { get; set; } = new List<Element>();
 

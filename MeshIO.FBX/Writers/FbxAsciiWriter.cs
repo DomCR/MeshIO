@@ -4,12 +4,12 @@ using System.IO;
 using System.Collections.Generic;
 using MeshIO.FBX.Exceptions;
 
-namespace MeshIO.FBX
+namespace MeshIO.FBX.Writers
 {
 	/// <summary>
 	/// Writes an FBX document in a text format
 	/// </summary>
-	public class FbxAsciiWriter : IDisposable
+	internal class FbxAsciiWriter : IDisposable
 	{
 		/// <summary>
 		/// The maximum line length in characters when outputting arrays

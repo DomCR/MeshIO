@@ -215,10 +215,9 @@ namespace MeshIO.FBX.Converters
 				node.Nodes.Add(new FbxNode("MultiLayer", n.MultiLayer.Value ? 'T' : 'F'));
 			if (n.MultiTake.HasValue)
 				node.Nodes.Add(new FbxNode("MultiTake", n.MultiTake.Value ? 'T' : 'F'));
-			if (n.Shading.HasValue)
-				node.Nodes.Add(new FbxNode("Shading", n.Shading.Value ? 'T' : 'F'));
-			if (!string.IsNullOrEmpty(n.Culling))
-				node.Nodes.Add(new FbxNode("Culling", n.Culling));
+
+			node.Nodes.Add(new FbxNode("Shading", n.Shading ? 'T' : 'F'));
+			node.Nodes.Add(new FbxNode("Culling", n.Culling));
 
 			foreach (Element item in n.Nodes)
 			{
