@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MeshIO.FBX.Writers
+namespace MeshIO.FBX
 {
 	public interface IFbxWriter
 	{

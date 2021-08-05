@@ -4,7 +4,7 @@ using System.IO;
 using System.Collections.Generic;
 using MeshIO.FBX.Exceptions;
 
-namespace MeshIO.FBX.Writers
+namespace MeshIO.FBX
 {
 	/// <summary>
 	/// Writes an FBX document in a text format

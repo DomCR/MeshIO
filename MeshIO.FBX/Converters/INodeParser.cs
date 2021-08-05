@@ -5,11 +5,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MeshIO.FBX
+namespace MeshIO.FBX.Converters
 {
-	public interface IFbxReader : IDisposable
+	public interface INodeParser
 	{
-		FbxRootNode Parse();
-		Scene Read();
+		FbxVersion Version { get; }
+
+		Scene ConvertScene();
 	}
 }
