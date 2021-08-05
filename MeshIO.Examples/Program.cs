@@ -1,6 +1,6 @@
 ﻿using MeshIO.Elements;
 using MeshIO.FBX;
-using MeshIO.FBX.Readers;
+using MeshIO.GLTF;
 using System;
 using System.IO;
 
@@ -10,18 +10,30 @@ namespace MeshIO.Examples
 	{
 		static void Main(string[] args)
 		{
+			//FbxExample();
+			GltfExample();
+
+			Console.WriteLine("Program finished");
+		}
+
+		static void FbxExample()
+		{
 			string pathI = @".\..\..\..\..\file_samples\fbx\objects_ascii_2014-2015.fbx";
 			string pathO = @".\..\..\..\..\file_samples\fbx\objects_ascii_2014-2015_out.fbx";
 
-			using (FbxReader reader = new FbxReader(pathI, ErrorLevel.Checked))
+			Scene Scene = FbxReader.Read(pathI, ErrorLevel.Checked);
+			FbxWriter.WriteAscii(pathO, Scene);
+		}
+
+		static void GltfExample()
+		{
+			string pathI = @".\..\..\..\..\file_samples\gltf\2CylinderEngine.glb";
+			string pathO = @".\..\..\..\..\file_samples\gltf\2CylinderEngine_out.glb";
+
+			using (GltfReader reader = new GltfReader(pathI))
 			{
-				var root = reader.Parse();
+				reader.Read();
 			}
-
-			//Scene scene = FbxIO.Read(pathI);
-			//FbxIO.WriteAscii(scene, pathO);
-
-			Console.WriteLine("Program finished");
 		}
 	}
 }

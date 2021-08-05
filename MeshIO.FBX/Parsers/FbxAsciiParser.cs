@@ -4,7 +4,7 @@ using System.IO;
 using System.Text.RegularExpressions;
 using MeshIO.FBX.Exceptions;
 
-namespace MeshIO.FBX.Parser
+namespace MeshIO.FBX
 {
 	/// <summary>
 	/// Reads FBX nodes from a text stream
@@ -517,7 +517,9 @@ namespace MeshIO.FBX.Parser
 			const string versionString = @"; FBX (\d)\.(\d)\.(\d) project file";
 			char c;
 			while (char.IsWhiteSpace(c = readChar()) && !endStream) { } // Skip whitespace
+			
 			bool hasVersionString = false;
+			
 			if (c == ';')
 			{
 				var sb = new StringBuilder();
@@ -534,12 +536,15 @@ namespace MeshIO.FBX.Parser
 						int.Parse(match.Groups[3].Value) * 10
 					);
 			}
+
 			if (!hasVersionString && _errorLevel >= ErrorLevel.Strict)
 				throw new FbxException(_line, _column,
 					"Invalid version string; first line must match \"" + versionString + "\"");
+			
 			FbxNode node;
 			while ((node = ReadNode()) != null)
 				ret.Nodes.Add(node);
+			
 			return ret;
 		}
 	}

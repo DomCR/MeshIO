@@ -3,7 +3,7 @@ using MeshIO.FBX.Converters;
 using System;
 using System.IO;
 
-namespace MeshIO.FBX.Writers
+namespace MeshIO.FBX
 {
 	public class FbxWriter : IFbxWriter
 	{
@@ -20,13 +20,13 @@ namespace MeshIO.FBX.Writers
 
 		public FbxRootNode GetRootNode()
 		{
-			IFbxConverter converter = BaseFbxConverter.GetConverter(Scene, Version);
+			IFbxConverter converter = FbxConverterBase.GetConverter(Scene, Version);
 			return converter.ToRootNode();
 		}
 
 		public FbxRootNode GetRootNode(FbxVersion version)
 		{
-			IFbxConverter converter = BaseFbxConverter.GetConverter(Scene, version);
+			IFbxConverter converter = FbxConverterBase.GetConverter(Scene, version);
 			return converter.ToRootNode();
 		}
 

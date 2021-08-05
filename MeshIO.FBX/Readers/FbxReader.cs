@@ -1,6 +1,5 @@
 ﻿using MeshIO.Elements;
 using MeshIO.FBX.Converters;
-using MeshIO.FBX.Parser;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -8,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MeshIO.FBX.Readers
+namespace MeshIO.FBX
 {
 	public class FbxReader : IFbxReader
 	{
@@ -43,7 +42,7 @@ namespace MeshIO.FBX.Readers
 		public Scene Read()
 		{
 			FbxRootNode root = this.Parse();
-			IParserConverter converter = BaseParserConverter.GetConverter(root);
+			INodeParser converter = NodeParserBase.GetConverter(root);
 
 			return converter.ConvertScene();
 		}
@@ -82,9 +81,8 @@ namespace MeshIO.FBX.Readers
 		}
 
 		/// <summary>
-		/// Transform an fbx node structure into an scene.
+		/// Parse the document into a node structure.
 		/// </summary>
-		/// <param name="root"></param>
 		/// <returns></returns>
 		public static FbxRootNode Parse(string path, ErrorLevel errorLevel)
 		{

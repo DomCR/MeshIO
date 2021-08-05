@@ -12,4 +12,10 @@
     <ProjectReference Include="..\MeshIO\MeshIO.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Schema\V1\" />
+  </ItemGroup>
+
+  <Import Project="..\..\CSUtilities\CSUtilities\CSUtilities.projitems" Label="Shared" />
+
 </Project>
