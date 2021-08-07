@@ -2,6 +2,7 @@
 using CSUtilities.IO;
 using MeshIO.Elements;
 using MeshIO.Elements.Geometries;
+using MeshIO.Elements.Geometries.Layers;
 using MeshIO.GLTF.Exceptions;
 using MeshIO.GLTF.Schema.V2;
 using Newtonsoft.Json;
@@ -29,13 +30,15 @@ namespace MeshIO.GLTF
 		}
 
 		protected readonly Dictionary<int, List<Mesh>> _meshMap = new Dictionary<int, List<Mesh>>();
+		protected readonly Dictionary<int, Material> _materialMap = new Dictionary<int, Material>();
 		protected readonly GltfRoot _root;
-		protected byte[] _chunk;
+		protected StreamIO _chunk;
+		protected Dictionary<int, StreamIO> _buffers;   //TODO: implement gltf reader for multiple buffers
 
 		public GltfBinaryReaderBase(GltfRoot root, byte[] chunk)
 		{
 			this._root = root;
-			this._chunk = chunk;
+			this._chunk = new StreamIO(chunk);
 		}
 
 		public Scene Read()
@@ -45,10 +48,13 @@ namespace MeshIO.GLTF
 
 			foreach (int nodeIndex in rootScene.Nodes)
 			{
-				Node a = readNode(nodeIndex);
+				Node n = readNode(nodeIndex);
+
+				if (n != null)
+					scene.Nodes.Add(n);
 			}
 
-			throw new NotImplementedException();
+			return scene;
 		}
 
 		public void Dispose()
@@ -59,15 +65,18 @@ namespace MeshIO.GLTF
 		protected Node readNode(int index)
 		{
 			GltfNode gltfNode = this._root.Nodes[index];
-			Node fbxNode = new Node(gltfNode.Name);
+			Node node = new Node(gltfNode.Name);
 
 			if (gltfNode.Camera.HasValue)
-				fbxNode.Children.Add(readCamera(gltfNode.Camera.Value));
+				node.Children.Add(readCamera(gltfNode.Camera.Value));
 
-			foreach (int i in gltfNode.Children)
+			gltfNode.Children?.ToList().ForEach((i) =>
 			{
+				Node n = readNode(i);
 
-			}
+				if (n != null)
+					node.Children.Add(n);
+			});
 
 			if (gltfNode.Skin.HasValue)
 			{
@@ -79,18 +88,38 @@ namespace MeshIO.GLTF
 				//TODO: Apply transform matrix
 			}
 
-			if (gltfNode.Mesh.HasValue)
+			if (gltfNode.Rotation != null)
 			{
-				fbxNode.Children.AddRange(readPrimitivesInMesh(gltfNode.Mesh.Value));
+				//TODO: Apply rotation matrix
 			}
 
-			throw new NotImplementedException();
+			if (gltfNode.Scale != null)
+			{
+				//TODO: Apply scale matrix
+			}
+
+			if (gltfNode.Translation != null)
+			{
+				//TODO: Apply translation matrix
+			}
+
+			if (gltfNode.Weights != null)
+			{
+				//TODO: Apply Weights matrix
+			}
+
+			if (gltfNode.Mesh.HasValue)
+			{
+				node.Children.AddRange(readPrimitivesInMesh(gltfNode.Mesh.Value, node));
+			}
+
+			return node;
 		}
 
 		protected Camera readCamera(int index)
 		{
 			GltfCamera gltfCamera = this._root.Cameras[index];
-			Camera fbxCamera = new Camera(gltfCamera.Name);
+			Camera camera = new Camera(gltfCamera.Name);
 
 			//TODO: implement gltf camera reader
 			switch (gltfCamera.Type)
@@ -103,7 +132,7 @@ namespace MeshIO.GLTF
 					throw new Exception();
 			}
 
-			throw new NotImplementedException();
+			return camera;
 		}
 
 		protected Element readElement(int index)
@@ -111,17 +140,169 @@ namespace MeshIO.GLTF
 			throw new NotImplementedException();
 		}
 
-		protected List<Mesh> readPrimitivesInMesh(int index)
+		protected List<Mesh> readPrimitivesInMesh(int index, Node node)
 		{
 			GltfMesh gltfMesh = this._root.Meshes[index];
 			List<Mesh> meshes = new List<Mesh>();
 
 			foreach (GltfMeshPrimitive p in gltfMesh.Primitives)
 			{
+				Mesh mesh = readPrimitive(p, out Material material);
+				meshes.Add(mesh);
 
+				node.Children.Add(material);	//TODO: fix the material reference
 			}
 
-			throw new NotImplementedException();
+			return meshes;
+		}
+
+		protected Mesh readPrimitive(GltfMeshPrimitive p, out Material material)
+		{
+			Mesh mesh = new Mesh();
+
+			if (p.Material.HasValue)
+				mesh.Layers.Add(new LayerElementMaterial(mesh));
+
+			foreach (KeyValuePair<string, int> att in p.Attributes)
+			{
+				switch (att.Key)
+				{
+					case "POSITION":
+						mesh.Vertices = readXYZ(_root.Accessors[att.Value]);
+						break;
+					case "NORMAL":
+						//TODO: Fix the gltf normal reading
+						//var normals = new LayerElementNormal(mesh);
+						//normals.Normals = readXYZ(_root.Accessors[att.Value]);
+						//mesh.Layers.Add(normals);
+						break;
+					case "TANGENT":
+					case "TEXCOORD_0":
+					case "TEXCOORD_1":
+					case "COLOR_0":
+					case "JOINTS_0":
+					case "WEIGHTS_0":
+						break;
+					default:
+						throw new Exception();
+				}
+			}
+
+			if (p.Indices.HasValue)
+			{
+				mesh.Polygons.AddRange(readIndices(_root.Accessors[p.Indices.Value], p.Mode));
+			}
+
+			if (p.Material.HasValue)
+			{
+				material = readMaterial(p.Material.Value);
+			}
+			else
+			{
+				material = null;
+			}
+
+			return mesh;
+		}
+
+		private Material readMaterial(int index)
+		{
+			if (_materialMap.TryGetValue(index, out Material material))
+			{
+				return material;
+			}
+
+			GltfMaterial gltfMaterial = _root.Materials[index];
+			material = new Material(gltfMaterial.Name);
+			_materialMap.Add(index, material);
+
+			//TODO: implement gltf material reader
+
+			return material;
+		}
+
+		protected List<XYZ> readXYZ(GltfAccessor accessor)
+		{
+			if (!accessor.BufferView.HasValue)
+				return new List<XYZ>();
+
+			if (accessor.Type != GltfAccessor.TypeEnum.VEC3)
+				throw new Exception();
+
+			return readAccessor<XYZ>(getBufferStream(accessor), accessor.ComponentType, accessor.Count, 3);
+		}
+
+		private IEnumerable<Polygon> readIndices(GltfAccessor accessor, GltfMeshPrimitive.ModeEnum mode)
+		{
+			if (!accessor.BufferView.HasValue)
+				return new List<Polygon>();
+
+			StreamIO stream = getBufferStream(accessor);
+
+			switch (mode)
+			{
+				case GltfMeshPrimitive.ModeEnum.TRIANGLES:
+					return readAccessor<Triangle>(stream, accessor.ComponentType, accessor.Count / 3, 3);
+				case GltfMeshPrimitive.ModeEnum.POINTS:
+				case GltfMeshPrimitive.ModeEnum.LINES:
+				case GltfMeshPrimitive.ModeEnum.LINE_LOOP:
+				case GltfMeshPrimitive.ModeEnum.LINE_STRIP:
+				case GltfMeshPrimitive.ModeEnum.TRIANGLE_STRIP:
+				case GltfMeshPrimitive.ModeEnum.TRIANGLE_FAN:
+				default:
+					throw new NotImplementedException();
+			}
+		}
+
+		protected List<T> readAccessor<T>(StreamIO stream, GltfAccessor.ComponentTypeEnum componentType, int count, int nargs)
+		{
+			List<T> vecs = new List<T>();
+
+			for (int i = 0; i < count; i++)
+			{
+				List<object> args = new List<object>();
+
+				for (int j = 0; j < nargs; j++)
+				{
+
+					switch (componentType)
+					{
+						case GltfAccessor.ComponentTypeEnum.BYTE:
+						case GltfAccessor.ComponentTypeEnum.UNSIGNED_BYTE:
+							args.Add(stream.ReadByte());
+							break;
+						case GltfAccessor.ComponentTypeEnum.SHORT:
+							args.Add(stream.ReadShort());
+							break;
+						case GltfAccessor.ComponentTypeEnum.UNSIGNED_SHORT:
+							args.Add(stream.ReadUShort());
+							break;
+						case GltfAccessor.ComponentTypeEnum.UNSIGNED_INT:
+							args.Add(stream.ReadUInt());
+							break;
+						case GltfAccessor.ComponentTypeEnum.FLOAT:
+							args.Add(stream.ReadSingle());
+							break;
+						default:
+							throw new Exception();
+					}
+				}
+
+				vecs.Add((T)Activator.CreateInstance(typeof(T), args.ToArray()));
+			}
+
+			return vecs;
+		}
+
+		private StreamIO getBufferStream(GltfAccessor accessor)
+		{
+			GltfBufferView bufferView = _root.BufferViews[accessor.BufferView.Value];
+			GltfBuffer buffer = _root.Buffers[bufferView.Buffer];
+
+			StreamIO stream = new StreamIO(_chunk.GetBytes(0, buffer.ByteLength));
+			stream.Position = bufferView.ByteOffset + accessor.ByteOffset;
+
+			return stream;
 		}
 	}
 
@@ -156,7 +337,7 @@ namespace MeshIO.GLTF
 			_stream = new StreamIO(stream);
 		}
 
-		public void Read()
+		public Scene Read()
 		{
 			//The 12-byte header consists of three 4-byte entries:
 			_header = new GlbHeader();
@@ -190,7 +371,7 @@ namespace MeshIO.GLTF
 			byte[] binChunk = _stream.ReadBytes((int)binChunkLength);
 			_binaryStream = new StreamIO(binChunk);
 
-			GltfBinaryReaderBase.GetBynaryReader((int)_header.Version, _root, binChunk).Read();
+			return GltfBinaryReaderBase.GetBynaryReader((int)_header.Version, _root, binChunk).Read();
 		}
 
 		public void Dispose()

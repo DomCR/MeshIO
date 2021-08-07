@@ -18,5 +18,10 @@ namespace MeshIO.Elements
 		public Node() : base() { }
 
 		public Node(string name) : base(name) { }
+
+		public IEnumerable<T> GetElements<T>()
+		{
+			return Children.Where(e => e is T).Cast<T>();
+		}
 	}
 }

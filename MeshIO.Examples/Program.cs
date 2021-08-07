@@ -21,18 +21,19 @@ namespace MeshIO.Examples
 			string pathI = @".\..\..\..\..\file_samples\fbx\objects_ascii_2014-2015.fbx";
 			string pathO = @".\..\..\..\..\file_samples\fbx\objects_ascii_2014-2015_out.fbx";
 
-			Scene Scene = FbxReader.Read(pathI, ErrorLevel.Checked);
-			FbxWriter.WriteAscii(pathO, Scene);
+			Scene scene = FbxReader.Read(pathI, ErrorLevel.Checked);
+			FbxWriter.WriteAscii(pathO, scene);
 		}
 
 		static void GltfExample()
 		{
 			string pathI = @".\..\..\..\..\file_samples\gltf\2CylinderEngine.glb";
-			string pathO = @".\..\..\..\..\file_samples\gltf\2CylinderEngine_out.glb";
+			string pathO = @".\..\..\..\..\file_samples\gltf\2CylinderEngine_out.fbx";
 
 			using (GltfReader reader = new GltfReader(pathI))
 			{
-				reader.Read();
+				Scene scene = reader.Read();
+				FbxWriter.WriteAscii(pathO, scene);
 			}
 		}
 	}

@@ -185,6 +185,8 @@ namespace MeshIO.FBX.Converters
 				case Mesh mesh:
 					node = buildMesh(mesh);
 					break;
+				case Camera camera:
+					break;
 				default:
 					System.Diagnostics.Debug.Fail($"{element.GetType().Name}");
 					break;

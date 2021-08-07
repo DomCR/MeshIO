@@ -9,7 +9,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 		.gitignore = .gitignore
-		links.txt = links.txt
 		README.md = README.md
 	EndProjectSection
 EndProject
@@ -40,7 +39,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "gltf", "gltf", "{0A337B82-E010-42F4-88A8-9381AA7476CD}"
 	ProjectSection(SolutionItems) = preProject
 		file_samples\gltf\2CylinderEngine.glb = file_samples\gltf\2CylinderEngine.glb
-		2CylinderEngine.json = 2CylinderEngine.json
+		file_samples\gltf\2CylinderEngine.json = file_samples\gltf\2CylinderEngine.json
 		file_samples\gltf\arq.babylon.glb = file_samples\gltf\arq.babylon.glb
 		file_samples\gltf\arq.babylon.json = file_samples\gltf\arq.babylon.json
 		file_samples\gltf\canoe.glb = file_samples\gltf\canoe.glb
