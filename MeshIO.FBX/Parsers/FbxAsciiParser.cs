@@ -20,6 +20,7 @@ namespace MeshIO.FBX
 		/// and slow or crash the system as a result.
 		/// </remarks>
 		public int MaxArrayLength { get; set; } = (1 << 24);
+		public bool ApplyArrayLength = false;
 
 		private readonly Stream _stream;
 		private readonly ErrorLevel _errorLevel;
@@ -324,12 +325,15 @@ namespace MeshIO.FBX
 			else
 				throw new FbxException(_line, _column,
 					"Unexpected '" + len + "', expected an integer");
+
 			if (l < 0)
 				throw new FbxException(_line, _column,
 					"Invalid array length " + l);
-			if (l > MaxArrayLength)
+
+			if (l > MaxArrayLength && ApplyArrayLength)
 				throw new FbxException(_line, _column,
 					"Array length " + l + " higher than permitted maximum " + MaxArrayLength);
+
 			ExpectToken('{');
 			ExpectToken(new Identifier("a"));
 			var array = new double[l];
@@ -517,9 +521,9 @@ namespace MeshIO.FBX
 			const string versionString = @"; FBX (\d)\.(\d)\.(\d) project file";
 			char c;
 			while (char.IsWhiteSpace(c = readChar()) && !endStream) { } // Skip whitespace
-			
+
 			bool hasVersionString = false;
-			
+
 			if (c == ';')
 			{
 				var sb = new StringBuilder();
@@ -540,11 +544,11 @@ namespace MeshIO.FBX
 			if (!hasVersionString && _errorLevel >= ErrorLevel.Strict)
 				throw new FbxException(_line, _column,
 					"Invalid version string; first line must match \"" + versionString + "\"");
-			
+
 			FbxNode node;
 			while ((node = ReadNode()) != null)
 				ret.Nodes.Add(node);
-			
+
 			return ret;
 		}
 	}

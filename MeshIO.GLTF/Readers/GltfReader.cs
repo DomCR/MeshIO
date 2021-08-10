@@ -172,9 +172,11 @@ namespace MeshIO.GLTF
 						break;
 					case "NORMAL":
 						//TODO: Fix the gltf normal reading
-						//var normals = new LayerElementNormal(mesh);
-						//normals.Normals = readXYZ(_root.Accessors[att.Value]);
-						//mesh.Layers.Add(normals);
+						var normals = new LayerElementNormal(mesh);
+						normals.Normals = readXYZ(_root.Accessors[att.Value]);
+						normals.MappingInformationType = MappingMode.ByPolygonVertex;
+						normals.ReferenceInformationType = ReferenceMode.Direct;
+						mesh.Layers.Add(normals);
 						break;
 					case "TANGENT":
 					case "TEXCOORD_0":

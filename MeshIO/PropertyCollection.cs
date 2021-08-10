@@ -26,6 +26,11 @@ namespace MeshIO
 			_properties.Add(property.Name, property);
 		}
 
+		public bool Contains(string name)
+		{
+			return _properties.ContainsKey(name);
+		}
+
 		public void Remove(Property property)
 		{
 			this.Remove(property.Name);

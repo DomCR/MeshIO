@@ -103,6 +103,9 @@ namespace MeshIO.FBX.Converters
 				case "NodeAttribute":
 					element = BuildNodeAttribute(node);
 					break;
+				case "Object":
+				case "ObjectMetaData":  //TODO: Link data with model
+					break;
 				default:
 					System.Diagnostics.Debug.Fail($"{node.Name}");
 					break;
@@ -121,10 +124,11 @@ namespace MeshIO.FBX.Converters
 
 			element.Name = name;
 
-			foreach (FbxNode n in node["Properties70"].Nodes)
-			{
-				element.Properties.Add(BuildProperty(n, element));
-			}
+			if (node["Properties70"] != null)
+				foreach (FbxNode n in node["Properties70"].Nodes)
+				{
+					element.Properties.Add(BuildProperty(n, element));
+				}
 		}
 
 		public Property BuildProperty(FbxNode node, Element owner)
@@ -259,6 +263,55 @@ namespace MeshIO.FBX.Converters
 				}
 			}
 
+			//Get fbxProperty values
+			if (material.Properties.Contains("AmbientColor"))
+			{
+				material.AmbientColor = (Color)(material.Properties["AmbientColor"]?.Value);
+				material.Properties.Remove("AmbientColor");
+			}
+
+			if (material.Properties.Contains("DiffuseColor"))
+			{
+				material.DiffuseColor = (Color)(material.Properties["DiffuseColor"]?.Value);
+				material.Properties.Remove("DiffuseColor");
+			}
+
+			if (material.Properties.Contains("SpecularColor"))
+			{
+				material.SpecularColor = (Color)(material.Properties["SpecularColor"]?.Value);
+				material.Properties.Remove("SpecularColor");
+			}
+
+			if (material.Properties.Contains("SpecularFactor"))
+			{
+				material.SpecularFactor = (double)(material.Properties["SpecularFactor"]?.Value);
+				material.Properties.Remove("SpecularFactor");
+			}
+
+			if (material.Properties.Contains("ShininessExponent"))
+			{
+				material.ShininessExponent = (double)(material.Properties["ShininessExponent"]?.Value);
+				material.Properties.Remove("ShininessExponent");
+			}
+
+			if (material.Properties.Contains("TransparencyFactor"))
+			{
+				material.TransparencyFactor = (double)(material.Properties["TransparencyFactor"]?.Value);
+				material.Properties.Remove("TransparencyFactor");
+			}
+
+			if (material.Properties.Contains("EmissiveColor"))
+			{
+				material.EmissiveColor = (Color)(material.Properties["EmissiveColor"]?.Value);
+				material.Properties.Remove("EmissiveColor");
+			}
+
+			if (material.Properties.Contains("EmissiveFactor"))
+			{
+				material.EmissiveFactor = (double)(material.Properties["EmissiveFactor"]?.Value);
+				material.Properties.Remove("EmissiveFactor");
+			}
+
 			return material;
 		}
 
@@ -353,6 +406,8 @@ namespace MeshIO.FBX.Converters
 						break;
 					case "LayerElementUV":
 						geometry.Layers.Add(BuildLayerElementUV(node[n["Type"].Value.ToString()], geometry));
+						break;
+					case "LayerElementUserData":
 						break;
 					default:
 						System.Diagnostics.Debug.Fail($"{n["Type"].Value}");

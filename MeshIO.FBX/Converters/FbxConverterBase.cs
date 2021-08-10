@@ -173,6 +173,7 @@ namespace MeshIO.FBX.Converters
 		protected FbxNode buildElementNode(Element element)
 		{
 			FbxNode node = null;
+			FbxNode properties = buildProperties(element.Properties);
 
 			switch (element)
 			{
@@ -180,7 +181,7 @@ namespace MeshIO.FBX.Converters
 					node = buildModel(n);
 					break;
 				case Material m:
-					node = buildMaterial(m);
+					node = buildMaterial(m, properties);
 					break;
 				case Mesh mesh:
 					node = buildMesh(mesh);
@@ -195,7 +196,7 @@ namespace MeshIO.FBX.Converters
 			if (node == null)
 				return node;
 
-			node.Nodes.Add(buildProperties(element.Properties));
+			node.Nodes.Add(properties);
 
 			_objects.Nodes.Add(node);
 			addDefinition(node.Name);
@@ -229,7 +230,7 @@ namespace MeshIO.FBX.Converters
 			return node;
 		}
 
-		protected FbxNode buildMaterial(Material n)
+		protected FbxNode buildMaterial(Material n, FbxNode properties)
 		{
 			FbxNode node = new FbxNode("Material", n._id, $"Material::{n.Name}", "Null");
 			node.Nodes.Add(new FbxNode("Version", 102));
@@ -239,6 +240,15 @@ namespace MeshIO.FBX.Converters
 
 			if (!string.IsNullOrEmpty(n.ShadingModel))
 				node.Nodes.Add(new FbxNode("ShadingModel", n.ShadingModel));
+
+			properties.Nodes.Add(buildProperty("AmbientColor", n.AmbientColor));
+			properties.Nodes.Add(buildProperty("DiffuseColor", n.DiffuseColor));
+			properties.Nodes.Add(buildProperty("SpecularColor", n.SpecularColor));
+			properties.Nodes.Add(buildProperty("SpecularFactor", n.SpecularFactor));
+			properties.Nodes.Add(buildProperty("ShininessExponent", n.ShininessExponent));
+			properties.Nodes.Add(buildProperty("TransparencyFactor", n.TransparencyFactor));
+			properties.Nodes.Add(buildProperty("EmissiveColor", n.EmissiveColor));
+			properties.Nodes.Add(buildProperty("EmissiveFactor", n.EmissiveFactor));
 
 			return node;
 		}
@@ -452,10 +462,15 @@ namespace MeshIO.FBX.Converters
 
 		private FbxNode buildProperty(Property property)
 		{
-			FbxNode node = new FbxNode("P");
-			node.Properties.Add(property.Name);
+			return buildProperty(property.Name, property.Value);
+		}
 
-			switch (property.Value)
+		private FbxNode buildProperty(string name, object propValue)
+		{
+			FbxNode node = new FbxNode("P");
+			node.Properties.Add(name);
+
+			switch (propValue)
 			{
 				case string value:
 					node.Properties.Add("KString");
@@ -522,7 +537,7 @@ namespace MeshIO.FBX.Converters
 					node.Properties.Add("");
 					break;
 				default:
-					System.Diagnostics.Debug.Fail($"{property.Value.GetType().FullName}");
+					System.Diagnostics.Debug.Fail($"{propValue.GetType().FullName}");
 					break;
 			}
 

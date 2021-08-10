@@ -6,6 +6,11 @@ using System.Threading.Tasks;
 
 namespace MeshIO
 {
+	public interface IVector : IEnumerable<double>
+	{
+
+	}
+
 	public struct XY
 	{
 		public readonly static XY Zero = new XY(0, 0);
@@ -45,6 +50,21 @@ namespace MeshIO
 			Z = z;
 		}
 
+		public double GetLength()
+		{
+			return GetLength(this);
+		}
+
+		public static double GetLength(XYZ xyz)
+		{
+			return GetLength(xyz.X, xyz.Y, xyz.Z);
+		}
+
+		public static double GetLength(double X, double Y, double Z)
+		{
+			return Math.Sqrt((X * X) + (Y * Y) + (Z * Z));
+		}
+
 		public override string ToString()
 		{
 			return $"{X},{Y},{Z}";
@@ -74,6 +94,15 @@ namespace MeshIO
 		public override string ToString()
 		{
 			return $"{X},{Y},{Z},{M}";
+		}
+	}
+
+	public static class VectorExtensions
+	{
+		public static double GetLength<T>(this T vector)
+			where T : IVector
+		{
+			throw new NotImplementedException();
 		}
 	}
 }
