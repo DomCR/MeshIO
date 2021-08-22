@@ -68,7 +68,9 @@ namespace MeshIO.GLTF
 			Node node = new Node(gltfNode.Name);
 
 			if (gltfNode.Camera.HasValue)
+			{
 				node.Children.Add(readCamera(gltfNode.Camera.Value));
+			}
 
 			gltfNode.Children?.ToList().ForEach((i) =>
 			{
@@ -86,6 +88,7 @@ namespace MeshIO.GLTF
 			if (gltfNode.Matrix != null)
 			{
 				//TODO: Apply transform matrix
+				node.Transform = new Transform(new Matrix4(gltfNode.Matrix.Select(f => (double)f).ToArray()));
 			}
 
 			if (gltfNode.Rotation != null)
@@ -140,7 +143,7 @@ namespace MeshIO.GLTF
 			throw new NotImplementedException();
 		}
 
-		protected List<Mesh> readPrimitivesInMesh(int index, Node node)
+		protected List<Mesh> readPrimitivesInMesh(int index, Node parent)
 		{
 			GltfMesh gltfMesh = this._root.Meshes[index];
 			List<Mesh> meshes = new List<Mesh>();
@@ -148,9 +151,10 @@ namespace MeshIO.GLTF
 			foreach (GltfMeshPrimitive p in gltfMesh.Primitives)
 			{
 				Mesh mesh = readPrimitive(p, out Material material);
+				mesh.Name = gltfMesh.Name;
 				meshes.Add(mesh);
 
-				node.Children.Add(material);	//TODO: fix the material reference
+				parent.Children.Add(material);    //TODO: fix the material reference
 			}
 
 			return meshes;
@@ -159,9 +163,6 @@ namespace MeshIO.GLTF
 		protected Mesh readPrimitive(GltfMeshPrimitive p, out Material material)
 		{
 			Mesh mesh = new Mesh();
-
-			if (p.Material.HasValue)
-				mesh.Layers.Add(new LayerElementMaterial(mesh));
 
 			foreach (KeyValuePair<string, int> att in p.Attributes)
 			{
@@ -172,11 +173,11 @@ namespace MeshIO.GLTF
 						break;
 					case "NORMAL":
 						//TODO: Fix the gltf normal reading
-						var normals = new LayerElementNormal(mesh);
-						normals.Normals = readXYZ(_root.Accessors[att.Value]);
-						normals.MappingInformationType = MappingMode.ByPolygonVertex;
-						normals.ReferenceInformationType = ReferenceMode.Direct;
-						mesh.Layers.Add(normals);
+						//var normals = new LayerElementNormal(mesh);
+						//normals.Normals = readXYZ(_root.Accessors[att.Value]); //.Select(x => -x).ToList();
+						//normals.MappingInformationType = MappingMode.ByPolygon;
+						//normals.ReferenceInformationType = ReferenceMode.Direct;
+						//mesh.Layers.Add(normals);
 						break;
 					case "TANGENT":
 					case "TEXCOORD_0":
@@ -193,11 +194,17 @@ namespace MeshIO.GLTF
 			if (p.Indices.HasValue)
 			{
 				mesh.Polygons.AddRange(readIndices(_root.Accessors[p.Indices.Value], p.Mode));
+
+				//TODO: Fix the gltf normal reading
+				//var normals = new LayerElementNormal(mesh);
+				//normals.CalculateFlatNormals();
+				//mesh.Layers.Add(normals);
 			}
 
 			if (p.Material.HasValue)
 			{
 				material = readMaterial(p.Material.Value);
+				mesh.Layers.Add(new LayerElementMaterial(mesh));
 			}
 			else
 			{
@@ -219,6 +226,17 @@ namespace MeshIO.GLTF
 			_materialMap.Add(index, material);
 
 			//TODO: implement gltf material reader
+			if (gltfMaterial.PbrMetallicRoughness != null)
+			{
+				byte r = (byte)(gltfMaterial.PbrMetallicRoughness.BaseColorFactor[0] * 255);
+				byte g = (byte)(gltfMaterial.PbrMetallicRoughness.BaseColorFactor[1] * 255);
+				byte b = (byte)(gltfMaterial.PbrMetallicRoughness.BaseColorFactor[2] * 255);
+				byte a = (byte)(gltfMaterial.PbrMetallicRoughness.BaseColorFactor[3] * 255);
+
+				material.AmbientColor = new Color(r, g, b, a);
+				material.DiffuseColor = new Color(r, g, b, a);
+				material.SpecularColor = new Color(r, g, b, a);
+			}
 
 			return material;
 		}
@@ -246,11 +264,12 @@ namespace MeshIO.GLTF
 				case GltfMeshPrimitive.ModeEnum.TRIANGLES:
 					return readAccessor<Triangle>(stream, accessor.ComponentType, accessor.Count / 3, 3);
 				case GltfMeshPrimitive.ModeEnum.POINTS:
-				case GltfMeshPrimitive.ModeEnum.LINES:
+				case GltfMeshPrimitive.ModeEnum.LINES:  //Works with the 3d lines, like polylines and lines
 				case GltfMeshPrimitive.ModeEnum.LINE_LOOP:
 				case GltfMeshPrimitive.ModeEnum.LINE_STRIP:
 				case GltfMeshPrimitive.ModeEnum.TRIANGLE_STRIP:
 				case GltfMeshPrimitive.ModeEnum.TRIANGLE_FAN:
+					return new List<Polygon>();
 				default:
 					throw new NotImplementedException();
 			}

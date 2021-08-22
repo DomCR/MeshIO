@@ -37,7 +37,7 @@ namespace MeshIO
 
 		public override int[] ToArray()
 		{
-			throw new NotImplementedException();
+			return new int[] { (int)Index0, (int)Index1, (int)Index2 };
 		}
 	}
 
@@ -58,7 +58,7 @@ namespace MeshIO
 
 		public override int[] ToArray()
 		{
-			throw new NotImplementedException();
+			return new int[] { (int)Index0, (int)Index1, (int)Index2, (int)Index3 };
 		}
 	}
 }

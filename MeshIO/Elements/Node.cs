@@ -13,6 +13,8 @@ namespace MeshIO.Elements
 		public bool Shading { get; set; } = true;
 		public string Culling { get; set; } = "CullingOff";
 
+		public Transform Transform { get; set; } = new Transform();
+
 		public List<Element> Children { get; set; } = new List<Element>();
 
 		public Node() : base() { }

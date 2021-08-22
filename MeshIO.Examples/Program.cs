@@ -10,8 +10,8 @@ namespace MeshIO.Examples
 	{
 		static void Main(string[] args)
 		{
-			FbxExample();
-			//GltfExample();
+			//FbxExample();
+			GltfExample();
 
 			Console.WriteLine("Program finished");
 		}
@@ -29,8 +29,14 @@ namespace MeshIO.Examples
 
 		static void GltfExample()
 		{
-			string pathI = @".\..\..\..\..\file_samples\gltf\2CylinderEngine.glb";
-			string pathO = @".\..\..\..\..\file_samples\gltf\2CylinderEngine_out.fbx";
+			//string pathI = @".\..\..\..\..\file_samples\gltf\Box.glb";
+			//string pathO = @".\..\..\..\..\file_samples\gltf\Box_out.fbx";		
+			string pathI = @".\..\..\..\..\file_samples\gltf\objects_ascii_2014-2015.glb";
+			string pathO = @".\..\..\..\..\file_samples\gltf\objects_ascii_2014-2015_out.fbx";
+			//string pathI = @".\..\..\..\..\file_samples\gltf\2CylinderEngine.glb";
+			//string pathO = @".\..\..\..\..\file_samples\gltf\2CylinderEngine_out.fbx";	
+			//string pathI = @".\..\..\..\..\file_samples\gltf\canoe.glb";
+			//string pathO = @".\..\..\..\..\file_samples\gltf\canoe_out.fbx";
 
 			using (GltfReader reader = new GltfReader(pathI))
 			{

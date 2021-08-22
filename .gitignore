@@ -351,5 +351,7 @@ MigrationBackup/
 
 # Custom folders
 /file_samples
-/GLTF.CodeGenerator
-/GLTF.CodeGeneratorLib
+/Utils
+
+# Exceptions
+!MeshIO.OBJ

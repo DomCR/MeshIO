@@ -178,7 +178,7 @@ namespace MeshIO.FBX.Converters
 			switch (element)
 			{
 				case Node n:
-					node = buildModel(n);
+					node = buildModel(n, properties);
 					break;
 				case Material m:
 					node = buildMaterial(m, properties);
@@ -187,6 +187,7 @@ namespace MeshIO.FBX.Converters
 					node = buildMesh(mesh);
 					break;
 				case Camera camera:
+					//node = buildCamera();
 					break;
 				default:
 					System.Diagnostics.Debug.Fail($"{element.GetType().Name}");
@@ -204,7 +205,7 @@ namespace MeshIO.FBX.Converters
 			return node;
 		}
 
-		protected FbxNode buildModel(Node n)
+		protected FbxNode buildModel(Node n, FbxNode properties)
 		{
 			FbxNode node = new FbxNode("Model", n._id, $"Model::{n.Name}", "Null");
 			node.Nodes.Add(new FbxNode("Version", 232));
@@ -226,6 +227,9 @@ namespace MeshIO.FBX.Converters
 
 				addConnection("OO", item._id.Value, n._id.Value);
 			}
+
+			properties.Nodes.Add(buildProperty("Lcl Translation", n.Transform.Translation / n.Transform.Scale));
+			properties.Nodes.Add(buildProperty("Lcl Scaling", n.Transform.Scale));
 
 			return node;
 		}
@@ -258,7 +262,7 @@ namespace MeshIO.FBX.Converters
 			FbxNode node = new FbxNode("Geometry", mesh._id, $"Geometry::{mesh.Name}", "Mesh");
 			node.Nodes.Add(new FbxNode("GeometryVersion", 124));
 
-			node.Nodes.Add(new FbxNode("Vertices", xyzToArray(mesh.Vertices)));
+			node.Nodes.Add(new FbxNode("Vertices", mesh.Vertices.SelectMany(x => x.GetComponents()).ToArray()));
 			node.Nodes.Add(new FbxNode("PolygonVertexIndex", polygonsArray(mesh)));
 
 			buildMeshLayers(node, mesh.Layers);
@@ -266,7 +270,7 @@ namespace MeshIO.FBX.Converters
 			return node;
 		}
 
-		protected double[] xyToArray(IEnumerable<XY> xy)
+		private double[] xyToArrayDouble(IEnumerable<XY> xy)
 		{
 			List<double> arr = new List<double>();
 
@@ -279,7 +283,7 @@ namespace MeshIO.FBX.Converters
 			return arr.ToArray();
 		}
 
-		protected double[] xyzToArray(IEnumerable<XYZ> xyz)
+		private double[] xyzToArrayDouble(IEnumerable<XYZ> xyz)
 		{
 			List<double> arr = new List<double>();
 
@@ -413,7 +417,7 @@ namespace MeshIO.FBX.Converters
 			FbxNode node = new FbxNode("LayerElementBinormal", 0);
 			node.Nodes.Add(new FbxNode("Version", 101));
 			buildLayerElement(node, layer);
-			node.Nodes.Add(new FbxNode("BiNormals", xyzToArray(layer.BiNormals)));
+			node.Nodes.Add(new FbxNode("BiNormals", layer.BiNormals.SelectMany(x => x.GetComponents()).ToArray()));
 			return node;
 		}
 
@@ -422,7 +426,7 @@ namespace MeshIO.FBX.Converters
 			FbxNode node = new FbxNode("LayerElementUV", 0);
 			node.Nodes.Add(new FbxNode("Version", 101));
 			buildLayerElement(node, layer);
-			node.Nodes.Add(new FbxNode("UV", xyToArray(layer.UV)));
+			node.Nodes.Add(new FbxNode("UV", layer.UV.SelectMany(x => x.GetComponents()).ToArray()));
 			node.Nodes.Add(new FbxNode("UVIndex", layer.UVIndex.ToArray()));
 			return node;
 		}
@@ -432,7 +436,7 @@ namespace MeshIO.FBX.Converters
 			FbxNode node = new FbxNode("LayerElementTangent", 0);
 			node.Nodes.Add(new FbxNode("Version", 102));
 			buildLayerElement(node, layer);
-			node.Nodes.Add(new FbxNode("Tangents", xyzToArray(layer.Tangents)));
+			node.Nodes.Add(new FbxNode("Tangents", layer.Tangents.SelectMany(x => x.GetComponents()).ToArray()));
 			return node;
 		}
 
@@ -441,7 +445,7 @@ namespace MeshIO.FBX.Converters
 			FbxNode node = new FbxNode("LayerElementNormal", 0);
 			node.Nodes.Add(new FbxNode("Version", 102));
 			buildLayerElement(node, layer);
-			node.Nodes.Add(new FbxNode("Normals", xyzToArray(layer.Normals)));
+			node.Nodes.Add(new FbxNode("Normals", layer.Normals.SelectMany(x => x.GetComponents()).ToArray()));
 			return node;
 		}
 
