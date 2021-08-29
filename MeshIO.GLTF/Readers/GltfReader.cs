@@ -88,7 +88,8 @@ namespace MeshIO.GLTF
 			if (gltfNode.Matrix != null)
 			{
 				//TODO: Apply transform matrix
-				node.Transform = new Transform(new Matrix4(gltfNode.Matrix.Select(f => (double)f).ToArray()));
+				//Matrix is organized by columns
+				node.Transform = new Transform(new Matrix4(gltfNode.Matrix.Select(f => (double)f).ToArray()).Transpose());
 			}
 
 			if (gltfNode.Rotation != null)

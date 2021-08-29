@@ -22,7 +22,9 @@ namespace MeshIO.Tests
 		[Fact()]
 		public void NormalizeTest()
 		{
-			Assert.True(false, "This test needs an implementation");
+			XYZ xyz = new XYZ(1, 1, 1);
+
+			Assert.Equal(1, xyz.Normalize().GetLength());
 		}
 	}
 }

@@ -9,10 +9,6 @@ namespace MeshIO.Tests
 {
 	public class XYZTests
 	{
-		[Fact()]
-		public void TransformTest()
-		{
-			Assert.True(false, "This test needs an implementation");
-		}
+
 	}
 }
