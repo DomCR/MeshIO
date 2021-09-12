@@ -11,18 +11,18 @@
 		public double Y { get; set; }
 		public double Z { get; set; }
 
-		/// <summary>
-		/// Constructs a vector whose elements are all the single specified value.
-		/// </summary>
-		/// <param name="value">The element to fill the vector with.</param>
-		public XYZ(double value) : this(value, value, value) { }
-
 		public XYZ(double x, double y, double z)
 		{
 			X = x;
 			Y = y;
 			Z = z;
 		}
+
+		/// <summary>
+		/// Constructs a vector whose elements are all the single specified value.
+		/// </summary>
+		/// <param name="value">The element to fill the vector with.</param>
+		public XYZ(double value) : this(value, value, value) { }
 
 		public XYZ(double[] components) : this(components[0], components[1], components[2]) { }
 
@@ -95,7 +95,7 @@
 		/// <returns>The summed vector.</returns>
 		public static XYZ operator +(XYZ left, XYZ right)
 		{
-			return new XYZ(left.X + right.X, left.Y + right.Y, left.Z + right.Z);
+			return left.Add(right);
 		}
 
 		/// <summary>
@@ -106,7 +106,7 @@
 		/// <returns>The difference vector.</returns>
 		public static XYZ operator -(XYZ left, XYZ right)
 		{
-			return new XYZ(left.X - right.X, left.Y - right.Y, left.Z - right.Z);
+			return left.Substract(right);
 		}
 
 		/// <summary>
@@ -117,29 +117,29 @@
 		/// <returns>The product vector.</returns>
 		public static XYZ operator *(XYZ left, XYZ right)
 		{
-			return new XYZ(left.X * right.X, left.Y * right.Y, left.Z * right.Z);
+			return left.Multiply(right);
 		}
 
 		/// <summary>
 		/// Multiplies a vector by the given scalar.
 		/// </summary>
 		/// <param name="left">The source vector.</param>
-		/// <param name="right">The scalar value.</param>
+		/// <param name="scalar">The scalar value.</param>
 		/// <returns>The scaled vector.</returns>
-		public static XYZ operator *(XYZ left, double right)
+		public static XYZ operator *(XYZ left, double scalar)
 		{
-			return left * new XYZ(right);
+			return left * new XYZ(scalar);
 		}
 
 		/// <summary>
 		/// Multiplies a vector by the given scalar.
 		/// </summary>
-		/// <param name="left">The scalar value.</param>
-		/// <param name="right">The source vector.</param>
+		/// <param name="scalar">The scalar value.</param>
+		/// <param name="vector">The source vector.</param>
 		/// <returns>The scaled vector.</returns>
-		public static XYZ operator *(double left, XYZ right)
+		public static XYZ operator *(double scalar, XYZ vector)
 		{
-			return new XYZ(left) * right;
+			return new XYZ(scalar) * vector;
 		}
 
 		/// <summary>
@@ -150,7 +150,7 @@
 		/// <returns>The vector resulting from the division.</returns>
 		public static XYZ operator /(XYZ left, XYZ right)
 		{
-			return new XYZ(left.X / right.X, left.Y / right.Y, left.Z / right.Z);
+			return left.Divide(right);
 		}
 
 		/// <summary>
@@ -175,7 +175,7 @@
 		/// <returns>The negated vector.</returns>
 		public static XYZ operator -(XYZ value)
 		{
-			return Zero - value;
+			return Zero.Substract(value);
 		}
 
 		/// <summary>

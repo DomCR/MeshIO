@@ -186,6 +186,8 @@ namespace MeshIO
 			  new XYZ(matrix.m20, matrix.m21, matrix.m22)
 			};
 
+			//List<XYZM> cols = matrix.GetCols();
+
 			scaling.X = cols[0].GetLength();
 			cols[0] = cols[0].Normalize();
 			XYZDouble.X = cols[0].Dot(cols[1]);

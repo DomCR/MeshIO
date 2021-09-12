@@ -27,40 +27,6 @@ namespace MeshIO
 			0.0, 0.0, 1.0, 0.0,
 			0.0, 0.0, 0.0, 1.0);
 
-		public static Matrix4 CreateRotationMatrix(double x, double y, double z)
-		{
-			double cosx = Math.Cos(x);
-			double cosy = Math.Cos(y);
-			double cosz = Math.Cos(z);
-
-			double sinx = Math.Sin(x);
-			double siny = Math.Sin(y);
-			double sinz = Math.Sin(z);
-
-			//X rotation 
-			Matrix4 rx = new Matrix4(
-				1, 0, 0, 0,
-				0, cosx, sinx, 0,
-				0, -sinx, cosx, 0,
-				0, 0, 0, 1);
-
-			//Y rotation 
-			Matrix4 ry = new Matrix4(
-				cosy, 0, -siny, 0,
-				0, 1, 0, 0,
-				siny, 0, cosy, 0,
-				0, 0, 0, 1);
-
-			//Z rotation 
-			Matrix4 rz = new Matrix4(
-				cosz, -sinz, 0, 0,
-				sinz, cosz, 0, 0,
-				0, 0, 1, 0,
-				0, 0, 0, 1);
-
-			return rx * ry * rz;
-		}
-
 		#region Public Fields
 		/// <summary>
 		/// Value at column 0, row 0 of the matrix.

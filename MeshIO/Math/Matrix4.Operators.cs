@@ -114,6 +114,47 @@ namespace MeshIO
 		}
 
 		/// <summary>
+		/// Creates a rotation matrix.
+		/// </summary>
+		/// <param name="x"></param>
+		/// <param name="y"></param>
+		/// <param name="z"></param>
+		/// <returns></returns>
+		public static Matrix4 CreateRotationMatrix(double x, double y, double z)
+		{
+			double cosx = Math.Cos(x);
+			double cosy = Math.Cos(y);
+			double cosz = Math.Cos(z);
+
+			double sinx = Math.Sin(x);
+			double siny = Math.Sin(y);
+			double sinz = Math.Sin(z);
+
+			//X rotation 
+			Matrix4 rx = new Matrix4(
+				1, 0, 0, 0,
+				0, cosx, sinx, 0,
+				0, -sinx, cosx, 0,
+				0, 0, 0, 1);
+
+			//Y rotation 
+			Matrix4 ry = new Matrix4(
+				cosy, 0, -siny, 0,
+				0, 1, 0, 0,
+				siny, 0, cosy, 0,
+				0, 0, 0, 1);
+
+			//Z rotation 
+			Matrix4 rz = new Matrix4(
+				cosz, -sinz, 0, 0,
+				sinz, cosz, 0, 0,
+				0, 0, 1, 0,
+				0, 0, 0, 1);
+
+			return rx * ry * rz;
+		}
+
+		/// <summary>
 		/// Creates a matrix that rotates around an arbitrary vector.
 		/// </summary>
 		/// <param name="axis">The axis to rotate around.</param>
@@ -245,13 +286,17 @@ namespace MeshIO
 			return result;
 		}
 
-		/// <summary>Multiply the matrix and vector4</summary>
-		/// <param name="lhs">Lhs.</param>
-		/// <param name="v">V.</param>
+		/// <summary>Multiply the matrix and XYZM</summary>
+		/// <param name="matrix"></param>
+		/// <param name="v"></param>
 		/// <returns>Result matrix</returns>
-		public static XYZM operator *(Matrix4 lhs, XYZM v)
+		public static XYZM operator *(Matrix4 matrix, XYZM v)
 		{
-			return new XYZM(lhs.m00 * v.X + lhs.m10 * v.Y + lhs.m20 * v.Z + lhs.m30 * v.M, lhs.m01 * v.X + lhs.m11 * v.Y + lhs.m21 * v.Z + lhs.m31 * v.M, lhs.m02 * v.X + lhs.m12 * v.Y + lhs.m22 * v.Z + lhs.m32 * v.M, lhs.m03 * v.X + lhs.m13 * v.Y + lhs.m23 * v.Z + lhs.m33 * v.M);
+			return new XYZM(
+				matrix.m00 * v.X + matrix.m10 * v.Y + matrix.m20 * v.Z + matrix.m30 * v.M,
+				matrix.m01 * v.X + matrix.m11 * v.Y + matrix.m21 * v.Z + matrix.m31 * v.M,
+				matrix.m02 * v.X + matrix.m12 * v.Y + matrix.m22 * v.Z + matrix.m32 * v.M,
+				matrix.m03 * v.X + matrix.m13 * v.Y + matrix.m23 * v.Z + matrix.m33 * v.M);
 		}
 	}
 }

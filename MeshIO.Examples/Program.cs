@@ -33,10 +33,12 @@ namespace MeshIO.Examples
 			//string pathO = @".\..\..\..\..\file_samples\gltf\Box_out.fbx";		
 			//string pathI = @".\..\..\..\..\file_samples\gltf\objects_ascii_2014-2015.glb";
 			//string pathO = @".\..\..\..\..\file_samples\gltf\objects_ascii_2014-2015_out.fbx";
-			string pathI = @".\..\..\..\..\file_samples\gltf\2CylinderEngine.glb";
-			string pathO = @".\..\..\..\..\file_samples\gltf\2CylinderEngine_out.fbx";	
+			//string pathI = @".\..\..\..\..\file_samples\gltf\2CylinderEngine.glb";
+			//string pathO = @".\..\..\..\..\file_samples\gltf\2CylinderEngine_out.fbx";
 			//string pathI = @".\..\..\..\..\file_samples\gltf\canoe.glb";
 			//string pathO = @".\..\..\..\..\file_samples\gltf\canoe_out.fbx";
+			string pathI = @".\..\..\..\..\file_samples\gltf\GearboxAssy.glb";
+			string pathO = @".\..\..\..\..\file_samples\gltf\GearboxAssy_out.fbx";
 
 			using (GltfReader reader = new GltfReader(pathI))
 			{

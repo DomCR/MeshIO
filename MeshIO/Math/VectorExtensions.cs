@@ -5,6 +5,10 @@ namespace MeshIO
 {
 	public static class VectorExtensions
 	{
+		/// <summary>
+		/// Returns the length of the vector.
+		/// </summary>
+		/// <returns>The vector's length.</returns>
 		public static double GetLength<T>(this T vector)
 			where T : IVector<T>
 		{
@@ -18,6 +22,11 @@ namespace MeshIO
 			return Math.Sqrt(length);
 		}
 
+		/// <summary>
+		/// Returns a vector with the same direction as the given vector, but with a length of 1.
+		/// </summary>
+		/// <param name="vector">The vector to normalize.</param>
+		/// <returns>The normalized vector.</returns>
 		public static T Normalize<T>(this T vector)
 			where T : IVector<T>, new()
 		{
@@ -32,11 +41,17 @@ namespace MeshIO
 			return new T().SetComponents(components);
 		}
 
-		public static double Dot<T>(this T vector1, T vector2)
+		/// <summary>
+		/// Returns the dot product of two vectors.
+		/// </summary>
+		/// <param name="left">The first vector.</param>
+		/// <param name="right">The second vector.</param>
+		/// <returns>The dot product.</returns>
+		public static double Dot<T>(this T left, T right)
 			where T : IVector<T>
 		{
-			var components1 = vector1.GetComponents();
-			var components2 = vector2.GetComponents();
+			var components1 = left.GetComponents();
+			var components2 = right.GetComponents();
 			double result = 0;
 
 			for (int i = 0; i < components1.Length; i++)
@@ -47,29 +62,88 @@ namespace MeshIO
 			return result;
 		}
 
-		public static T Add<T>(this T vector1, T vector2)
-			where T : IVector<T>, new()
+		/// <summary>
+		/// Returns a boolean indicating whether the two given vectors are equal.
+		/// </summary>
+		/// <param name="left">The first vector to compare.</param>
+		/// <param name="right">The second vector to compare.</param>
+		/// <returns>True if the vectors are equal; False otherwise.</returns>
+		public static bool IsEqual<T>(this T left, T right)
+			where T : IVector<T>
 		{
-			return applyFunctionByComponentIndex(vector1, vector2, (o, x) => o + x);
+			var components1 = left.GetComponents();
+			var components2 = right.GetComponents();
+
+			for (int i = 0; i < components1.Length; i++)
+			{
+				if (components1[i] != components2[i])
+					return false;
+			}
+
+			return true;
 		}
 
-		public static T Multiply<T>(this T vector1, T vector2)
+		/// <summary>
+		/// Adds two vectors together.
+		/// </summary>
+		/// <param name="left">The first source vector.</param>
+		/// <param name="right">The second source vector.</param>
+		/// <returns>The summed vector.</returns>
+		public static T Add<T>(this T left, T right)
 			where T : IVector<T>, new()
 		{
-			return applyFunctionByComponentIndex(vector1, vector2, (o, x) => o * x);
+			return applyFunctionByComponentIndex(left, right, (o, x) => o + x);
 		}
 
-		public static T Divide<T>(this T vector1, T vector2)
+		/// <summary>
+		/// Subtracts the second vector from the first.
+		/// </summary>
+		/// <param name="left">The first source vector.</param>
+		/// <param name="right">The second source vector.</param>
+		/// <returns>The difference vector.</returns>
+		public static T Substract<T>(this T left, T right)
 			where T : IVector<T>, new()
 		{
-			return applyFunctionByComponentIndex(vector1, vector2, (o, x) => o / x);
+			return applyFunctionByComponentIndex(left, right, (o, x) => o - x);
 		}
 
-		private static T applyFunctionByComponentIndex<T>(this T vector1, T vector2, Func<double, double, double> op)
+		/// <summary>
+		/// Multiplies two vectors together.
+		/// </summary>
+		/// <param name="left">The first source vector.</param>
+		/// <param name="right">The second source vector.</param>
+		/// <returns>The product vector.</returns>
+		public static T Multiply<T>(this T left, T right)
 			where T : IVector<T>, new()
 		{
-			double[] components1 = vector1.GetComponents();
-			double[] components2 = vector2.GetComponents();
+			return applyFunctionByComponentIndex(left, right, (o, x) => o * x);
+		}
+
+		/// <summary>
+		/// Divides the first vector by the second.
+		/// </summary>
+		/// <param name="left">The first source vector.</param>
+		/// <param name="right">The second source vector.</param>
+		/// <returns>The vector resulting from the division.</returns>
+		public static T Divide<T>(this T left, T right)
+			where T : IVector<T>, new()
+		{
+			return applyFunctionByComponentIndex(left, right, (o, x) => o / x);
+		}
+
+		/// <summary>
+		/// Applies a function in all the components of a vector by order
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="left"></param>
+		/// <param name="right"></param>
+		/// <param name="op"></param>
+		/// <returns></returns>
+		private static T applyFunctionByComponentIndex<T>(this T left, T right, Func<double, double, double> op)
+			where T : IVector<T>, new()
+		{
+			double[] components1 = left.GetComponents();
+			double[] components2 = right.GetComponents();
 			double[] result = new double[components1.Length];
 
 			for (int i = 0; i < components1.Length; i++)
