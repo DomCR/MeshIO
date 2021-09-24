@@ -20,6 +20,11 @@ namespace MeshIO.Elements.Geometries.Layers
 		}
 	}
 
+	public class LayerCollection	//TODO: Organize and create different layers for a geometry element
+	{
+
+	}
+
 	public class LayerElementMaterial : LayerElement
 	{
 		public List<int> Materials { get; set; } = new List<int>();
