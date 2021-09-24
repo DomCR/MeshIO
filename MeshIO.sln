@@ -20,8 +20,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MeshIO.Examples", "MeshIO.E
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MeshIO.GLTF", "MeshIO.GLTF\MeshIO.GLTF.csproj", "{D1EA3B08-85CC-4085-BAA1-C47040E7E621}"
 EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "CSUtilities", "..\CSUtilities\CSUtilities\CSUtilities.shproj", "{B4EF345D-52B9-47F1-AA2A-B4AE85F62EFC}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "file_samples", "file_samples", "{9C0B5243-FD21-4933-9269-5B3A958D2B83}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "fbx", "fbx", "{6BAF95A1-2B12-4667-81EA-AE32A5A49AEA}"
@@ -58,10 +56,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "obj", "obj", "{590110F8-095
 		file_samples\obj\teapot.obj = file_samples\obj\teapot.obj
 	EndProjectSection
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "CSUtilities", "CSUtilities\CSUtilities\CSUtilities.shproj", "{B4EF345D-52B9-47F1-AA2A-B4AE85F62EFC}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		..\CSUtilities\CSUtilities\CSUtilities.projitems*{b4ef345d-52b9-47f1-aa2a-b4ae85f62efc}*SharedItemsImports = 13
-		..\CSUtilities\CSUtilities\CSUtilities.projitems*{d1ea3b08-85cc-4085-baa1-c47040e7e621}*SharedItemsImports = 5
+		CSUtilities\CSUtilities\CSUtilities.projitems*{b4ef345d-52b9-47f1-aa2a-b4ae85f62efc}*SharedItemsImports = 13
+		CSUtilities\CSUtilities\CSUtilities.projitems*{d1ea3b08-85cc-4085-baa1-c47040e7e621}*SharedItemsImports = 5
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

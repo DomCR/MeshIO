@@ -23,6 +23,6 @@
     <Folder Include="Schema\V1\" />
   </ItemGroup>
 
-  <Import Project="..\..\CSUtilities\CSUtilities\CSUtilities.projitems" Label="Shared" />
+  <Import Project="..\CSUtilities\CSUtilities\CSUtilities.projitems" Label="Shared" />
 
 </Project>
