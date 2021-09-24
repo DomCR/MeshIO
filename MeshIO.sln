@@ -9,6 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 		.gitignore = .gitignore
+		.gitmodules = .gitmodules
 		LICENSE = LICENSE
 		links.txt = links.txt
 		README.md = README.md
@@ -58,6 +59,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "obj", "obj", "{590110F8-095
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "CSUtilities", "CSUtilities\CSUtilities\CSUtilities.shproj", "{B4EF345D-52B9-47F1-AA2A-B4AE85F62EFC}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{006DAC54-BEE3-4878-900F-4E698B519501}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{FF66D7A6-6DCE-41DE-B30F-492988B2DF63}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\build_n_test.yml = .github\workflows\build_n_test.yml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		CSUtilities\CSUtilities\CSUtilities.projitems*{b4ef345d-52b9-47f1-aa2a-b4ae85f62efc}*SharedItemsImports = 13
@@ -101,6 +109,8 @@ Global
 		{6BAF95A1-2B12-4667-81EA-AE32A5A49AEA} = {9C0B5243-FD21-4933-9269-5B3A958D2B83}
 		{0A337B82-E010-42F4-88A8-9381AA7476CD} = {9C0B5243-FD21-4933-9269-5B3A958D2B83}
 		{590110F8-095C-49C7-80B2-C1D63588F4D6} = {9C0B5243-FD21-4933-9269-5B3A958D2B83}
+		{006DAC54-BEE3-4878-900F-4E698B519501} = {DA7FF092-3DA1-4942-9FF6-B42F1CDBD0C6}
+		{FF66D7A6-6DCE-41DE-B30F-492988B2DF63} = {006DAC54-BEE3-4878-900F-4E698B519501}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B96D2DF1-9226-4CEE-BF70-43C8318F59DC}
