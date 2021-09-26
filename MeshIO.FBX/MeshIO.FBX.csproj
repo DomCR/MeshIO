@@ -1,9 +1,17 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>net5.0;net48;netstandard2.1</TargetFrameworks>
+    <LangVersion>9.0</LangVersion>
     <Authors>DomCr</Authors>
     <Company>MeshIO</Company>
+    <Version>1.0.0-alpha</Version>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/DomCR/MeshIO</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/DomCR/MeshIO</RepositoryUrl>
+    <PackageTags>C# 3D fbx</PackageTags>
+    <RepositoryType>git</RepositoryType>
+    <Copyright>Copyright (c) 2020 Albert Domenech</Copyright>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net5.0|AnyCPU'">

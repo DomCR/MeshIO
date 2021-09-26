@@ -15,5 +15,7 @@ namespace MeshIO.FBX
 		public FbxProperty(string name, Element owner) : base(name, owner) { }
 
 		public FbxProperty(string name, Element owner, T value) : base(name, owner, value) { }
+
+		public FbxProperty(string name, Element owner, T value, string typeName, string typeLabel, PropertyFlags flags) : base(name, owner, value, typeName, typeLabel, flags) { }
 	}
 }

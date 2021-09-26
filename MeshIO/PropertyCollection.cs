@@ -11,7 +11,10 @@ namespace MeshIO
 	public class PropertyCollection : IEnumerable<Property>
 	{
 		public Property this[int index] { get { return _properties.Values.ElementAt(index); } }
+
 		public Property this[string name] { get { return _properties[name]; } }
+
+		public int Count { get { return _properties.Count; } }
 
 		private readonly Dictionary<string, Property> _properties = new Dictionary<string, Property>();
 		private Element _owner;

@@ -2,10 +2,10 @@
 
   <PropertyGroup>
     <TargetFrameworks>net5.0;net48;netstandard2.1</TargetFrameworks>
-    <LangVersion>8.0</LangVersion>
+    <LangVersion>9.0</LangVersion>
     <Authors>DomCr</Authors>
     <Company>MeshIO</Company>
-    <Version>0.0.1</Version>
+    <Version>1.0.0-alpha</Version>
     <PackageId>MeshIO</PackageId>
     <PackageTags>C# 3D</PackageTags>
     <RepositoryUrl>https://github.com/DomCR/MeshIO</RepositoryUrl>
@@ -18,6 +18,10 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net5.0|AnyCPU'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net5.0|AnyCPU'">
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
   </PropertyGroup>
 
 </Project>

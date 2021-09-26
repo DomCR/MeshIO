@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>net5.0;net48;netstandard2.1</TargetFrameworks>
-    <LangVersion>8.0</LangVersion>
+    <LangVersion>9.0</LangVersion>
     <Authors>DomCr</Authors>
     <Company>MeshIO</Company>
   </PropertyGroup>

@@ -466,6 +466,14 @@ namespace MeshIO.FBX.Converters
 
 		private FbxNode buildProperty(Property property)
 		{
+			switch (property)
+			{
+				case FbxProperty:
+				case Property:
+				default:
+					break;
+			}
+
 			return buildProperty(property.Name, property.Value);
 		}
 
@@ -664,8 +672,8 @@ namespace MeshIO.FBX.Converters
 				properties.Nodes.Add(new FbxNode("P", "CoordAxisSign", "int", "Integer", "", 1));
 				properties.Nodes.Add(new FbxNode("P", "OriginalUpAxis", "int", "Integer", "", 2));
 				properties.Nodes.Add(new FbxNode("P", "OriginalUpAxisSign", "int", "Integer", "", 1));
-				properties.Nodes.Add(new FbxNode("P", "UnitScaleFactor", "double", "Number", "", 100));
-				properties.Nodes.Add(new FbxNode("P", "OriginalUnitScaleFactor", "double", "Number"));
+				properties.Nodes.Add(new FbxNode("P", "UnitScaleFactor", "double", "Number", "", 100000));
+				properties.Nodes.Add(new FbxNode("P", "OriginalUnitScaleFactor", "double", "Number", "", 100));
 				properties.Nodes.Add(new FbxNode("P", "AmbientColor", "ColorRGB", "Color", "", 0, 0, 0));
 				properties.Nodes.Add(new FbxNode("P", "DefaultCamera", "KString", "", "", "Producer"));
 				properties.Nodes.Add(new FbxNode("P", "TimeMode", "enum", "", "", 6));
