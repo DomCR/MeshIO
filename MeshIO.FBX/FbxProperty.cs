@@ -13,14 +13,14 @@ namespace MeshIO.FBX
 		public string FbxTypeName { get; set; }
 
 		public string TypeLabel { get; set; }
-		
+
 		public PropertyFlags Flags { get; set; }
 
 		public FbxProperty(string name, Element owner) : base(name, owner) { }
 
 		public FbxProperty(string name, Element owner, object value) : base(name, owner, value) { }
 
-		public FbxProperty(string name, Element owner, object value, string typeName, string typeLabel, PropertyFlags flags) : base(name, owner, value) 
+		public FbxProperty(string name, Element owner, object value, string typeName, string typeLabel, PropertyFlags flags) : base(name, owner, value)
 		{
 			this.FbxTypeName = typeName;
 			this.TypeLabel = typeLabel;
