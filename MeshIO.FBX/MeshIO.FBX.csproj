@@ -12,6 +12,7 @@
     <PackageTags>C# 3D fbx</PackageTags>
     <RepositoryType>git</RepositoryType>
     <Copyright>Copyright (c) 2020 Albert Domenech</Copyright>
+    <Description>MeshIO module for fbx format.</Description>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net5.0|AnyCPU'">
