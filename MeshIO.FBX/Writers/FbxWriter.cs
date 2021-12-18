@@ -1,93 +1,111 @@
 ﻿using MeshIO.Elements;
-using MeshIO.FBX.Converters;
 using System;
 using System.IO;
 
 namespace MeshIO.FBX
 {
+	/// <summary>
+	/// Implements a <see cref="FbxWriter"/> for writing fbx files.
+	/// </summary>
 	public class FbxWriter : IFbxWriter
 	{
-		public string Path { get; set; }
-		FbxVersion Version { get; set; }
-		public Scene Scene { get; set; }
+		/// <summary>
+		/// Version to be used in the fbx file.
+		/// </summary>
+		public FbxVersion Version { get; }
 
-		public FbxWriter(string path, Scene scene, FbxVersion version = FbxVersion.v7400)
+		private Stream _stream;
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="FbxWriter"/> class for the specified file.
+		/// </summary>
+		/// <param name="path">The complete file path to write to.</param>
+		/// <param name="version"></param>
+		public FbxWriter(string path, FbxVersion version = FbxVersion.v7400)
 		{
-			this.Path = path;
-			this.Scene = scene;
+			if (string.IsNullOrEmpty(path))
+				throw new ArgumentNullException(nameof(path));
+
+			this._stream = new FileStream(path, FileMode.Create);
 			this.Version = version;
 		}
 
-		public FbxRootNode GetRootNode()
+		/// <summary>
+		/// Initializes a new instance of the <see cref="FbxWriter"/> class for the specified stream.
+		/// </summary>
+		/// <param name="stream">The stream to write to.</param>
+		/// <param name="version"></param>
+		public FbxWriter(Stream stream, FbxVersion version = FbxVersion.v7400)
 		{
-			IFbxConverter converter = FbxConverterBase.GetConverter(Scene, Version);
-			return converter.ToRootNode();
+			if (stream == null)
+				throw new ArgumentNullException(nameof(stream));
+
+			if (!stream.CanSeek)
+				throw new ArgumentException("The stream must support seeking. Try reading the data into a buffer first");
+
+			this._stream = stream;
+			this.Version = version;
 		}
 
-		public FbxRootNode GetRootNode(FbxVersion version)
+		/// <inheritdoc/>
+		public void WriteAscii(Scene scene)
 		{
-			IFbxConverter converter = FbxConverterBase.GetConverter(Scene, version);
-			return converter.ToRootNode();
+			using (FbxAsciiWriter writer = new FbxAsciiWriter(this._stream))
+				writer.Write(FbxRootNode.CreateFromScene(scene, this.Version));
 		}
 
-		public void WriteAscii()
+		/// <inheritdoc/>
+		public void WriteBinary(Scene scene)
 		{
-			if (Path == null)
-				throw new ArgumentNullException(nameof(Path));
-
-			using (FileStream stream = new FileStream(Path, FileMode.Create))
-			{
-				using (FbxAsciiWriter writer = new FbxAsciiWriter(stream))
-					writer.Write(GetRootNode());
-			}
+			using (FbxBinaryWriter writer = new FbxBinaryWriter(this._stream))
+				writer.Write(FbxRootNode.CreateFromScene(scene, this.Version));
 		}
 
-		public void WriteBinary()
+		/// <inheritdoc/>
+		public void WriteAscii(FbxRootNode root)
 		{
-			if (Path == null)
-				throw new ArgumentNullException(nameof(Path));
+			using (FbxAsciiWriter writer = new FbxAsciiWriter(this._stream))
+				writer.Write(root);
+		}
 
-			using (FileStream stream = new FileStream(Path, FileMode.Create))
-			{
-				using (FbxBinaryWriter writer = new FbxBinaryWriter(stream))
-					writer.Write(GetRootNode());
-			}
+		/// <inheritdoc/>
+		public void WriteBinary(FbxRootNode root)
+		{
+			using (FbxBinaryWriter writer = new FbxBinaryWriter(this._stream))
+				writer.Write(root);
+		}
+
+		/// <inheritdoc/>
+		public void Dispose()
+		{
+			_stream.Dispose();
 		}
 
 		public static void WriteAscii(string path, Scene scene, FbxVersion version = FbxVersion.v7400)
 		{
-			FbxWriter writer = new FbxWriter(path, scene, version);
-			writer.WriteAscii();
+			using (FbxWriter writer = new FbxWriter(path, version))
+				writer.WriteAscii(scene);
 		}
 
 		public static void WriteAscii(string path, FbxRootNode root)
 		{
-			if (path == null)
-				throw new ArgumentNullException(nameof(path));
-
-			using (FileStream stream = new FileStream(path, FileMode.Create))
-			{
-				using (FbxAsciiWriter writer = new FbxAsciiWriter(stream))
-					writer.Write(root);
-			}
+			using (FbxWriter writer = new FbxWriter(path, root.Version))
+				writer.WriteAscii(root);
 		}
 
 		public static void WriteBinary(string path, Scene scene, FbxVersion version = FbxVersion.v7400)
 		{
-			FbxWriter writer = new FbxWriter(path, scene, version);
-			writer.WriteBinary();
+			if (path == null)
+				throw new ArgumentNullException(nameof(path));
+
+			using (FbxWriter writer = new FbxWriter(path, version))
+				writer.WriteBinary(scene);
 		}
 
 		public static void WriteBinary(string path, FbxRootNode root)
 		{
-			if (path == null)
-				throw new ArgumentNullException(nameof(path));
-
-			using (FileStream stream = new FileStream(path, FileMode.Create))
-			{
-				using (FbxBinaryWriter writer = new FbxBinaryWriter(stream))
-					writer.Write(root);
-			}
+			using (FbxWriter writer = new FbxWriter(path, root.Version))
+				writer.WriteBinary(root);
 		}
 	}
 }

@@ -1,11 +1,8 @@
 ﻿using MeshIO.Elements;
 using MeshIO.FBX.Converters;
+using MeshIO.FBX.Exceptions;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MeshIO.FBX
 {
@@ -14,6 +11,11 @@ namespace MeshIO.FBX
 		private Stream _stream;
 		private ErrorLevel _errorLevel;
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="FbxReader"/> class for the specified file.
+		/// </summary>
+		/// <param name="path">The complete file path to read to.</param>
+		/// <param name="errorLevel">When to throw an <see cref="FbxException"/></param>
 		public FbxReader(string path, ErrorLevel errorLevel)
 		{
 			if (string.IsNullOrEmpty(path))
@@ -23,6 +25,11 @@ namespace MeshIO.FBX
 			_errorLevel = errorLevel;
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="FbxReader"/> class for the specified stream.
+		/// </summary>
+		/// <param name="stream">The stream to write to.</param>
+		/// <param name="errorLevel"></param>
 		public FbxReader(Stream stream, ErrorLevel errorLevel)
 		{
 			if (stream == null)
@@ -67,10 +74,15 @@ namespace MeshIO.FBX
 			return parser.Parse();
 		}
 
+		/// <inheritdoc/>
+		public void Dispose()
+		{
+			_stream.Dispose();
+		}
+
 		/// <summary>
 		/// Read fbx file.
 		/// </summary>
-		/// <param name="root"></param>
 		/// <returns></returns>
 		public static Scene Read(string path, ErrorLevel errorLevel)
 		{
@@ -92,10 +104,20 @@ namespace MeshIO.FBX
 			}
 		}
 
-		/// <inheritdoc/>
-		public void Dispose()
+		public static Scene Read(Stream stream, ErrorLevel errorLevel)
 		{
-			_stream.Dispose();
+			using (FbxReader reader = new FbxReader(stream, errorLevel))
+			{
+				return reader.Read();
+			}
+		}
+
+		public static FbxRootNode Parse(Stream stream, ErrorLevel errorLevel)
+		{
+			using (FbxReader reader = new FbxReader(stream, errorLevel))
+			{
+				return reader.Parse();
+			}
 		}
 	}
 }

@@ -97,12 +97,12 @@ namespace MeshIO.GLTF
 
 			if (gltfNode.Scale != null)
 			{
-				(node.Transform ??= new Transform()).Scale = new XYZ(gltfNode.Rotation.Select(f => (double)f).ToArray());
+				(node.Transform ??= new Transform()).Scale = new XYZ(gltfNode.Scale.Select(f => (double)f).ToArray());
 			}
 
 			if (gltfNode.Translation != null)
 			{
-				(node.Transform ??= new Transform()).Translation = new XYZ(gltfNode.Rotation.Select(f => (double)f).ToArray());
+				(node.Transform ??= new Transform()).Translation = new XYZ(gltfNode.Translation.Select(f => (double)f).ToArray());
 			}
 
 			if (gltfNode.Weights != null)

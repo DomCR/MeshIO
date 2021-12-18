@@ -5,18 +5,24 @@
     <LangVersion>9.0</LangVersion>
     <Authors>DomCr</Authors>
     <Company>MeshIO</Company>
-    <Version>1.0.0-alpha</Version>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/DomCR/MeshIO</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/DomCR/MeshIO</RepositoryUrl>
+    <Version>1.0.1-alpha</Version>
+    <PackageId>MeshIO.FBX</PackageId>
     <PackageTags>C# 3D fbx</PackageTags>
+    <RepositoryUrl>https://github.com/DomCR/MeshIO</RepositoryUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryType>git</RepositoryType>
+    <PackageProjectUrl>https://github.com/DomCR/MeshIO</PackageProjectUrl>
     <Copyright>Copyright (c) 2020 Albert Domenech</Copyright>
     <Description>MeshIO module for fbx format.</Description>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net5.0|AnyCPU'">
-    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <DocumentationFile>bin\MeshIO.FBX.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

@@ -1,4 +1,7 @@
-﻿namespace MeshIO.FBX
+﻿using MeshIO.Elements;
+using MeshIO.FBX.Converters;
+
+namespace MeshIO.FBX
 {
 	/// <summary>
 	/// A top-level FBX node
@@ -14,5 +17,16 @@
 		/// Most FBX importers can cope with any version.
 		/// </remarks>
 		public FbxVersion Version { get; set; } = FbxVersion.v7400;
+
+		/// <summary>
+		/// Create a <see cref="FbxRootNode"/> from an <see cref="Scene"/>.
+		/// </summary>
+		/// <param name="scene">Scene from where the <see cref="FbxRootNode"/> will be created.</param>
+		/// <param name="version"><see cref="FbxVersion"/> format for the <see cref="FbxRootNode"/></param>
+		public static FbxRootNode CreateFromScene(Scene scene, FbxVersion version = FbxVersion.v7400)
+		{
+			IFbxConverter converter = FbxConverterBase.GetConverter(scene, version);
+			return converter.ToRootNode();
+		}
 	}
 }

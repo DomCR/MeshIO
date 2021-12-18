@@ -1,18 +1,28 @@
 ﻿using MeshIO.Elements;
-using MeshIO.FBX.Converters;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MeshIO.FBX
 {
-	public interface IFbxWriter
+	public interface IFbxWriter: IDisposable
 	{
-		FbxRootNode GetRootNode();
-		void WriteBinary();
-		void WriteAscii();
+		/// <summary>
+		/// Write an <see cref="FbxRootNode"/> into an fbx binary file.
+		/// </summary>
+		void WriteBinary(FbxRootNode root);
+
+		/// <summary>
+		/// Write an <see cref="Scene"/> into an fbx binary file.
+		/// </summary>
+		void WriteBinary(Scene scene);
+
+		/// <summary>
+		/// Write a <see cref="FbxRootNode"/> into a fbx an ascii file.
+		/// </summary>
+		void WriteAscii(FbxRootNode root);
+
+		/// <summary>
+		/// Write a <see cref="Scene"/> into a fbx an ascii file.
+		/// </summary>
+		void WriteAscii(Scene scene);
 	}
 }
