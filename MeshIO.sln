@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29613.14
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32210.238
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MeshIO", "MeshIO\MeshIO.csproj", "{3F391F00-A310-4681-BE94-15329D662A3D}"
 EndProject
@@ -66,6 +66,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{
 		.github\workflows\build_n_test.yml = .github\workflows\build_n_test.yml
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MeshIO.FBX.Tests", "MeshIO.FBX.Tests\MeshIO.FBX.Tests.csproj", "{60FE28C0-704E-4C4B-A2CD-929039A16F9E}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		CSUtilities\CSUtilities\CSUtilities.projitems*{b4ef345d-52b9-47f1-aa2a-b4ae85f62efc}*SharedItemsImports = 13
@@ -100,6 +102,10 @@ Global
 		{23E1077D-5EED-43D7-ABAB-F3DB7BA21E37}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{23E1077D-5EED-43D7-ABAB-F3DB7BA21E37}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{23E1077D-5EED-43D7-ABAB-F3DB7BA21E37}.Release|Any CPU.Build.0 = Release|Any CPU
+		{60FE28C0-704E-4C4B-A2CD-929039A16F9E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{60FE28C0-704E-4C4B-A2CD-929039A16F9E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{60FE28C0-704E-4C4B-A2CD-929039A16F9E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{60FE28C0-704E-4C4B-A2CD-929039A16F9E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
