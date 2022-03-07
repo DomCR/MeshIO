@@ -1,4 +1,5 @@
-﻿using MeshIO.Elements;
+﻿using CSMath;
+using MeshIO.Elements;
 using MeshIO.Elements.Geometries;
 using MeshIO.Elements.Geometries.Layers;
 using MeshIO.FBX.Exceptions;

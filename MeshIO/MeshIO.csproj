@@ -25,4 +25,6 @@
     <DocumentationFile>bin\MeshIO.xml</DocumentationFile>
   </PropertyGroup>
 
+  <Import Project="..\CSUtilities\CSMath\CSMath.projitems" Label="Shared" />
+
 </Project>
