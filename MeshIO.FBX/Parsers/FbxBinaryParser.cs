@@ -84,7 +84,8 @@ namespace MeshIO.FBX
 				do
 				{
 					nested = ReadNode(document);
-					node.Nodes.Add(nested);
+					if (nested != null)
+						node.Nodes.Add(nested);
 				} while (nested != null);
 				if (_errorLevel >= ErrorLevel.Checked && _stream.BaseStream.Position != endOffset)
 					throw new FbxException(_stream.BaseStream.Position,
