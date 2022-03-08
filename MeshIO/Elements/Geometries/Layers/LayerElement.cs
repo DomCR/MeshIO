@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace MeshIO.Elements.Geometries.Layers
 {
+	//TODO: finish the layer element implementations
 	public abstract class LayerElement
 	{
 		public string Name { get; set; } = string.Empty;
