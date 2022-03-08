@@ -1,4 +1,5 @@
 ﻿using CSMath;
+using MeshIO.Core;
 using MeshIO.Elements;
 using MeshIO.Elements.Geometries;
 using MeshIO.Elements.Geometries.Layers;
@@ -15,11 +16,18 @@ namespace MeshIO.FBX.Converters
 	/// <summary>
 	/// Base class to convert a node structure fbx <see cref="FbxRootNode"/> into a <see cref="Scene"/>
 	/// </summary>
-	public abstract class NodeParserBase : INodeParser
+	public abstract class NodeConverterBase : INodeConverter
 	{
-		public static INodeParser GetConverter(FbxRootNode root)
+		public NotificationHandler OnNotification { get; set; }
+
+		public FbxVersion Version { get { return this._root.Version; } }
+
+		protected Dictionary<ulong, FbxNode> _objects = new Dictionary<ulong, FbxNode>();
+		protected readonly FbxRootNode _root;
+
+		public static INodeConverter GetConverter(FbxRootNode root)
 		{
-			INodeParser converter = null;
+			INodeConverter converter = null;
 
 			switch (root.Version)
 			{
@@ -32,23 +40,24 @@ namespace MeshIO.FBX.Converters
 				case FbxVersion.v4050:
 				case FbxVersion.v5000:
 				case FbxVersion.v5800:
+					throw new NotSupportedException($"Fbx version {root.Version} not supported");
 				case FbxVersion.v6000:
 				case FbxVersion.v6100:
-					throw new NotImplementedException($"Incompatible version {root.Version}");
+					throw new NotImplementedException($"Fbx version {root.Version} not implemented");
 				case FbxVersion.v7000:
 				case FbxVersion.v7100:
 				case FbxVersion.v7200:
 				case FbxVersion.v7300:
 				case FbxVersion.v7400:
-					converter = new NodeParser7400(root);
+					converter = new NodeConverter7400(root);
 					break;
 				case FbxVersion.v7500:
 				case FbxVersion.v7600:
 				case FbxVersion.v7700:
-					converter = new NodeParser7400(root);
+					converter = new NodeConverter7400(root);
 					break;
 				default:
-					throw new NotImplementedException($"Incompatible version {root.Version}");
+					throw new Exception($"Unknown fbx version : {root.Version}");
 			}
 
 			//TODO: check the versions differences to implement the missing converters
@@ -56,28 +65,23 @@ namespace MeshIO.FBX.Converters
 			return converter;
 		}
 
-		public FbxVersion Version { get { return _root.Version; } }
-
-		protected Dictionary<ulong, FbxNode> _objects = new Dictionary<ulong, FbxNode>();
-		protected readonly FbxRootNode _root;
-
-		public NodeParserBase(FbxRootNode root)
+		public NodeConverterBase(FbxRootNode root)
 		{
-			_root = root;
+			this._root = root;
 
-			foreach (FbxNode n in getObjects().Nodes)
+			foreach (FbxNode n in this.getObjects().Nodes)
 			{
-				_objects.Add(Convert.ToUInt64(n.Properties[0]), n);
+				this._objects.Add(Convert.ToUInt64(n.Properties[0]), n);
 			}
 		}
 
 		public Scene ConvertScene()
 		{
-			Scene scene = buildScene(getDocuments());
+			Scene scene = this.buildScene(this.getDocuments());
 
-			foreach (FbxNode n in getChildren(scene._id.Value))
+			foreach (FbxNode n in this.getChildren(scene._id.Value))
 			{
-				Element element = ToElement(n);
+				Element element = this.ToElement(n);
 
 				if (element is Node fbxNode)
 					scene.Nodes.Add(fbxNode);
@@ -93,20 +97,20 @@ namespace MeshIO.FBX.Converters
 			switch (node.Name)
 			{
 				case "Model":
-					element = BuildModel(node);
+					element = this.BuildModel(node);
 					break;
 				case "Material":
-					element = BuildMaterial(node);
+					element = this.BuildMaterial(node);
 					break;
 				case "Geometry":
-					element = BuildGeometryObject(node);
+					element = this.BuildGeometryObject(node);
 					break;
 				case "NodeAttribute":
-					element = BuildNodeAttribute(node);
+					element = this.BuildNodeAttribute(node);
 					break;
-				case "Object":
-				case "ObjectMetaData":  //TODO: Link data with model
-					break;
+				//case "Object":
+				//case "ObjectMetaData":  //TODO: Link data with model
+				//	break;
 				default:
 					System.Diagnostics.Debug.Fail($"{node.Name}");
 					break;
@@ -126,10 +130,12 @@ namespace MeshIO.FBX.Converters
 			element.Name = name;
 
 			if (node["Properties70"] != null)
+			{
 				foreach (FbxNode n in node["Properties70"].Nodes)
 				{
-					element.Properties.Add(BuildProperty(n, element));
+					element.Properties.Add(this.BuildProperty(n, element));
 				}
+			}
 		}
 
 		public Property BuildProperty(FbxNode node, Element owner)
@@ -211,12 +217,15 @@ namespace MeshIO.FBX.Converters
 		{
 			Node model = new Node();
 
-			BuildElement(node, model, "Model::");
+			this.BuildElement(node, model, "Model::");
 
 			foreach (FbxNode n in node.Nodes)
 			{
 				switch (n.Name)
 				{
+					case "Properties70":
+						//Ignore properties
+						break;
 					case "MultiLayer":
 						model.MultiLayer = (char)n.Value == 'T';
 						break;
@@ -229,12 +238,15 @@ namespace MeshIO.FBX.Converters
 					case "Culling":
 						model.Culling = (string)n.Value;
 						break;
+					default:
+						this.notify($"Unknow node while building Model:: with name {n.Name}");
+						break;
 				}
 			}
 
-			foreach (FbxNode n in getChildren(model._id.Value))
+			foreach (FbxNode n in this.getChildren(model._id.Value))
 			{
-				Element child = ToElement(n);
+				Element child = this.ToElement(n);
 
 				if (child == null)
 					continue;
@@ -249,7 +261,7 @@ namespace MeshIO.FBX.Converters
 		{
 			Material material = new Material();
 
-			BuildElement(node, material, "Material::");
+			this.BuildElement(node, material, "Material::");
 
 			foreach (FbxNode n in node.Nodes)
 			{
@@ -323,7 +335,7 @@ namespace MeshIO.FBX.Converters
 			switch (node.Properties[2].ToString())
 			{
 				case "Mesh":
-					geometry = BuildMesh(node);
+					geometry = this.BuildMesh(node);
 					break;
 				case "Line":
 					//TODO: implement line reading
@@ -340,17 +352,17 @@ namespace MeshIO.FBX.Converters
 		{
 			Mesh mesh = new Mesh();
 
-			BuildElement(node, mesh, "Geometry::");
+			this.BuildElement(node, mesh, "Geometry::");
 
 			foreach (FbxNode n in node)
 			{
 				switch (n.Name)
 				{
 					case "Vertices":
-						mesh.Vertices = arrToXYZ(n.Value as double[]);
+						mesh.Vertices = this.arrToXYZ(n.Value as double[]);
 						break;
 					case "PolygonVertexIndex":
-						mesh.Polygons = buildPolygons(n.Value as int[]);
+						mesh.Polygons = this.buildPolygons(n.Value as int[]);
 						break;
 					case "Edges":
 						//TODO: implement edges
@@ -358,7 +370,7 @@ namespace MeshIO.FBX.Converters
 				}
 			}
 
-			BuildLayers(node, mesh);
+			this.BuildLayers(node, mesh);
 
 			return mesh;
 		}
@@ -391,22 +403,22 @@ namespace MeshIO.FBX.Converters
 				switch (n["Type"].Value)
 				{
 					case "LayerElementNormal":
-						geometry.Layers.Add(BuildElementLayerNormal(node[n["Type"].Value.ToString()], geometry));
+						geometry.Layers.Add(this.BuildElementLayerNormal(node[n["Type"].Value.ToString()], geometry));
 						break;
 					case "LayerElementBinormal":
-						geometry.Layers.Add(BuildElementLayerBinormal(node[n["Type"].Value.ToString()], geometry));
+						geometry.Layers.Add(this.BuildElementLayerBinormal(node[n["Type"].Value.ToString()], geometry));
 						break;
 					case "LayerElementTangent":
-						geometry.Layers.Add(BuildElementLayerTangent(node[n["Type"].Value.ToString()], geometry));
+						geometry.Layers.Add(this.BuildElementLayerTangent(node[n["Type"].Value.ToString()], geometry));
 						break;
 					case "LayerElementMaterial":
-						geometry.Layers.Add(BuildLayerElementMaterial(node[n["Type"].Value.ToString()], geometry));
+						geometry.Layers.Add(this.BuildLayerElementMaterial(node[n["Type"].Value.ToString()], geometry));
 						break;
 					case "LayerElementSmoothing":
 						//geometry.Layers.Add(BuildLayerElementSmoothing(node[n["Type"].Value.ToString()]));
 						break;
 					case "LayerElementUV":
-						geometry.Layers.Add(BuildLayerElementUV(node[n["Type"].Value.ToString()], geometry));
+						geometry.Layers.Add(this.BuildLayerElementUV(node[n["Type"].Value.ToString()], geometry));
 						break;
 					case "LayerElementUserData":
 						break;
@@ -451,14 +463,14 @@ namespace MeshIO.FBX.Converters
 		{
 			LayerElementNormal layer = new LayerElementNormal(geometry);
 
-			BuildLayer(node, layer);
+			this.BuildLayer(node, layer);
 
 			foreach (FbxNode n in node)
 			{
 				switch (n.Name)
 				{
 					case "Normals":
-						layer.Normals = arrToXYZ(arrToDoubleArray(n.Value as IEnumerable));
+						layer.Normals = this.arrToXYZ(this.arrToDoubleArray(n.Value as IEnumerable));
 						break;
 					case "NormalsW":
 						//TODO: implement NormalsW
@@ -475,14 +487,14 @@ namespace MeshIO.FBX.Converters
 		{
 			LayerElementBinormal layer = new LayerElementBinormal(geometry);
 
-			BuildLayer(node, layer);
+			this.BuildLayer(node, layer);
 
 			foreach (FbxNode n in node)
 			{
 				switch (n.Name)
 				{
 					case "Binormals":
-						layer.BiNormals = arrToXYZ(arrToDoubleArray(n.Value as IEnumerable));
+						layer.BiNormals = this.arrToXYZ(this.arrToDoubleArray(n.Value as IEnumerable));
 						break;
 					case "BinormalsW":
 						//TODO: implement NormalsW
@@ -499,14 +511,14 @@ namespace MeshIO.FBX.Converters
 		{
 			LayerElementTangent layer = new LayerElementTangent(geometry);
 
-			BuildLayer(node, layer);
+			this.BuildLayer(node, layer);
 
 			foreach (FbxNode n in node)
 			{
 				switch (n.Name)
 				{
 					case "Tangents":
-						layer.Tangents = arrToXYZ(arrToDoubleArray(n.Value as IEnumerable));
+						layer.Tangents = this.arrToXYZ(this.arrToDoubleArray(n.Value as IEnumerable));
 						break;
 					case "TangentsW":
 						//TODO: implement NormalsW
@@ -523,17 +535,17 @@ namespace MeshIO.FBX.Converters
 		{
 			LayerElementUV layer = new LayerElementUV(geometry);
 
-			BuildLayer(node, layer);
+			this.BuildLayer(node, layer);
 
 			foreach (FbxNode n in node)
 			{
 				switch (n.Name)
 				{
 					case "UV":
-						layer.UV = arrToXY(arrToDoubleArray(n.Value as IEnumerable));
+						layer.UV = this.arrToXY(this.arrToDoubleArray(n.Value as IEnumerable));
 						break;
 					case "UVIndex":
-						layer.UVIndex.AddRange(toArr<int>(n.Value as IEnumerable));
+						layer.UVIndex.AddRange(this.toArr<int>(n.Value as IEnumerable));
 						break;
 					default:
 						break;
@@ -547,14 +559,14 @@ namespace MeshIO.FBX.Converters
 		{
 			LayerElementMaterial layer = new LayerElementMaterial(geometry);
 
-			BuildLayer(node, layer);
+			this.BuildLayer(node, layer);
 
 			foreach (FbxNode n in node)
 			{
 				switch (n.Name)
 				{
 					case "Materials":
-						layer.Materials.AddRange(toArr<int>(n.Value as IEnumerable));
+						layer.Materials.AddRange(this.toArr<int>(n.Value as IEnumerable));
 						break;
 					default:
 						break;
@@ -674,17 +686,17 @@ namespace MeshIO.FBX.Converters
 
 		protected FbxNode getDocuments()
 		{
-			return _root["Documents"];
+			return this._root["Documents"];
 		}
 
 		protected FbxNode getConnections()
 		{
-			return _root["Connections"];
+			return this._root["Connections"];
 		}
 
 		protected FbxNode getObjects()
 		{
-			return _root["Objects"];
+			return this._root["Objects"];
 		}
 
 		protected Scene buildScene(FbxNode documents)
@@ -698,7 +710,7 @@ namespace MeshIO.FBX.Converters
 
 		protected IEnumerable<FbxNode> getChildren(ulong containerId)
 		{
-			foreach (FbxNode c in getConnections().Nodes)
+			foreach (FbxNode c in this.getConnections().Nodes)
 			{
 				if (Convert.ToUInt64(c.Properties[2]) == containerId)
 				{
@@ -720,6 +732,11 @@ namespace MeshIO.FBX.Converters
 					yield return this._objects[elementId];
 				}
 			}
+		}
+
+		protected void notify(string message)
+		{
+			this.OnNotification?.Invoke(new NotificationArgs(message));
 		}
 	}
 }
