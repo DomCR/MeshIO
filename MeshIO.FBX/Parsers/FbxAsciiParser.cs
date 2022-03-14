@@ -164,9 +164,12 @@ namespace MeshIO.FBX
 				prevTokenSingle = null;
 				return ret;
 			}
+			
 			var c = readChar();
+			
 			if (endStream)
 				return new EndOfStream();
+
 			switch (c)
 			{
 				case ';': // Comments
@@ -256,7 +259,7 @@ namespace MeshIO.FBX
 				"Unknown character " + c);
 		}
 
-		private object prevToken;
+		private object _prevToken;
 
 		// Use a loop rather than recursion to prevent stack overflow
 		// Here we can also merge string+colon into an identifier,
@@ -264,29 +267,34 @@ namespace MeshIO.FBX
 		object ReadToken()
 		{
 			object ret;
-			if (prevToken != null)
+			if (_prevToken != null)
 			{
-				ret = prevToken;
-				prevToken = null;
+				ret = _prevToken;
+				_prevToken = null;
 				return ret;
 			}
 			do
 			{
 				ret = ReadTokenSingle();
 			} while (ret == null);
+
 			var id = ret as Identifier;
+
 			if (id != null)
 			{
 				object colon;
+
 				do
 				{
 					colon = ReadTokenSingle();
 				} while (colon == null);
+
 				if (!':'.Equals(colon))
 				{
 					if (id.String.Length > 1)
 						throw new FbxException(_line, _column,
 							"Unexpected '" + colon + "', expected ':' or a single-char literal");
+				
 					ret = id.String[0];
 					prevTokenSingle = colon;
 				}
@@ -492,14 +500,14 @@ namespace MeshIO.FBX
 			// Now we're either at an open brace, close brace or a new node
 			if (token is Identifier || '}'.Equals(token))
 			{
-				prevToken = token;
+				_prevToken = token;
 				return node;
 			}
 			// The while loop can't end unless we're at an open brace, so we can continue right on
 			object endBrace;
 			while (!'}'.Equals(endBrace = ReadToken()))
 			{
-				prevToken = endBrace; // If it's not an end brace, the next node will need it
+				_prevToken = endBrace; // If it's not an end brace, the next node will need it
 				node.Nodes.Add(ReadNode());
 			}
 			if (node.Nodes.Count < 1) // If there's an open brace, we want that to be preserved

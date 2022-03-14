@@ -45,14 +45,30 @@ namespace MeshIO.FBX.Tests.Readers
 		[MemberData(nameof(AsciiFiles))]
 		public void ReadAsciiTest(string test)
 		{
-			Scene scene = FbxReader.Read(test, ErrorLevel.Checked, this.onNotification);
+			readFile(test);
 		}
 
 		[Theory]
 		[MemberData(nameof(BinaryFiles))]
 		public void ReadBinaryTest(string test)
 		{
-			Scene scene = FbxReader.Read(test, ErrorLevel.Checked, this.onNotification);
+			readFile(test);
+		}
+
+		private Scene readFile(string path)
+		{
+			using (FbxReader reader = new FbxReader(path, ErrorLevel.Checked))
+			{
+				reader.OnNotification = this.onNotification;
+
+				if (reader.GetVersion() <= FbxVersion.v6100)
+				{
+					this._output.WriteLine($"Fbx version not implemented: {reader.GetVersion()}");
+					return null;
+				}
+
+				return reader.Read();
+			}
 		}
 
 		private void onNotification(NotificationArgs e)

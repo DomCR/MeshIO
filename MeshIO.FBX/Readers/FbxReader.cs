@@ -10,7 +10,10 @@ namespace MeshIO.FBX
 	public class FbxReader : ReaderBase, IFbxReader
 	{
 		private Stream _stream;
+
 		private ErrorLevel _errorLevel;
+
+		private FbxRootNode _root;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="FbxReader"/> class for the specified file.
@@ -44,10 +47,18 @@ namespace MeshIO.FBX
 		}
 
 		/// <inheritdoc/>
+		public FbxVersion GetVersion()
+		{
+			_root ??= this.Parse();
+
+			return _root.Version;
+		}
+
+		/// <inheritdoc/>
 		public Scene Read()
 		{
-			FbxRootNode root = this.Parse();
-			INodeConverter converter = NodeConverterBase.GetConverter(root);
+			_root ??= this.Parse();
+			INodeConverter converter = NodeConverterBase.GetConverter(_root);
 			converter.OnNotification = this.OnNotification;
 
 			return converter.ConvertScene();

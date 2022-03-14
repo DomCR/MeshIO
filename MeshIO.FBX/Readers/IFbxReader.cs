@@ -10,6 +10,12 @@ namespace MeshIO.FBX
 	public interface IFbxReader : IDisposable
 	{
 		/// <summary>
+		/// Checks the version of the file
+		/// </summary>
+		/// <returns></returns>
+		FbxVersion GetVersion();
+
+		/// <summary>
 		/// Parse the document into a node structure.
 		/// </summary>
 		/// <returns></returns>
