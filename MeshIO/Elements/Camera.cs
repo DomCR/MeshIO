@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CSMath;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,7 +9,6 @@ namespace MeshIO.Elements
 {
 	public class Camera : Element
 	{
-		#region Enums
 		/// <summary>
 		/// Camera's projection types
 		/// </summary>
@@ -18,12 +18,12 @@ namespace MeshIO.Elements
 			/// The camera uses perspective projection
 			/// </summary>
 			Perspective,
+
 			/// <summary>
 			/// The camera uses orthographic projection
 			/// </summary>
 			Orthographic,
 		}
-		#endregion
 
 		public XYZ Position { get; set; }
 

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace MeshIO
 {
+	//TODO: Polygon classes need to be in the geometry namespace
 	public abstract class Polygon
 	{
 		public abstract int[] ToArray();

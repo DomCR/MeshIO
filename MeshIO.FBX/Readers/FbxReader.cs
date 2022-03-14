@@ -1,4 +1,5 @@
-﻿using MeshIO.Elements;
+﻿using MeshIO.Core;
+using MeshIO.Elements;
 using MeshIO.FBX.Converters;
 using MeshIO.FBX.Exceptions;
 using System;
@@ -6,7 +7,7 @@ using System.IO;
 
 namespace MeshIO.FBX
 {
-	public class FbxReader : IFbxReader
+	public class FbxReader : ReaderBase, IFbxReader
 	{
 		private Stream _stream;
 		private ErrorLevel _errorLevel;
@@ -49,7 +50,8 @@ namespace MeshIO.FBX
 		public Scene Read()
 		{
 			FbxRootNode root = this.Parse();
-			INodeParser converter = NodeParserBase.GetConverter(root);
+			INodeConverter converter = NodeConverterBase.GetConverter(root);
+			converter.OnNotification = this.OnNotification;
 
 			return converter.ConvertScene();
 		}
@@ -84,10 +86,11 @@ namespace MeshIO.FBX
 		/// Read fbx file.
 		/// </summary>
 		/// <returns></returns>
-		public static Scene Read(string path, ErrorLevel errorLevel)
+		public static Scene Read(string path, ErrorLevel errorLevel, NotificationHandler notificationHandler = null)
 		{
 			using (FbxReader reader = new FbxReader(path, errorLevel))
 			{
+				reader.OnNotification = notificationHandler;
 				return reader.Read();
 			}
 		}
@@ -96,10 +99,11 @@ namespace MeshIO.FBX
 		/// Parse the document into a node structure.
 		/// </summary>
 		/// <returns></returns>
-		public static FbxRootNode Parse(string path, ErrorLevel errorLevel)
+		public static FbxRootNode Parse(string path, ErrorLevel errorLevel, NotificationHandler notificationHandler = null)
 		{
 			using (FbxReader reader = new FbxReader(path, errorLevel))
 			{
+				reader.OnNotification = notificationHandler;
 				return reader.Parse();
 			}
 		}

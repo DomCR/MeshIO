@@ -6,36 +6,50 @@ using System.Threading.Tasks;
 
 namespace MeshIO.Elements
 {
-	public class Element
+	/// <summary>
+	/// Base class for all the elements contained in the 3D environment
+	/// </summary>
+	public abstract class Element
 	{
+		/// <summary>
+		/// Unique id to identify this element
+		/// </summary>
+		public Guid Id { get; internal set; }
+
 		/// <summary>
 		/// Name of the element.
 		/// </summary>
 		public string Name { get; set; }
 
+		/// <summary>
+		/// Properties of this element
+		/// </summary>
 		public PropertyCollection Properties { get; }
 
+		[Obsolete]
 		internal ulong? _id = null;
 
 		/// <summary>
-		/// Default constructor.
+		/// Default constructor
 		/// </summary>
-		public Element()
+		public Element() : this(string.Empty)
 		{
-			Name = string.Empty;
-			Properties = new PropertyCollection(this);
+			this.Properties = new PropertyCollection(this);
 
-			_id = Utils.CreateId();
+			this.Id = Guid.NewGuid();
+
+			this._id = Utils.CreateId();
 		}
 
-		public Element(string name) : this()
+		public Element(string name)
 		{
-			Name = name;
+			this.Name = name;
 		}
 
+		/// <inheritdoc/>
 		public override string ToString()
 		{
-			return $"{this.GetType().Name}:{Name}";
+			return $"{this.GetType().Name}:{this.Name}";
 		}
 	}
 }

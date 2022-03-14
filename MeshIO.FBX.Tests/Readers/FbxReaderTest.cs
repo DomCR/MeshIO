@@ -1,4 +1,5 @@
-﻿using MeshIO.Elements;
+﻿using MeshIO.Core;
+using MeshIO.Elements;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -18,7 +19,7 @@ namespace MeshIO.FBX.Tests.Readers
 
 		public static readonly TheoryData<string> BinaryFiles;
 
-		private readonly ITestOutputHelper output;
+		private readonly ITestOutputHelper _output;
 
 		static FbxReaderTest()
 		{
@@ -35,18 +36,28 @@ namespace MeshIO.FBX.Tests.Readers
 			}
 		}
 
+		public FbxReaderTest(ITestOutputHelper output)
+		{
+			this._output = output;
+		}
+
 		[Theory]
 		[MemberData(nameof(AsciiFiles))]
 		public void ReadAsciiTest(string test)
 		{
-			Scene scene = FbxReader.Read(test, ErrorLevel.Checked);
+			Scene scene = FbxReader.Read(test, ErrorLevel.Checked, this.onNotification);
 		}
 
 		[Theory]
 		[MemberData(nameof(BinaryFiles))]
 		public void ReadBinaryTest(string test)
 		{
-			Scene scene = FbxReader.Read(test, ErrorLevel.Checked);
+			Scene scene = FbxReader.Read(test, ErrorLevel.Checked, this.onNotification);
+		}
+
+		private void onNotification(NotificationArgs e)
+		{
+			this._output.WriteLine(e.Message);
 		}
 	}
 }
