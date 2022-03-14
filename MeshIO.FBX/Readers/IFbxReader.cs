@@ -9,7 +9,16 @@ namespace MeshIO.FBX
 {
 	public interface IFbxReader : IDisposable
 	{
+		/// <summary>
+		/// Parse the document into a node structure.
+		/// </summary>
+		/// <returns></returns>
 		FbxRootNode Parse();
+
+		/// <summary>
+		/// Read the file into an fbx scene.
+		/// </summary>
+		/// <returns></returns>
 		Scene Read();
 	}
 }
