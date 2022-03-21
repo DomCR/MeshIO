@@ -152,14 +152,6 @@ namespace MeshIO.FBX.Converters
 
 		public List<Property> BuildProperties(FbxNode node)
 		{
-			List<Property> properties = new List<Property> ();
-
-			foreach (FbxNode n in node.Nodes)
-			{
-				var p = this.BuildProperty(n);
-
-		public List<Property> BuildProperties(FbxNode node)
-		{
 			List<Property> properties = new List<Property>();
 
 			foreach (FbxNode n in node.Nodes)
@@ -171,6 +163,9 @@ namespace MeshIO.FBX.Converters
 					this.notify($"Duplicated property with name : {p.Name}");
 					continue;
 				}
+			}
+
+			return properties;
 		}
 
 		public Property BuildProperty(FbxNode node)
