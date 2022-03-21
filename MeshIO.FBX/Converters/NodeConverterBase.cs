@@ -28,6 +28,8 @@ namespace MeshIO.FBX.Converters
 
 		public FbxNode SectionConnections { get; set; }
 
+		protected System.Text.RegularExpressions.Regex _propertiesRegex = new System.Text.RegularExpressions.Regex(@"(Properties).*?[\d]+");
+
 		protected Dictionary<ulong, FbxNode> _objects = new Dictionary<ulong, FbxNode>();
 
 		protected readonly FbxRootNode _root;
@@ -130,7 +132,7 @@ namespace MeshIO.FBX.Converters
 				//case "ObjectMetaData":  //TODO: Link data with model
 				//	break;
 				default:
-					System.Diagnostics.Debug.Fail($"{node.Name}");
+					this.notify($"Unknown element node with name : {node.Name}");
 					break;
 			}
 
@@ -146,17 +148,29 @@ namespace MeshIO.FBX.Converters
 				name = name.Remove(0, prefix.Length);
 
 			element.Name = name;
-
-			if (node["Properties70"] != null)
-			{
-				foreach (FbxNode n in node["Properties70"].Nodes)
-				{
-					element.Properties.Add(this.BuildProperty(n, element));
-				}
-			}
 		}
 
-		public Property BuildProperty(FbxNode node, Element owner)
+		public Dictionary<string, Property> BuildProperties(FbxNode node)
+		{
+			Dictionary<string, Property> properties = new Dictionary<string, Property>();
+
+			foreach (FbxNode n in node.Nodes)
+			{
+				var p = this.BuildProperty(n);
+
+				if (properties.ContainsKey(p.Name))
+				{
+					this.notify($"Duplicated property with name : {p.Name}");
+					continue;
+				}
+
+				properties.Add(p.Name, p);
+			}
+
+			return properties;
+		}
+
+		public Property BuildProperty(FbxNode node)
 		{
 			//P : ["PropName", "PropType", "Label(?)", "Flags", __values__, …]
 			Property property = null;
@@ -172,19 +186,19 @@ namespace MeshIO.FBX.Converters
 					byte r = (byte)(Convert.ToDouble(node.Properties[4]) * 255);
 					byte g = (byte)(Convert.ToDouble(node.Properties[5]) * 255);
 					byte b = (byte)(Convert.ToDouble(node.Properties[6]) * 255);
-					property = new Property<Color>(node.Properties[0].ToString(), owner, new Color(r, g, b));
+					property = new Property<Color>(node.Properties[0].ToString(), new Color(r, g, b));
 					break;
 				case "ColorAndAlpha":
 					r = (byte)(Convert.ToDouble(node.Properties[4]) * 255);
 					g = (byte)(Convert.ToDouble(node.Properties[5]) * 255);
 					b = (byte)(Convert.ToDouble(node.Properties[6]) * 255);
 					byte a = (byte)(Convert.ToDouble(node.Properties[7]) * 255);
-					property = new Property<Color>(node.Properties[0].ToString(), owner, new Color(r, g, b, a));
+					property = new Property<Color>(node.Properties[0].ToString(), new Color(r, g, b, a));
 					break;
 				case "Visibility":
 				case "Bool":
 				case "bool":
-					property = new Property<bool>(node.Properties[0].ToString(), owner, Convert.ToInt32(node.Properties[4]) != 0);
+					property = new Property<bool>(node.Properties[0].ToString(), Convert.ToInt32(node.Properties[4]) != 0);
 					break;
 				case "Vector":
 				case "Vector3":
@@ -195,33 +209,33 @@ namespace MeshIO.FBX.Converters
 					double x = Convert.ToDouble(node.Properties[4]);
 					double y = Convert.ToDouble(node.Properties[5]);
 					double z = Convert.ToDouble(node.Properties[6]);
-					property = new Property<XYZ>(node.Properties[0].ToString(), owner, new XYZ(x, y, z));
+					property = new Property<XYZ>(node.Properties[0].ToString(), new XYZ(x, y, z));
 					break;
 				case "int":
 				case "Integer":
 				case "Enum":
 				case "enum":
-					property = new Property<int>(node.Properties[0].ToString(), owner, Convert.ToInt32(node.Properties[4]));
+					property = new Property<int>(node.Properties[0].ToString(), Convert.ToInt32(node.Properties[4]));
 					break;
 				case "KString":
-					property = new Property<string>(node.Properties[0].ToString(), owner, (string)node.Properties[4]);
+					property = new Property<string>(node.Properties[0].ToString(), (string)node.Properties[4]);
 					break;
 				case "Float":
-					property = new Property<float>(node.Properties[0].ToString(), owner, Convert.ToSingle(node.Properties[4]));
+					property = new Property<float>(node.Properties[0].ToString(), Convert.ToSingle(node.Properties[4]));
 					break;
 				case "FieldOfView":
 				case "FieldOfViewX":
 				case "FieldOfViewY":
 				case "double":
 				case "Number":
-					property = new Property<double>(node.Properties[0].ToString(), owner, Convert.ToDouble(node.Properties[4]));
+					property = new Property<double>(node.Properties[0].ToString(), Convert.ToDouble(node.Properties[4]));
 					break;
 				case "KTime":
-					property = new Property<TimeSpan>(node.Properties[0].ToString(), owner, new TimeSpan(Convert.ToInt64(node.Properties[4])));
+					property = new Property<TimeSpan>(node.Properties[0].ToString(), new TimeSpan(Convert.ToInt64(node.Properties[4])));
 					break;
 				case "Reference":
 				case "Compound":
-					property = new Property(node.Properties[0].ToString(), owner, null);
+					property = new Property(node.Properties[0].ToString(), null);
 					break;
 				default:
 					System.Diagnostics.Debug.Fail($"{node.Properties[1]}");
@@ -235,14 +249,16 @@ namespace MeshIO.FBX.Converters
 		{
 			Node model = new Node();
 
+			Dictionary<string, Property> properties = new Dictionary<string, Property>();
+
 			this.BuildElement(node, model, "Model::");
 
 			foreach (FbxNode n in node.Nodes)
 			{
 				switch (n.Name)
 				{
-					case "Properties70":
-						//Ignore properties
+					case string value when _propertiesRegex.IsMatch(n.Name):
+						properties = this.BuildProperties(n);
 						break;
 					case "MultiLayer":
 						model.MultiLayer = (char)n.Value == 'T';
@@ -262,6 +278,23 @@ namespace MeshIO.FBX.Converters
 				}
 			}
 
+			//Process the properties
+			foreach (KeyValuePair<string, Property> p in properties)
+			{
+				switch (p.Key)
+				{
+					case FbxProperty.LclScaling:
+						model.Transform.Scale = (XYZ)p.Value.Value;
+						continue;
+					case FbxProperty.LclTranslation:
+						model.Transform.Translation = (XYZ)p.Value.Value;
+						continue;
+				}
+
+				model.Properties.Add(p.Value);
+			}
+
+			//Get the children for this Node
 			foreach (FbxNode n in this.getChildren(model._id.Value))
 			{
 				Element child = this.ToElement(n);
