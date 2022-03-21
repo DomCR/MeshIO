@@ -45,14 +45,14 @@ namespace MeshIO.FBX.Tests.Readers
 		[MemberData(nameof(AsciiFiles))]
 		public void ReadAsciiTest(string test)
 		{
-			readFile(test);
+			this.readFile(test);
 		}
 
 		[Theory]
 		[MemberData(nameof(BinaryFiles))]
 		public void ReadBinaryTest(string test)
 		{
-			readFile(test);
+			this.readFile(test);
 		}
 
 		private Scene readFile(string path)

@@ -545,7 +545,7 @@ namespace MeshIO.FBX.Converters
 						layer.UV = this.arrToXY(this.arrToDoubleArray(n.Value as IEnumerable));
 						break;
 					case "UVIndex":
-						layer.UVIndex.AddRange(this.toArr<int>(n.Value as IEnumerable));
+						layer.Indices.AddRange(this.toArr<int>(n.Value as IEnumerable));
 						break;
 					default:
 						break;
@@ -566,7 +566,7 @@ namespace MeshIO.FBX.Converters
 				switch (n.Name)
 				{
 					case "Materials":
-						layer.Materials.AddRange(this.toArr<int>(n.Value as IEnumerable));
+						layer.Indices.AddRange(this.toArr<int>(n.Value as IEnumerable));
 						break;
 					default:
 						break;

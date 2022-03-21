@@ -400,7 +400,7 @@ namespace MeshIO.FBX.Converters
 			FbxNode node = new FbxNode("LayerElementMaterial", 0);
 			node.Nodes.Add(new FbxNode("Version", 101));
 			buildLayerElement(node, layer);
-			node.Nodes.Add(new FbxNode("Materials", layer.Materials.ToArray()));
+			node.Nodes.Add(new FbxNode("Materials", layer.Indices.ToArray()));
 			return node;
 		}
 
@@ -428,7 +428,7 @@ namespace MeshIO.FBX.Converters
 			node.Nodes.Add(new FbxNode("Version", 101));
 			buildLayerElement(node, layer);
 			node.Nodes.Add(new FbxNode("UV", layer.UV.SelectMany(x => x.GetComponents()).ToArray()));
-			node.Nodes.Add(new FbxNode("UVIndex", layer.UVIndex.ToArray()));
+			node.Nodes.Add(new FbxNode("UVIndex", layer.Indices.ToArray()));
 			return node;
 		}
 
