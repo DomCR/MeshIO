@@ -10,10 +10,13 @@ namespace MeshIO.FBX
 	//P : ["PropName", "PropType", "Label(?)", "Flags", __values__, …]
 	public class FbxProperty : Property
 	{
+		//Model porperties
 		public const string LclTranslation = "Lcl Translation";
 		public const string LclScaling = "Lcl Scaling";
 		public const string LclRotation = "Lcl Rotation";
 
+		//Material Properties
+		public const string AmbientColor = "AmbientColor";
 
 		public string FbxTypeName { get; set; }
 

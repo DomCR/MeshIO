@@ -17,6 +17,7 @@ namespace MeshIO
 		public int Count { get { return _properties.Count; } }
 
 		private readonly Dictionary<string, Property> _properties = new Dictionary<string, Property>();
+
 		private Element _owner;
 
 		public PropertyCollection(Element owner)
@@ -26,7 +27,12 @@ namespace MeshIO
 
 		public void Add(Property property)
 		{
+			if (property.Owner != null)
+				throw new ArgumentException("Property already has an owner", nameof(property));
+
 			_properties.Add(property.Name, property);
+
+			property.Owner = this._owner;
 		}
 
 		public bool Contains(string name)
