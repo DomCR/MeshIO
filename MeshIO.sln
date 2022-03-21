@@ -74,6 +74,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{4B0FFF9E
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Submodules", "Submodules", "{D5A86352-D79D-4308-819A-2C4402CBCE96}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MeshIO.STL", "MeshIO.STL\MeshIO.STL.csproj", "{9EA2BA2C-39BF-451A-A2EF-1AA0B9E2EC7B}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		CSUtilities\CSMath\CSMath.projitems*{3f391f00-a310-4681-be94-15329d662a3d}*SharedItemsImports = 5
@@ -114,6 +116,10 @@ Global
 		{60FE28C0-704E-4C4B-A2CD-929039A16F9E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{60FE28C0-704E-4C4B-A2CD-929039A16F9E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{60FE28C0-704E-4C4B-A2CD-929039A16F9E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9EA2BA2C-39BF-451A-A2EF-1AA0B9E2EC7B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9EA2BA2C-39BF-451A-A2EF-1AA0B9E2EC7B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9EA2BA2C-39BF-451A-A2EF-1AA0B9E2EC7B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9EA2BA2C-39BF-451A-A2EF-1AA0B9E2EC7B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

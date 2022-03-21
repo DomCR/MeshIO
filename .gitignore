@@ -352,6 +352,7 @@ MigrationBackup/
 # Custom folders
 /file_samples
 /Utils
+/samples/fbx/old
 
 # Exceptions
 !MeshIO.OBJ
