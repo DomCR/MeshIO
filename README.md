@@ -1,4 +1,4 @@
-# MeshIO ![Build](https://img.shields.io/github/workflow/status/DomCr/MeshIO/Build&Test/master)
+# MeshIO ![Build](https://github.com/DomCr/MeshIO/actions/workflows/build_n_test.yml/badge.svg) ![License](https://img.shields.io/github/license/DomCr/ACadSharp)
 
 C# 3D library.
 
