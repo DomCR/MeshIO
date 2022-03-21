@@ -7,22 +7,26 @@ namespace MeshIO
 	{
 		public string Name { get; }
 
-		public virtual object Value { get; set; }
+		public object Value { get; set; }
 
 		protected Element _owner;
 
 		public Property(string name, Element owner)
 		{
-			Name = name;
-			_owner = owner;
+			this.Name = name;
+			this._owner = owner;
 		}
+
+		public Property(string name) : this(name, null) { }
+
+		public Property(string name, object value) : this(name, null, value) { }
 
 		public Property(string name, Element owner, object value) : this(name, owner)
 		{
-			Value = value;
+			this.Value = value;
 		}
 
-		public static Property<T> CreateTypedProperty<T>(Property property)
+		public static Property<T> ConvertProperty<T>(Property property)
 		{
 			Property<T> typed = new Property<T>(property.Name, property._owner);
 
@@ -40,6 +44,10 @@ namespace MeshIO
 		public new T Value { get; set; }
 
 		public Property(string name, Element owner) : base(name, owner) { }
+
+		public Property(string name) : base(name, null) { }
+
+		public Property(string name, T value) : base(name, null, value) { }
 
 		public Property(string name, Element owner, T value) : base(name, owner, value) { }
 	}

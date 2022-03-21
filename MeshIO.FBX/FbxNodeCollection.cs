@@ -22,7 +22,7 @@ namespace MeshIO.FBX
 		/// </summary>
 		/// <param name="name"></param>
 		/// <returns>The child node, or null</returns>
-		public FbxNode this[string name] { get { return Nodes.Find(n => n != null && n.Name == name); } }
+		public FbxNode this[string name] { get { return this.Nodes.Find(n => n != null && n.Name == name); } }
 
 		/// <summary>
 		/// Gets a child node, using a '/' separated path
@@ -44,11 +44,26 @@ namespace MeshIO.FBX
 			return n as FbxNode;
 		}
 
+		/// <summary>
+		/// Gets a named child node only if exists
+		/// </summary>
+		/// <param name="name"></param>
+		/// <param name="node"></param>
+		/// <returns></returns>
+		public bool TryGetNode(string name, out FbxNode node)
+		{
+			node = this[name];
+
+			return node != null;
+		}
+
+		/// <inheritdoc/>
 		public IEnumerator<FbxNode> GetEnumerator()
 		{
 			return Nodes.GetEnumerator();
 		}
 
+		/// <inheritdoc/>
 		IEnumerator IEnumerable.GetEnumerator()
 		{
 			return Nodes.GetEnumerator();

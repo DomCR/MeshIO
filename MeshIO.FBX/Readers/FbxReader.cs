@@ -10,7 +10,10 @@ namespace MeshIO.FBX
 	public class FbxReader : ReaderBase, IFbxReader
 	{
 		private Stream _stream;
+
 		private ErrorLevel _errorLevel;
+
+		private FbxRootNode _root;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="FbxReader"/> class for the specified file.
@@ -43,23 +46,25 @@ namespace MeshIO.FBX
 			_errorLevel = errorLevel;
 		}
 
-		/// <summary>
-		/// Read the file into an fbx scene.
-		/// </summary>
-		/// <returns></returns>
+		/// <inheritdoc/>
+		public FbxVersion GetVersion()
+		{
+			_root ??= this.Parse();
+
+			return _root.Version;
+		}
+
+		/// <inheritdoc/>
 		public Scene Read()
 		{
-			FbxRootNode root = this.Parse();
-			INodeConverter converter = NodeConverterBase.GetConverter(root);
-			converter.OnNotification = this.OnNotification;
+			_root ??= this.Parse();
+			INodeConverter converter = NodeConverterBase.GetConverter(_root, this.OnNotification);
 
 			return converter.ConvertScene();
 		}
 
-		/// <summary>
-		/// Parse the document into a node structure.
-		/// </summary>
-		/// <returns></returns>
+
+		/// <inheritdoc/>
 		public FbxRootNode Parse()
 		{
 			IFbxParser parser = null;
@@ -108,18 +113,28 @@ namespace MeshIO.FBX
 			}
 		}
 
-		public static Scene Read(Stream stream, ErrorLevel errorLevel)
+		/// <summary>
+		/// Read fbx file.
+		/// </summary>
+		/// <returns></returns>
+		public static Scene Read(Stream stream, ErrorLevel errorLevel, NotificationHandler notificationHandler = null)
 		{
 			using (FbxReader reader = new FbxReader(stream, errorLevel))
 			{
+				reader.OnNotification = notificationHandler;
 				return reader.Read();
 			}
 		}
 
-		public static FbxRootNode Parse(Stream stream, ErrorLevel errorLevel)
+		/// <summary>
+		/// Parse the document into a node structure.
+		/// </summary>
+		/// <returns></returns>
+		public static FbxRootNode Parse(Stream stream, ErrorLevel errorLevel, NotificationHandler notificationHandler = null)
 		{
 			using (FbxReader reader = new FbxReader(stream, errorLevel))
 			{
+				reader.OnNotification = notificationHandler;
 				return reader.Parse();
 			}
 		}

@@ -14,13 +14,13 @@ namespace MeshIO
 		{
 			get
 			{
-				return new XYZ(_matrix.m30, _matrix.m31, _matrix.m32);
+				return new XYZ(this._matrix.m30, this._matrix.m31, this._matrix.m32);
 			}
 			set
 			{
-				_matrix.m30 = value.X;
-				_matrix.m31 = value.Y;
-				_matrix.m32 = value.Z;
+				this._matrix.m30 = value.X;
+				this._matrix.m31 = value.Y;
+				this._matrix.m32 = value.Z;
 			}
 		}
 
@@ -37,7 +37,7 @@ namespace MeshIO
 			set
 			{
 				if (value.X == 0 || value.Y == 0 || value.Z == 0)
-					throw new ArgumentException();
+					throw new ArgumentException("Scale value cannot be 0");
 
 				double x = new XYZ(this._matrix.m00, this._matrix.m01, this._matrix.m02).GetLength();
 				double y = new XYZ(this._matrix.m10, this._matrix.m11, this._matrix.m12).GetLength();
@@ -52,7 +52,7 @@ namespace MeshIO
 			get { throw new NotImplementedException(); }
 			set
 			{
-				_matrix *= Matrix4.CreateRotationMatrix(value.X, value.Y, value.Z);
+				this._matrix *= Matrix4.CreateRotationMatrix(value.X, value.Y, value.Z);
 			}
 		}
 
@@ -122,12 +122,19 @@ namespace MeshIO
 
 		public Transform()
 		{
-			_matrix = Matrix4.Identity;
-			Translation = XYZ.Zero;
-			Rotation = XYZ.Zero;
-			Quaternion = Quaternion.Identity;
-			Scale = new XYZ(1, 1, 1);
-			_matrix.m33 = 1;
+			this._matrix = Matrix4.Identity;
+			this.Translation = XYZ.Zero;
+			this.Rotation = XYZ.Zero;
+			this.Quaternion = Quaternion.Identity;
+			this.Scale = new XYZ(1, 1, 1);
+			this._matrix.m33 = 1;
+		}
+
+		public Transform(XYZ translation, XYZ scale, XYZ rotation) : this()
+		{
+			this.Translation = translation;
+			this.Scale = scale;
+			this.Rotation = rotation;
 		}
 
 		public Transform(Matrix4 matrix)
@@ -137,12 +144,12 @@ namespace MeshIO
 
 		public XYZ ApplyTransform(XYZ xyz)
 		{
-			return _matrix * xyz;
+			return this._matrix * xyz;
 		}
 
-		public static bool TryDecompose(Transform transform, out XYZ translation, out XYZ scaling, out Quaternion rotation)
+		public bool TryDecompose(out XYZ translation, out XYZ scaling, out Quaternion rotation)
 		{
-			Matrix4 matrix = transform._matrix;
+			Matrix4 matrix = this._matrix;
 
 			translation = new XYZ();
 			scaling = new XYZ();
@@ -152,7 +159,6 @@ namespace MeshIO
 			if (matrix.m33 == 0.0)
 				return false;
 
-			//matrix = matrix.Normalize();
 			Matrix4 matrix4_3 = matrix;
 			matrix4_3.m03 = 0.0;
 			matrix4_3.m13 = 0.0;
@@ -186,8 +192,6 @@ namespace MeshIO
 			  new XYZ(matrix.m10, matrix.m11, matrix.m12),
 			  new XYZ(matrix.m20, matrix.m21, matrix.m22)
 			};
-
-			//List<XYZM> cols = matrix.GetCols();
 
 			scaling.X = cols[0].GetLength();
 			cols[0] = cols[0].Normalize();
@@ -263,6 +267,4 @@ namespace MeshIO
 			return true;
 		}
 	}
-
-
 }
