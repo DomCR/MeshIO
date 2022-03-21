@@ -150,21 +150,21 @@ namespace MeshIO.FBX.Converters
 			element.Name = name;
 		}
 
-		public Dictionary<string, Property> BuildProperties(FbxNode node)
+		public List<Property> BuildProperties(FbxNode node)
 		{
-			Dictionary<string, Property> properties = new Dictionary<string, Property>();
+			List<Property> properties = new List<Property> ();
 
 			foreach (FbxNode n in node.Nodes)
 			{
 				var p = this.BuildProperty(n);
 
-				if (properties.ContainsKey(p.Name))
+				if (properties.Select(p => p.Name).Contains(p.Name))
 				{
 					this.notify($"Duplicated property with name : {p.Name}");
 					continue;
 				}
 
-				properties.Add(p.Name, p);
+				properties.Add(p);
 			}
 
 			return properties;
@@ -249,7 +249,7 @@ namespace MeshIO.FBX.Converters
 		{
 			Node model = new Node();
 
-			Dictionary<string, Property> properties = new Dictionary<string, Property>();
+			List<Property> properties = new List<Property>();
 
 			this.BuildElement(node, model, "Model::");
 
@@ -279,19 +279,22 @@ namespace MeshIO.FBX.Converters
 			}
 
 			//Process the properties
-			foreach (KeyValuePair<string, Property> p in properties)
+			foreach (Property p in properties)
 			{
-				switch (p.Key)
+				switch (p.Name)
 				{
+					case FbxProperty.LclRotation:
+						model.Transform.Rotation = (XYZ)p.Value;
+						continue;
 					case FbxProperty.LclScaling:
-						model.Transform.Scale = (XYZ)p.Value.Value;
+						model.Transform.Scale = (XYZ)p.Value;
 						continue;
 					case FbxProperty.LclTranslation:
-						model.Transform.Translation = (XYZ)p.Value.Value;
+						model.Transform.Translation = (XYZ)p.Value;
 						continue;
 				}
 
-				model.Properties.Add(p.Value);
+				model.Properties.Add(p);
 			}
 
 			//Get the children for this Node
@@ -312,17 +315,25 @@ namespace MeshIO.FBX.Converters
 		{
 			Material material = new Material();
 
+			List<Property> properties = new List<Property>();
+
 			this.BuildElement(node, material, "Material::");
 
 			foreach (FbxNode n in node.Nodes)
 			{
 				switch (n.Name)
 				{
+					case string value when _propertiesRegex.IsMatch(n.Name):
+						properties = this.BuildProperties(n);
+						break;
 					case "ShadingModel":
 						material.ShadingModel = (string)n.Value;
 						break;
 					case "MultiLayer":
 						material.MultiLayer = Convert.ToInt32(n.Value);
+						break;
+					default:
+						this.notify($"Unknow node while building Material:: with name {n.Name}");
 						break;
 				}
 			}
@@ -388,11 +399,8 @@ namespace MeshIO.FBX.Converters
 				case "Mesh":
 					geometry = this.BuildMesh(node);
 					break;
-				case "Line":
-					//TODO: implement line reading
-					break;
 				default:
-					System.Diagnostics.Debug.Fail($"{node.Properties[2]}");
+					this.notify($"Unknow geometry type with name {node.Properties[2]}");
 					break;
 			}
 
@@ -417,6 +425,9 @@ namespace MeshIO.FBX.Converters
 						break;
 					case "Edges":
 						//TODO: implement edges
+						break;
+					default:
+						this.notify($"Unknow node while building Geometry:: with name {n.Name}");
 						break;
 				}
 			}
