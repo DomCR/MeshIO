@@ -1,4 +1,6 @@
-﻿namespace MeshIO.FBX.Converters
+﻿using MeshIO.Core;
+
+namespace MeshIO.FBX.Converters
 {
 	/// <inheritdoc/>
 	/// <remarks>
@@ -6,6 +8,6 @@
 	/// </remarks>
 	public class NodeConverter7400 : NodeConverterBase
 	{
-		public NodeConverter7400(FbxRootNode root) : base(root) { }
+		public NodeConverter7400(FbxRootNode root, NotificationHandler onNotification) : base(root, onNotification) { }
 	}
 }

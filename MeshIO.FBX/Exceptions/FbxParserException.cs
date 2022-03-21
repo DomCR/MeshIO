@@ -13,8 +13,8 @@ namespace MeshIO.FBX.Exceptions
 		/// </summary>
 		/// <param name="position"></param>
 		/// <param name="message"></param>
-		public FbxException(long position, string
-			 message) : base($"{message}, near offset {position}") { }
+		public FbxException(long position, string message)
+			: base($"{message}, near offset {position}") { }
 
 		/// <summary>
 		/// An error in a text file
@@ -22,9 +22,8 @@ namespace MeshIO.FBX.Exceptions
 		/// <param name="line"></param>
 		/// <param name="column"></param>
 		/// <param name="message"></param>
-		public FbxException(int line, int column, string message) :
-			base($"{message}, near line {line} column {column}")
-		{ }
+		public FbxException(int line, int column, string message)
+			: base($"{message}, near line {line} column {column}") { }
 
 		/// <summary>
 		/// An error in a node object

@@ -10,6 +10,9 @@ using System.Threading.Tasks;
 
 namespace MeshIO.FBX.Converters
 {
+	/// <summary>
+	/// Converts a fbx scene to a <see cref="FbxRootNode"/>
+	/// </summary>
 	public abstract class FbxConverterBase : IFbxConverter
 	{
 		public static IFbxConverter GetConverter(Scene scene, FbxVersion version)
@@ -43,7 +46,7 @@ namespace MeshIO.FBX.Converters
 					converter = new FbxConverter7400(scene);
 					break;
 				default:
-					throw new NotImplementedException($"Incompatible version {version}");
+					throw new NotSupportedException($"Incompatible version {version}");
 			}
 
 			//TODO: check the versions differences to implement the missing converters

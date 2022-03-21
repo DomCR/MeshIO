@@ -22,10 +22,17 @@ namespace MeshIO.FBX.Converters
 
 		public FbxVersion Version { get { return this._root.Version; } }
 
+		public FbxNode SectionDocuments { get; set; }
+
+		public FbxNode SectionObjects { get; set; }
+
+		public FbxNode SectionConnections { get; set; }
+
 		protected Dictionary<ulong, FbxNode> _objects = new Dictionary<ulong, FbxNode>();
+
 		protected readonly FbxRootNode _root;
 
-		public static INodeConverter GetConverter(FbxRootNode root)
+		public static INodeConverter GetConverter(FbxRootNode root, NotificationHandler onNotification)
 		{
 			INodeConverter converter = null;
 
@@ -49,12 +56,12 @@ namespace MeshIO.FBX.Converters
 				case FbxVersion.v7200:
 				case FbxVersion.v7300:
 				case FbxVersion.v7400:
-					converter = new NodeConverter7400(root);
+					converter = new NodeConverter7400(root, onNotification);
 					break;
 				case FbxVersion.v7500:
 				case FbxVersion.v7600:
 				case FbxVersion.v7700:
-					converter = new NodeConverter7400(root);
+					converter = new NodeConverter7400(root, onNotification);
 					break;
 				default:
 					throw new Exception($"Unknown fbx version : {root.Version}");
@@ -65,26 +72,37 @@ namespace MeshIO.FBX.Converters
 			return converter;
 		}
 
-		public NodeConverterBase(FbxRootNode root)
+		public NodeConverterBase(FbxRootNode root, NotificationHandler onNotification)
 		{
 			this._root = root;
+			this.OnNotification = onNotification;
 
-			foreach (FbxNode n in this.getObjects().Nodes)
-			{
-				this._objects.Add(Convert.ToUInt64(n.Properties[0]), n);
-			}
+			this.checkFileSections();
 		}
 
 		public Scene ConvertScene()
 		{
-			Scene scene = this.buildScene(this.getDocuments());
+
+			Scene scene = this.buildScene(this.SectionDocuments);
+
+			foreach (FbxNode n in this.SectionObjects.Nodes)
+			{
+				this._objects.Add(Convert.ToUInt64(n.Properties[0]), n);
+			}
 
 			foreach (FbxNode n in this.getChildren(scene._id.Value))
 			{
 				Element element = this.ToElement(n);
 
-				if (element is Node fbxNode)
-					scene.Nodes.Add(fbxNode);
+				switch (element)
+				{
+					case Node fbxNode:
+						scene.Nodes.Add(fbxNode);
+						break;
+					default:
+						this.notify($"Element is not a {typeof(Node).FullName} is a {element.GetType().FullName}");
+						break;
+				}
 			}
 
 			return scene;
@@ -576,6 +594,43 @@ namespace MeshIO.FBX.Converters
 			return layer;
 		}
 
+		protected void checkFileSections()
+		{
+			foreach (var item in this._root)
+			{
+				switch (item.Name)
+				{
+					case "Documents":
+						this.SectionDocuments = this.setRootSection(this.SectionDocuments, item);
+						break;
+					case "Objects":
+						this.SectionObjects = this.setRootSection(this.SectionObjects, item);
+						break;
+					case "Connections":
+						this.SectionConnections = this.setRootSection(this.SectionConnections, item);
+						break;
+					default:
+						this.notify($"Unknown root node with name : {item.Name}");
+						break;
+				}
+			}
+
+			if (this.SectionDocuments == null)
+				throw new FbxConverterException($"Root section not found: Documents");
+			if (this.SectionObjects == null)
+				throw new FbxConverterException($"Root section not found: Objects");
+			if (this.SectionConnections == null)
+				throw new FbxConverterException($"Root section not found: Connections");
+		}
+
+		protected FbxNode setRootSection(FbxNode property, FbxNode node)
+		{
+			if (property != null)
+				throw new FbxConverterException($"Duplicate root node with name: {property.Name}");
+
+			return node;
+		}
+
 		protected double[] arrToDoubleArray(IEnumerable arr)
 		{
 			List<double> converted = new List<double>();
@@ -586,6 +641,7 @@ namespace MeshIO.FBX.Converters
 
 			return converted.ToArray();
 		}
+
 		protected List<XY> arrToXY(double[] arr)
 		{
 			List<XY> xy = new List<XY>();
@@ -595,7 +651,7 @@ namespace MeshIO.FBX.Converters
 				return xy;
 
 			if (arr.Length % 2 != 0)
-				throw new FbxConverterException();
+				throw new FbxConverterException("2D point array with odd length");
 
 			//Create the vertices
 			for (int i = 1; i < arr.Length; i += 2)
@@ -616,7 +672,7 @@ namespace MeshIO.FBX.Converters
 				return xyz;
 
 			if (arr.Length % 3 != 0)
-				throw new FbxConverterException();
+				throw new FbxConverterException("3D point array length is not multiple of 3");
 
 			//Create the vertices
 			for (int i = 2; i < arr.Length; i += 3)
@@ -654,13 +710,10 @@ namespace MeshIO.FBX.Converters
 						//Substract a unit to the last
 						(uint)(Math.Abs(arr[i])) - 1);
 
-					//Set the material for this polygon
-					//if (ElementMaterial != null)
-					//	tmp.MaterialIndex = ElementMaterial.GetMaterialIndex(polygons.Count);
-
 					Polygons.Add(tmp);
 				}
 			}
+
 			//Quads
 			else if (arr[3] < 0)
 			{
@@ -672,10 +725,6 @@ namespace MeshIO.FBX.Converters
 						(uint)Math.Abs(arr[i - 1]),
 						//Substract a unit to the last
 						(uint)Math.Abs(arr[i]) - 1);
-
-					//Set the material for this polygon
-					//if (ElementMaterial != null)
-					//	tmp.MaterialIndex = ElementMaterial.GetMaterialIndex(polygons.Count);
 
 					Polygons.Add(tmp);
 				}
@@ -710,7 +759,7 @@ namespace MeshIO.FBX.Converters
 
 		protected IEnumerable<FbxNode> getChildren(ulong containerId)
 		{
-			foreach (FbxNode c in this.getConnections().Nodes)
+			foreach (FbxNode c in this.SectionConnections.Nodes)
 			{
 				if (Convert.ToUInt64(c.Properties[2]) == containerId)
 				{

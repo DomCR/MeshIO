@@ -57,6 +57,7 @@ namespace MeshIO.FBX
 		{
 			Value = value;
 		}
+
 		public FbxNode(string name, params object[] properties) : this(name)
 		{
 			Properties = new List<object>(properties);

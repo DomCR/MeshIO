@@ -8,10 +8,12 @@ using System.Threading.Tasks;
 
 namespace MeshIO.FBX.Converters
 {
+	/// <summary>
+	/// Converts a <see cref="FbxRootNode"/> into a <see cref="Scene"/>
+	/// </summary>
 	public interface INodeConverter
 	{
 		FbxVersion Version { get; }
-		NotificationHandler OnNotification { get; set; }
 
 		Scene ConvertScene();
 	}

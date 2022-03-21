@@ -58,8 +58,7 @@ namespace MeshIO.FBX
 		public Scene Read()
 		{
 			_root ??= this.Parse();
-			INodeConverter converter = NodeConverterBase.GetConverter(_root);
-			converter.OnNotification = this.OnNotification;
+			INodeConverter converter = NodeConverterBase.GetConverter(_root, this.OnNotification);
 
 			return converter.ConvertScene();
 		}
