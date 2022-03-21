@@ -152,7 +152,7 @@ namespace MeshIO.FBX.Converters
 
 		public List<Property> BuildProperties(FbxNode node)
 		{
-			List<Property> properties = new List<Property> ();
+			List<Property> properties = new List<Property>();
 
 			foreach (FbxNode n in node.Nodes)
 			{
@@ -163,8 +163,6 @@ namespace MeshIO.FBX.Converters
 					this.notify($"Duplicated property with name : {p.Name}");
 					continue;
 				}
-
-				properties.Add(p);
 			}
 
 			return properties;
@@ -338,13 +336,20 @@ namespace MeshIO.FBX.Converters
 				}
 			}
 
-			//Get fbxProperty values
-			if (material.Properties.Contains("AmbientColor"))
+			//Process the properties
+			foreach (Property p in properties)
 			{
-				material.AmbientColor = (Color)(material.Properties["AmbientColor"]?.Value);
-				material.Properties.Remove("AmbientColor");
+				switch (p.Name)
+				{
+					case FbxProperty.AmbientColor:
+						material.AmbientColor = (Color)p.Value;
+						continue;
+				}
+
+				material.Properties.Add(p);
 			}
 
+			//Get fbxProperty values
 			if (material.Properties.Contains("DiffuseColor"))
 			{
 				material.DiffuseColor = (Color)(material.Properties["DiffuseColor"]?.Value);

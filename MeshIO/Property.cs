@@ -9,12 +9,12 @@ namespace MeshIO
 
 		public object Value { get; set; }
 
-		protected Element _owner;
+		public Element Owner { get; internal set; }
 
 		public Property(string name, Element owner)
 		{
 			this.Name = name;
-			this._owner = owner;
+			this.Owner = owner;
 		}
 
 		public Property(string name) : this(name, null) { }
@@ -28,7 +28,7 @@ namespace MeshIO
 
 		public static Property<T> ConvertProperty<T>(Property property)
 		{
-			Property<T> typed = new Property<T>(property.Name, property._owner);
+			Property<T> typed = new Property<T>(property.Name, property.Owner);
 
 			if (!property.Value.GetType().IsEquivalentTo(typeof(T)))
 				throw new ArgumentException($"Value is not equivalent to {typeof(T).FullName}", nameof(property));
