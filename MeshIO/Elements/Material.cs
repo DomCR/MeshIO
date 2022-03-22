@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MeshIO.Elements
 {
-	public class Material : Element
+	public class Material : Element	//TODO: implement material 
 	{
 		public string ShadingModel { get; set; } = "unknown";
 
