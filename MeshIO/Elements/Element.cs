@@ -32,18 +32,17 @@ namespace MeshIO.Elements
 		/// <summary>
 		/// Default constructor
 		/// </summary>
-		public Element() : this(string.Empty)
+		public Element() : this(string.Empty) { }
+
+		public Element(string name)
 		{
+			this.Name = name;
+
 			this.Properties = new PropertyCollection(this);
 
 			this.Id = Guid.NewGuid();
 
 			this._id = Utils.CreateId();
-		}
-
-		public Element(string name)
-		{
-			this.Name = name;
 		}
 
 		/// <inheritdoc/>

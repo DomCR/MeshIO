@@ -1,9 +1,13 @@
-﻿namespace MeshIO.Elements.Geometries.Layers
+﻿using System.Collections.Generic;
+
+namespace MeshIO.Elements.Geometries.Layers
 {
 	public class LayerElementWeight : LayerElement
 	{
-		public LayerElementWeight(Geometry owner) : base(owner)
-		{
-		}
+		public List<double> Weights { get; set; } = new List<double>();
+
+		public LayerElementWeight() : base() { }
+
+		public LayerElementWeight(Geometry owner) : base(owner) { }
 	}
 }

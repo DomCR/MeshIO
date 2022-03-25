@@ -2,8 +2,8 @@
 {
 	public class LayerElementVisibility : LayerElement
 	{
-		public LayerElementVisibility(Geometry owner) : base(owner)
-		{
-		}
+		public LayerElementVisibility() : base() { }
+
+		public LayerElementVisibility(Geometry owner) : base(owner) { }
 	}
 }

@@ -9,7 +9,7 @@ namespace MeshIO.Elements.Geometries
 {
 	public class Mesh : Geometry
 	{
-		public List<XYZ> Vertices { get; set; } = new List<XYZ>();
+		public List<int> Edges { get; set; } = new List<int>();
 
 		public List<Polygon> Polygons { get; set; } = new List<Polygon>();
 

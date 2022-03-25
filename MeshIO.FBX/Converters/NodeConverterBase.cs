@@ -8,6 +8,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -125,9 +126,9 @@ namespace MeshIO.FBX.Converters
 				case "Geometry":
 					element = this.BuildGeometryObject(node);
 					break;
-				case "NodeAttribute":
-					element = this.BuildNodeAttribute(node);
-					break;
+				//case "NodeAttribute":
+				//	element = this.BuildNodeAttribute(node);
+				//	break;
 				//case "Object":
 				//case "ObjectMetaData":  //TODO: Link data with model
 				//	break;
@@ -163,6 +164,8 @@ namespace MeshIO.FBX.Converters
 					this.notify($"Duplicated property with name : {p.Name}");
 					continue;
 				}
+
+				properties.Add(p);
 			}
 
 			return properties;
@@ -255,9 +258,6 @@ namespace MeshIO.FBX.Converters
 			{
 				switch (n.Name)
 				{
-					case string value when _propertiesRegex.IsMatch(n.Name):
-						properties = this.BuildProperties(n);
-						break;
 					case "MultiLayer":
 						model.MultiLayer = (char)n.Value == 'T';
 						break;
@@ -271,7 +271,8 @@ namespace MeshIO.FBX.Converters
 						model.Culling = (string)n.Value;
 						break;
 					default:
-						this.notify($"Unknow node while building Model:: with name {n.Name}");
+						if (!this.isCommonElementField(model, n, properties))
+							this.notify($"Unknow node while building Model:: with name {n.Name}");
 						break;
 				}
 			}
@@ -321,7 +322,7 @@ namespace MeshIO.FBX.Converters
 			{
 				switch (n.Name)
 				{
-					case string value when _propertiesRegex.IsMatch(n.Name):
+					case string value when this._propertiesRegex.IsMatch(n.Name):
 						properties = this.BuildProperties(n);
 						break;
 					case "ShadingModel":
@@ -416,6 +417,8 @@ namespace MeshIO.FBX.Converters
 		{
 			Mesh mesh = new Mesh();
 
+			List<Property> properties = new List<Property>();
+
 			this.BuildElement(node, mesh, "Geometry::");
 
 			foreach (FbxNode n in node)
@@ -425,19 +428,24 @@ namespace MeshIO.FBX.Converters
 					case "Vertices":
 						mesh.Vertices = this.arrToXYZ(n.Value as double[]);
 						break;
+					case "Edges":
+						mesh.Edges.AddRange(this.toArr<int>(n.Value as IEnumerable));
+						break;
 					case "PolygonVertexIndex":
 						mesh.Polygons = this.buildPolygons(n.Value as int[]);
 						break;
-					case "Edges":
-						//TODO: implement edges
-						break;
 					default:
-						this.notify($"Unknow node while building Geometry:: with name {n.Name}");
+						if (!this.isCommonGeometryField(mesh, n, properties))
+							this.notify($"Unknow node while building Geometry:: with name {n.Name}");
 						break;
 				}
 			}
 
-			this.BuildLayers(node, mesh);
+			//Process the properties
+			foreach (Property p in properties)
+			{
+				mesh.Properties.Add(p);
+			}
 
 			return mesh;
 		}
@@ -448,89 +456,17 @@ namespace MeshIO.FBX.Converters
 			{
 				case "Camera":
 				case "Light":
-					break;
 				default:
-					System.Diagnostics.Debug.Fail($"{node.Properties[2]}");
+					this.notify($"Unknow node while building NodeAttribute with name {node.Properties[2].ToString()}");
 					break;
 			}
 
 			return null;
 		}
 
-		public void BuildLayers(FbxNode node, Geometry geometry)
+		public LayerElement BuildLayerElementNormal(FbxNode node)
 		{
-			if (!node.Select(n => n.Name).Contains("Layer"))
-				return;
-
-			foreach (FbxNode n in node["Layer"])
-			{
-				if (n.Name != "LayerElement")
-					continue;
-
-				switch (n["Type"].Value)
-				{
-					case "LayerElementNormal":
-						geometry.Layers.Add(this.BuildElementLayerNormal(node[n["Type"].Value.ToString()], geometry));
-						break;
-					case "LayerElementBinormal":
-						geometry.Layers.Add(this.BuildElementLayerBinormal(node[n["Type"].Value.ToString()], geometry));
-						break;
-					case "LayerElementTangent":
-						geometry.Layers.Add(this.BuildElementLayerTangent(node[n["Type"].Value.ToString()], geometry));
-						break;
-					case "LayerElementMaterial":
-						geometry.Layers.Add(this.BuildLayerElementMaterial(node[n["Type"].Value.ToString()], geometry));
-						break;
-					case "LayerElementSmoothing":
-						//geometry.Layers.Add(BuildLayerElementSmoothing(node[n["Type"].Value.ToString()]));
-						break;
-					case "LayerElementUV":
-						geometry.Layers.Add(this.BuildLayerElementUV(node[n["Type"].Value.ToString()], geometry));
-						break;
-					case "LayerElementUserData":
-						break;
-					default:
-						System.Diagnostics.Debug.Fail($"{n["Type"].Value}");
-						break;
-				}
-			}
-		}
-
-		public void BuildLayer(FbxNode node, LayerElement layer)
-		{
-			foreach (FbxNode n in node)
-			{
-				switch (n.Name)
-				{
-					case "Name":
-						layer.Name = (string)n.Value;
-						break;
-					case "MappingInformationType":
-#if NET48
-						layer.MappingInformationType = (MappingMode)Enum.Parse(typeof(MappingMode), (string)n.Value);
-#else
-						layer.MappingInformationType = Enum.Parse<MappingMode>((string)n.Value);
-#endif
-						break;
-					case "ReferenceInformationType":
-#if NET48
-						layer.ReferenceInformationType = (ReferenceMode)Enum.Parse(typeof(ReferenceMode), (string)n.Value);
-#else
-						layer.ReferenceInformationType = Enum.Parse<ReferenceMode>((string)n.Value);
-#endif
-
-						break;
-					default:
-						break;
-				}
-			}
-		}
-
-		public LayerElement BuildElementLayerNormal(FbxNode node, Geometry geometry)
-		{
-			LayerElementNormal layer = new LayerElementNormal(geometry);
-
-			this.BuildLayer(node, layer);
+			LayerElementNormal layer = new LayerElementNormal();
 
 			foreach (FbxNode n in node)
 			{
@@ -540,9 +476,11 @@ namespace MeshIO.FBX.Converters
 						layer.Normals = this.arrToXYZ(this.arrToDoubleArray(n.Value as IEnumerable));
 						break;
 					case "NormalsW":
-						//TODO: implement NormalsW
+						layer.Weights.AddRange(this.arrToDoubleArray(n.Value as IEnumerable));
 						break;
 					default:
+						if (!this.isCommonLayerField(layer, n))
+							this.notify($"Unknow node while building LayerElement with name {n.Name}");
 						break;
 				}
 			}
@@ -550,23 +488,23 @@ namespace MeshIO.FBX.Converters
 			return layer;
 		}
 
-		public LayerElement BuildElementLayerBinormal(FbxNode node, Geometry geometry)
+		public LayerElement BuildLayerElementBinormal(FbxNode node)
 		{
-			LayerElementBinormal layer = new LayerElementBinormal(geometry);
-
-			this.BuildLayer(node, layer);
+			LayerElementBinormal layer = new LayerElementBinormal();
 
 			foreach (FbxNode n in node)
 			{
 				switch (n.Name)
 				{
 					case "Binormals":
-						layer.BiNormals = this.arrToXYZ(this.arrToDoubleArray(n.Value as IEnumerable));
+						layer.Normals = this.arrToXYZ(this.arrToDoubleArray(n.Value as IEnumerable));
 						break;
 					case "BinormalsW":
-						//TODO: implement NormalsW
+						layer.Weights.AddRange(this.arrToDoubleArray(n.Value as IEnumerable));
 						break;
 					default:
+						if (!this.isCommonLayerField(layer, n))
+							this.notify($"Unknow node while building LayerElement with name {n.Name}");
 						break;
 				}
 			}
@@ -574,11 +512,9 @@ namespace MeshIO.FBX.Converters
 			return layer;
 		}
 
-		public LayerElement BuildElementLayerTangent(FbxNode node, Geometry geometry)
+		public LayerElement BuildLayerElementTangent(FbxNode node)
 		{
-			LayerElementTangent layer = new LayerElementTangent(geometry);
-
-			this.BuildLayer(node, layer);
+			LayerElementTangent layer = new LayerElementTangent();
 
 			foreach (FbxNode n in node)
 			{
@@ -588,9 +524,11 @@ namespace MeshIO.FBX.Converters
 						layer.Tangents = this.arrToXYZ(this.arrToDoubleArray(n.Value as IEnumerable));
 						break;
 					case "TangentsW":
-						//TODO: implement NormalsW
+						layer.Weights.AddRange(this.arrToDoubleArray(n.Value as IEnumerable));
 						break;
 					default:
+						if (!this.isCommonLayerField(layer, n))
+							this.notify($"Unknow node while building LayerElement with name {n.Name}");
 						break;
 				}
 			}
@@ -598,11 +536,9 @@ namespace MeshIO.FBX.Converters
 			return layer;
 		}
 
-		public LayerElement BuildLayerElementUV(FbxNode node, Geometry geometry)
+		public LayerElement BuildLayerElementUV(FbxNode node)
 		{
-			LayerElementUV layer = new LayerElementUV(geometry);
-
-			this.BuildLayer(node, layer);
+			LayerElementUV layer = new LayerElementUV();
 
 			foreach (FbxNode n in node)
 			{
@@ -615,6 +551,8 @@ namespace MeshIO.FBX.Converters
 						layer.Indices.AddRange(this.toArr<int>(n.Value as IEnumerable));
 						break;
 					default:
+						if (!this.isCommonLayerField(layer, n))
+							this.notify($"Unknow node while building LayerElement with name {n.Name}");
 						break;
 				}
 			}
@@ -622,11 +560,9 @@ namespace MeshIO.FBX.Converters
 			return layer;
 		}
 
-		public LayerElement BuildLayerElementMaterial(FbxNode node, Geometry geometry)
+		public LayerElement BuildLayerElementMaterial(FbxNode node)
 		{
-			LayerElementMaterial layer = new LayerElementMaterial(geometry);
-
-			this.BuildLayer(node, layer);
+			LayerElementMaterial layer = new LayerElementMaterial();
 
 			foreach (FbxNode n in node)
 			{
@@ -636,6 +572,8 @@ namespace MeshIO.FBX.Converters
 						layer.Indices.AddRange(this.toArr<int>(n.Value as IEnumerable));
 						break;
 					default:
+						if (!this.isCommonLayerField(layer, n))
+							this.notify($"Unknow node while building LayerElement with name {n.Name}");
 						break;
 				}
 			}
@@ -782,30 +720,6 @@ namespace MeshIO.FBX.Converters
 			return Polygons;
 		}
 
-		protected FbxNode getDocuments()
-		{
-			return this._root["Documents"];
-		}
-
-		protected FbxNode getConnections()
-		{
-			return this._root["Connections"];
-		}
-
-		protected FbxNode getObjects()
-		{
-			return this._root["Objects"];
-		}
-
-		protected Scene buildScene(FbxNode documents)
-		{
-			Scene scene = new Scene();
-
-			scene._id = 0;
-
-			return scene;
-		}
-
 		protected IEnumerable<FbxNode> getChildren(ulong containerId)
 		{
 			foreach (FbxNode c in this.SectionConnections.Nodes)
@@ -832,9 +746,104 @@ namespace MeshIO.FBX.Converters
 			}
 		}
 
-		protected void notify(string message)
+		private bool isCommonElementField(Element element, FbxNode node, List<Property> properties)
 		{
-			this.OnNotification?.Invoke(new NotificationArgs(message));
+			switch (node.Name)
+			{
+				case "Version":
+				case "GeometryVersion":
+					return true;
+				default:
+					return this.isPropertiesField(node, properties);
+			}
+		}
+
+		private bool isCommonGeometryField(Geometry geometry, FbxNode node, List<Property> properties)
+		{
+			switch (node.Name)
+			{
+				case "LayerElementNormal":
+					geometry.Layers.Add(this.BuildLayerElementNormal(node));
+					return true;
+				case "LayerElementBinormal":
+					geometry.Layers.Add(this.BuildLayerElementBinormal(node));
+					return true;
+				case "LayerElementTangent":
+					geometry.Layers.Add(this.BuildLayerElementTangent(node));
+					return true;
+				case "LayerElementMaterial":
+					geometry.Layers.Add(this.BuildLayerElementMaterial(node));
+					return true;
+				case "LayerElementUV":
+					geometry.Layers.Add(this.BuildLayerElementUV(node));
+					return true;
+				case "LayerElementSmoothing":
+				//geometry.Layers.Add(this.BuildLayerElementSmoothing(node));
+				//return true;
+				default:
+					return this.isCommonElementField(geometry, node, properties);
+			}
+		}
+
+		private bool isCommonLayerField(LayerElement layer, FbxNode node)
+		{
+			switch (node.Name)
+			{
+				case "Version":
+					return true;
+				case "Name":
+					layer.Name = node.Value as string;
+					return true;
+				case "MappingInformationType":
+					if (Enum.TryParse<MappingMode>((string)node.Value, out MappingMode mappingMode))
+					{
+						layer.MappingMode = mappingMode;
+					}
+					else
+					{
+						this.notify("Could not parse MappingMode");
+					}
+					return true;
+				case "ReferenceInformationType":
+					if (Enum.TryParse<ReferenceMode>((string)node.Value, out ReferenceMode referenceMode))
+					{
+						layer.ReferenceMode = referenceMode;
+					}
+					else
+					{
+						this.notify("Could not parse MappingMode");
+					}
+					return true;
+				default:
+					return false;
+			}
+		}
+
+		private bool isPropertiesField(FbxNode node, List<Property> properties)
+		{
+			if (this._propertiesRegex.IsMatch(node.Name))
+			{
+				properties.AddRange(this.BuildProperties(node));
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+		private Scene buildScene(FbxNode documents)
+		{
+			Scene scene = new Scene();
+
+			scene._id = 0;
+
+			return scene;
+		}
+
+		private void notify(string message, [CallerMemberName] string caller = null)
+		{
+			this.OnNotification?.Invoke(new NotificationArgs($"{caller} | {message}"));
 		}
 	}
 }

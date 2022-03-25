@@ -394,8 +394,8 @@ namespace MeshIO.FBX.Converters
 		public void buildLayerElement(FbxNode node, LayerElement layer)
 		{
 			node.Nodes.Add(new FbxNode("Name", layer.Name));
-			node.Nodes.Add(new FbxNode("MappingInformationType", layer.MappingInformationType.ToString()));
-			node.Nodes.Add(new FbxNode("ReferenceInformationType", layer.ReferenceInformationType.ToString()));
+			node.Nodes.Add(new FbxNode("MappingInformationType", layer.MappingMode.ToString()));
+			node.Nodes.Add(new FbxNode("ReferenceInformationType", layer.ReferenceMode.ToString()));
 		}
 
 		public FbxNode buildLayerElementMaterial(LayerElementMaterial layer)
@@ -421,7 +421,7 @@ namespace MeshIO.FBX.Converters
 			FbxNode node = new FbxNode("LayerElementBinormal", 0);
 			node.Nodes.Add(new FbxNode("Version", 101));
 			buildLayerElement(node, layer);
-			node.Nodes.Add(new FbxNode("BiNormals", layer.BiNormals.SelectMany(x => x.GetComponents()).ToArray()));
+			node.Nodes.Add(new FbxNode("BiNormals", layer.Normals.SelectMany(x => x.GetComponents()).ToArray()));
 			return node;
 		}
 

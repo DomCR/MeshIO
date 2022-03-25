@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace MeshIO.FBX
 {
@@ -61,6 +62,11 @@ namespace MeshIO.FBX
 		public FbxNode(string name, params object[] properties) : this(name)
 		{
 			Properties = new List<object>(properties);
+		}
+
+		public T GetValueAs<T>()
+		{
+			throw new NotImplementedException();
 		}
 
 		public override string ToString()
