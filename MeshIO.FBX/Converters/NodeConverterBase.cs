@@ -322,9 +322,6 @@ namespace MeshIO.FBX.Converters
 			{
 				switch (n.Name)
 				{
-					case string value when this._propertiesRegex.IsMatch(n.Name):
-						properties = this.BuildProperties(n);
-						break;
 					case "ShadingModel":
 						material.ShadingModel = (string)n.Value;
 						break;
@@ -332,7 +329,8 @@ namespace MeshIO.FBX.Converters
 						material.MultiLayer = Convert.ToInt32(n.Value);
 						break;
 					default:
-						this.notify($"Unknow node while building Material:: with name {n.Name}");
+						if (!this.isCommonElementField(material, n, properties))
+							this.notify($"Unknow node while building Material:: with name {n.Name}");
 						break;
 				}
 			}
@@ -545,10 +543,31 @@ namespace MeshIO.FBX.Converters
 				switch (n.Name)
 				{
 					case "UV":
-						layer.UV = this.arrToXY(this.arrToDoubleArray(n.Value as IEnumerable));
+						layer.UV.AddRange(this.arrToXY(this.arrToDoubleArray(n.Value as IEnumerable)));
 						break;
 					case "UVIndex":
 						layer.Indices.AddRange(this.toArr<int>(n.Value as IEnumerable));
+						break;
+					default:
+						if (!this.isCommonLayerField(layer, n))
+							this.notify($"Unknow node while building LayerElement with name {n.Name}");
+						break;
+				}
+			}
+
+			return layer;
+		}
+
+		public LayerElement BuildLayerElementSmoothing(FbxNode node)
+		{
+			LayerElementSmoothing layer = new LayerElementSmoothing();
+
+			foreach (FbxNode n in node)
+			{
+				switch (n.Name)
+				{
+					case "Smoothing":
+						layer.Smoothing.AddRange(this.toArr<int>(n.Value as IEnumerable));
 						break;
 					default:
 						if (!this.isCommonLayerField(layer, n))
@@ -762,6 +781,9 @@ namespace MeshIO.FBX.Converters
 		{
 			switch (node.Name)
 			{
+				case "Layer":
+					//TODO: Process the layer node in the geometry
+					return true;
 				case "LayerElementNormal":
 					geometry.Layers.Add(this.BuildLayerElementNormal(node));
 					return true;
@@ -778,8 +800,8 @@ namespace MeshIO.FBX.Converters
 					geometry.Layers.Add(this.BuildLayerElementUV(node));
 					return true;
 				case "LayerElementSmoothing":
-				//geometry.Layers.Add(this.BuildLayerElementSmoothing(node));
-				//return true;
+					geometry.Layers.Add(this.BuildLayerElementSmoothing(node));
+					return true;
 				default:
 					return this.isCommonElementField(geometry, node, properties);
 			}
