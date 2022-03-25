@@ -5,20 +5,21 @@
     <LangVersion>9.0</LangVersion>
     <Authors>DomCr</Authors>
     <Company>MeshIO</Company>
-    <Version>1.0.1-alpha</Version>
     <PackageId>MeshIO</PackageId>
     <PackageTags>C# 3D</PackageTags>
     <RepositoryUrl>https://github.com/DomCR/MeshIO</RepositoryUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryType>git</RepositoryType>
     <PackageProjectUrl>https://github.com/DomCR/MeshIO</PackageProjectUrl>
-    <Copyright>Copyright (c) 2020 Albert Domenech</Copyright>
+    <Copyright>Copyright (c) 2022 Albert Domenech</Copyright>
     <Description>3D library in pure C# that allows reading and writing in multiple formats.</Description>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <PropertyGroup>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <Version>1.1.0-alpha</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net5.0|AnyCPU'">
@@ -26,5 +27,12 @@
   </PropertyGroup>
 
   <Import Project="..\CSUtilities\CSMath\CSMath.projitems" Label="Shared" />
+
+  <ItemGroup>
+    <None Include="..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
 
 </Project>
