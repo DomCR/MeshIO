@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,9 +8,14 @@ using System.Threading.Tasks;
 namespace MeshIO
 {
 	//TODO: Polygon classes need to be in the geometry namespace
-	public abstract class Polygon
+	public abstract class Polygon : IEnumerable
 	{
 		public abstract int[] ToArray();
+
+		public IEnumerator GetEnumerator()
+		{
+			return this.ToArray().GetEnumerator();
+		}
 	}
 
 	public class Triangle : Polygon
@@ -31,14 +37,14 @@ namespace MeshIO
 		/// <param name="i2"></param>
 		public Triangle(uint i0, uint i1, uint i2)
 		{
-			Index0 = i0;
-			Index1 = i1;
-			Index2 = i2;
+			this.Index0 = i0;
+			this.Index1 = i1;
+			this.Index2 = i2;
 		}
 
 		public override int[] ToArray()
 		{
-			return new int[] { (int)Index0, (int)Index1, (int)Index2 };
+			return new int[] { (int)this.Index0, (int)this.Index1, (int)this.Index2 };
 		}
 	}
 
@@ -59,7 +65,7 @@ namespace MeshIO
 
 		public override int[] ToArray()
 		{
-			return new int[] { (int)Index0, (int)Index1, (int)Index2, (int)Index3 };
+			return new int[] { (int)this.Index0, (int)this.Index1, (int)this.Index2, (int)this.Index3 };
 		}
 	}
 }

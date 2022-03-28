@@ -14,6 +14,12 @@ namespace MeshIO.Elements.Geometries.Layers
 
 		public LayerElementNormal(Geometry owner) : base(owner) { }
 
+		public void Add(XYZ normal, double defaulWheight = 0)
+		{
+			Normals.Add(normal);
+			Weights.Add(defaulWheight);
+		}
+
 		public void CalculateFlatNormals()
 		{
 			if (!(this.Owner is Mesh mesh))
