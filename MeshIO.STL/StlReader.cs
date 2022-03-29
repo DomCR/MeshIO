@@ -10,6 +10,9 @@ using System.Text.RegularExpressions;
 
 namespace MeshIO.STL
 {
+	/// <summary>
+	/// Reader for STL files in ascii or binary
+	/// </summary>
 	public class StlReader : ReaderBase, IDisposable
 	{
 		private StreamIO _stream;
@@ -47,6 +50,10 @@ namespace MeshIO.STL
 			this.OnNotification = onNotification;
 		}
 
+		/// <summary>
+		/// Check the format of the file
+		/// </summary>
+		/// <returns>true if is binary</returns>
 		public bool IsBinary()
 		{
 			this._stream.Position = 0;
@@ -56,6 +63,10 @@ namespace MeshIO.STL
 			return checkStreamLenth(nTriangles);
 		}
 
+		/// <summary>
+		/// Read the STL file
+		/// </summary>
+		/// <returns>mesh defined in the file</returns>
 		public Mesh Read()
 		{
 			this._stream.Position = 0;
