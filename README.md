@@ -11,6 +11,15 @@ Based upon [FBXWriter](https://github.com/hamish-milne/FbxWriter) by [Hamish Mil
 - Read and Write FBX binary files
 - Read and Write FBX ASCII files
 
+# MeshIO.STL
+
+Read a mesh from STL file
+
+**Current features**:
+
+- Read STL binary files
+- Read STL ASCII files
+
 Contributing
 ------------
 
