@@ -1,7 +1,26 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFrameworks>net5.0;net48;netstandard2.1</TargetFrameworks>
+    <LangVersion>9.0</LangVersion>
+    <Authors>DomCr</Authors>
+    <Company>MeshIO</Company>
+    <Version>1.0.0</Version>
+    <PackageId>MeshIO.STL</PackageId>
+    <PackageTags>C# 3D fbx</PackageTags>
+    <RepositoryUrl>https://github.com/DomCR/MeshIO</RepositoryUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RepositoryType>git</RepositoryType>
+    <PackageProjectUrl>https://github.com/DomCR/MeshIO</PackageProjectUrl>
+    <Copyright>Copyright (c) 2022 Albert Domenech</Copyright>
+    <Description>MeshIO module for stl format.</Description>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MeshIO\MeshIO.csproj" />
+  </ItemGroup>
+
+  <Import Project="..\CSUtilities\CSUtilities\CSUtilities.projitems" Label="Shared" />
 
 </Project>
