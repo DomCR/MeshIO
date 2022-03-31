@@ -17,8 +17,8 @@ Read a mesh from STL file
 
 **Current features**:
 
-- Read STL binary files
-- Read STL ASCII files
+- Read and write STL binary files
+- Read and write STL ASCII files
 
 Contributing
 ------------

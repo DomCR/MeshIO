@@ -711,10 +711,10 @@ namespace MeshIO.FBX.Converters
 				for (int i = 2; i < arr.Length; i += 3)
 				{
 					Triangle tmp = new Triangle(
-						(uint)arr[i - 2],
-						(uint)arr[i - 1],
+						arr[i - 2],
+						arr[i - 1],
 						//Substract a unit to the last
-						(uint)(Math.Abs(arr[i])) - 1);
+						(Math.Abs(arr[i])) - 1);
 
 					Polygons.Add(tmp);
 				}
@@ -726,11 +726,11 @@ namespace MeshIO.FBX.Converters
 				for (int i = 3; i < arr.Length; i += 4)
 				{
 					Quad tmp = new Quad(
-						(uint)Math.Abs(arr[i - 3]),
-						(uint)Math.Abs(arr[i - 2]),
-						(uint)Math.Abs(arr[i - 1]),
+						Math.Abs(arr[i - 3]),
+						Math.Abs(arr[i - 2]),
+						Math.Abs(arr[i - 1]),
 						//Substract a unit to the last
-						(uint)Math.Abs(arr[i]) - 1);
+						Math.Abs(arr[i]) - 1);
 
 					Polygons.Add(tmp);
 				}

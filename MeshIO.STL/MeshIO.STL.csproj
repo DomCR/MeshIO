@@ -21,6 +21,6 @@
     <ProjectReference Include="..\MeshIO\MeshIO.csproj" />
   </ItemGroup>
 
-  <Import Project="..\CSUtilities\CSUtilities\CSUtilities.projitems" Label="Shared" />
+  <Import Project="..\..\CSUtilities\CSUtilities\CSUtilities.projitems" Label="Shared" />
 
 </Project>

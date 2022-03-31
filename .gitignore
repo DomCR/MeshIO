@@ -350,6 +350,7 @@ MigrationBackup/
 .ionide/
 
 # Custom folders
+/samples/out
 /file_samples
 /Utils
 /samples/fbx/old
