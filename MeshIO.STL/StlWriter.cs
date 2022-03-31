@@ -18,7 +18,7 @@ namespace MeshIO.STL
 		/// Initializes a new instance of the <see cref="StlWriter"/> class for the specified file.
 		/// </summary>
 		/// <param name="path">The complete file path to write to.</param>
-		public StlWriter(string path, NotificationHandler onNotification = null)
+		public StlWriter(string path)
 		{
 			if (string.IsNullOrEmpty(path))
 				throw new ArgumentNullException(nameof(path));
@@ -30,7 +30,7 @@ namespace MeshIO.STL
 		/// Initializes a new instance of the <see cref="StlWriter"/> class for the specified stream.
 		/// </summary>
 		/// <param name="stream">The stream to write to.</param>
-		public StlWriter(Stream stream, NotificationHandler onNotification = null)
+		public StlWriter(Stream stream)
 		{
 			if (stream == null)
 				throw new ArgumentNullException(nameof(stream));
@@ -52,8 +52,8 @@ namespace MeshIO.STL
 		public void WriteAscii(Mesh mesh)
 		{
 			this.validate(mesh);
-
-			using (TextWriter tw = new StreamWriter(this._stream.Stream, Encoding.UTF8))
+			
+			using (TextWriter tw = new StreamWriter(this._stream.Stream, new UTF8Encoding(false)))
 			{
 				tw.WriteLine($"solid {mesh.Name}");
 
@@ -62,19 +62,19 @@ namespace MeshIO.STL
 				{
 					XYZ normal = normals.Normals[i];
 
-					tw.WriteLine($"\tfacet normal {(float)normal.X} {(float)normal.Y} {(float)normal.Z}");
+					tw.WriteLine($"  facet normal {(float)normal.X} {(float)normal.Y} {(float)normal.Z}");
 
-					tw.WriteLine($"\t\touter loop");
+					tw.WriteLine($"    outer loop");
 
 					foreach (int item in (Triangle)mesh.Polygons[i])
 					{
 						var v = mesh.Vertices[item];
 
-						tw.WriteLine($"\t\t\tvertex {(float)v.X} {(float)v.Y} {(float)v.Z}");
+						tw.WriteLine($"      vertex {(float)v.X} {(float)v.Y} {(float)v.Z}");
 					}
 
-					tw.WriteLine($"\t\tendloop");
-					tw.WriteLine($"\tendfacet");
+					tw.WriteLine($"    endloop");
+					tw.WriteLine($"  endfacet");
 				}
 
 				tw.WriteLine($"endsolid {mesh.Name}");
