@@ -32,9 +32,9 @@ namespace MeshIO.Elements.Geometries
 				this.Vertices.Add(vertices.ElementAt(i + 2));
 
 				this.Polygons.Add(new Triangle(
-					(uint)(this.Vertices.Count - 3),
-					(uint)(this.Vertices.Count - 2),
-					(uint)(this.Vertices.Count - 1)
+						(this.Vertices.Count - 3),
+						(this.Vertices.Count - 2),
+						(this.Vertices.Count - 1)
 					));
 			}
 		}

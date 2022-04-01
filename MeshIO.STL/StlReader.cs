@@ -60,7 +60,7 @@ namespace MeshIO.STL
 			this._stream.ReadString(80);
 			int nTriangles = this._stream.ReadInt<LittleEndianConverter>();
 
-			return checkStreamLenth(nTriangles);
+			return this.checkStreamLenth(nTriangles);
 		}
 
 		/// <summary>
@@ -80,7 +80,7 @@ namespace MeshIO.STL
 
 			int nTriangles = this._stream.ReadInt<LittleEndianConverter>();
 
-			if (checkStreamLenth(nTriangles))
+			if (this.checkStreamLenth(nTriangles))
 			{
 				for (int i = 0; i < nTriangles; i++)
 				{
@@ -109,14 +109,14 @@ namespace MeshIO.STL
 
 				while (!line.Contains($"endsolid {name}"))
 				{
-					XYZ normal = readPoint(line, "facet normal");
+					XYZ normal = this.readPoint(line, "facet normal");
 					normals.Add(normal);
 
 					this.checkLine(this._stream.ReadUntil('\n'), "outer loop");
 
-					XYZ v1 = readPoint(this._stream.ReadUntil('\n'), "vertex");
-					XYZ v2 = readPoint(this._stream.ReadUntil('\n'), "vertex");
-					XYZ v3 = readPoint(this._stream.ReadUntil('\n'), "vertex");
+					XYZ v1 = this.readPoint(this._stream.ReadUntil('\n'), "vertex");
+					XYZ v2 = this.readPoint(this._stream.ReadUntil('\n'), "vertex");
+					XYZ v3 = this.readPoint(this._stream.ReadUntil('\n'), "vertex");
 
 					mesh.AddTriangles(v1, v2, v3);
 
@@ -139,7 +139,7 @@ namespace MeshIO.STL
 		private bool checkStreamLenth(int nTriangles)
 		{
 			//Compare the length of the stream to check if is ascii file
-			return _stream.Length == 84 + nTriangles * 50;
+			return this._stream.Length == 84 + nTriangles * 50;
 		}
 
 		private void checkLine(string line, string match)

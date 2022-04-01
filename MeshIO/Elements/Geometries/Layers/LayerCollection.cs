@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace MeshIO.Elements.Geometries.Layers
 {
@@ -22,6 +23,22 @@ namespace MeshIO.Elements.Geometries.Layers
 
 			layerElement.Owner = this.Owner;
 			this._list.Add(layerElement);
+		}
+
+		public T GetLayer<T>()
+			where T : LayerElement
+		{
+			return this._list.OfType<T>().FirstOrDefault();
+		}
+
+		public bool TryGetLayer<T>(out T layer)
+			where T : LayerElement
+		{
+			layer = this._list.OfType<T>().FirstOrDefault();
+			if (layer != null)
+				return true;
+			else
+				return false;
 		}
 
 		public IEnumerator<LayerElement> GetEnumerator()
