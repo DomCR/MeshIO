@@ -36,7 +36,7 @@ namespace MeshIO.STL.Tests
 		[Fact]
 		public void WriteAsciiTest()
 		{
-			if (Environment.GetEnvironmentVariable("GITHUB_WORKFLOW") == "BUILD_TEST")
+			if (Environment.GetEnvironmentVariable("GITHUB_WORKFLOW") != null)
 			{
 				return;
 			}
@@ -52,7 +52,7 @@ namespace MeshIO.STL.Tests
 		[Fact]
 		public void WriteBinaryTest()
 		{
-			if (Environment.GetEnvironmentVariable("GITHUB_WORKFLOW") == "BUILD_TEST")
+			if (Environment.GetEnvironmentVariable("GITHUB_WORKFLOW") != null)
 			{
 				return;
 			}
