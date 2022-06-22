@@ -15,18 +15,24 @@ namespace MeshIO.Elements.Geometries.Layers
 		/// Name of the layer
 		/// </summary>
 		public string Name { get; set; } = string.Empty;
-		
-		public MappingMode MappingInformationType { get; set; }
-		
-		public ReferenceMode ReferenceInformationType { get; set; }
+
+		public MappingMode MappingMode { get; set; }
+
+		public ReferenceMode ReferenceMode { get; set; }
 
 		public List<int> Indices { get; } = new List<int>();
 
-		protected Geometry _owner;
+		public Geometry Owner { get; set; }
 
-		public LayerElement(Geometry owner)
+		public LayerElement()
 		{
-			this._owner = owner;
+			this.MappingMode = MappingMode.AllSame;
+			this.ReferenceMode = ReferenceMode.IndexToDirect;
+		}
+
+		public LayerElement(Geometry owner) : this()
+		{
+			this.Owner = owner;
 		}
 	}
 }

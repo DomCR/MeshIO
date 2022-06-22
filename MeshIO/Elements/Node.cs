@@ -20,12 +20,7 @@ namespace MeshIO.Elements
 		[Obsolete]
 		public string Culling { get; set; } = "CullingOff";
 
-		public Transform Transform
-		{
-			get;
-			[Obsolete("The transform cannot be set or null")]
-			set;
-		} = new Transform();
+		public Transform Transform { get; internal set; } = new Transform();
 
 		public Node Parent { get; }
 

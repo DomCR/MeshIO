@@ -4,12 +4,11 @@ namespace MeshIO.Elements.Geometries.Layers
 {
 	public class LayerElementMaterial : LayerElement
 	{
+		public LayerElementMaterial() : base() { }
+
 		public LayerElementMaterial(Geometry owner) : base(owner)
 		{
-			this.MappingInformationType = MappingMode.AllSame;
-			this.ReferenceInformationType = ReferenceMode.IndexToDirect;
-
-			this.Indices.Add(0);
+			// this.Indices.Add(0);
 		}
 	}
 }

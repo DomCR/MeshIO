@@ -18,3 +18,4 @@ using System.Runtime.InteropServices;
 [assembly: Guid("9d28a275-f5b7-4403-8af4-b10241584094")]
 
 [assembly: InternalsVisibleTo("MeshIO.FBX")]
+[assembly: InternalsVisibleTo("MeshIO.GLTF")]

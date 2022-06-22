@@ -8,17 +8,27 @@ namespace MeshIO.Elements.Geometries.Layers
 	{
 		public List<XYZ> Normals { get; set; } = new List<XYZ>();
 
+		public List<double> Weights { get; set; } = new List<double>();
+
+		public LayerElementNormal() : base() { }
+
 		public LayerElementNormal(Geometry owner) : base(owner) { }
+
+		public void Add(XYZ normal, double defaulWheight = 0)
+		{
+			Normals.Add(normal);
+			Weights.Add(defaulWheight);
+		}
 
 		public void CalculateFlatNormals()
 		{
-			if (!(_owner is Mesh mesh))
-				return;
+			if (!(this.Owner is Mesh mesh))
+				throw new InvalidOperationException();
 
-			Normals.Clear();
+			this.Normals.Clear();
 
-			MappingInformationType = MappingMode.ByPolygon;
-			ReferenceInformationType = ReferenceMode.Direct;
+			this.MappingMode = MappingMode.ByPolygon;
+			this.ReferenceMode = ReferenceMode.Direct;
 
 			foreach (Polygon item in mesh.Polygons)
 			{
@@ -27,7 +37,7 @@ namespace MeshIO.Elements.Geometries.Layers
 					mesh.Vertices[item.ToArray()[1]],
 					mesh.Vertices[item.ToArray()[2]]);
 
-				Normals.Add(normal.Normalize());
+				this.Normals.Add(normal.Normalize());
 			}
 		}
 	}

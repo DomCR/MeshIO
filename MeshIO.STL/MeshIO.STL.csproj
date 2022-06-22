@@ -1,7 +1,43 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFrameworks>net5.0;net48;netstandard2.1</TargetFrameworks>
+    <LangVersion>9.0</LangVersion>
+    <Authors>DomCr</Authors>
+    <Company>MeshIO</Company>
+    <Version>1.0.0</Version>
+    <PackageId>MeshIO.STL</PackageId>
+    <PackageTags>C# 3D stl</PackageTags>
+    <RepositoryUrl>https://github.com/DomCR/MeshIO</RepositoryUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RepositoryType>git</RepositoryType>
+    <PackageProjectUrl>https://github.com/DomCR/MeshIO</PackageProjectUrl>
+    <Copyright>Copyright (c) 2022 Albert Domenech</Copyright>
+    <Description>MeshIO module for stl format.</Description>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
+
+  <PropertyGroup>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <Version>1.0.0</Version>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net5.0|AnyCPU'">
+    <DocumentationFile>bin\MeshIO.STL.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MeshIO\MeshIO.csproj" />
+  </ItemGroup>
+
+  <Import Project="..\CSUtilities\CSUtilities\CSUtilities.projitems" Label="Shared" />
+
+  <ItemGroup>
+    <None Include="..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
 
 </Project>

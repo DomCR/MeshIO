@@ -1,9 +1,13 @@
-﻿namespace MeshIO.Elements.Geometries.Layers
+﻿using System.Collections.Generic;
+
+namespace MeshIO.Elements.Geometries.Layers
 {
 	public class LayerElementSmoothing : LayerElement
 	{
-		public LayerElementSmoothing(Geometry owner) : base(owner)
-		{
-		}
+		public List<int> Smoothing { get; set; } = new List<int>();
+
+		public LayerElementSmoothing() : base() { }
+
+		public LayerElementSmoothing(Geometry owner) : base(owner) { }
 	}
 }
