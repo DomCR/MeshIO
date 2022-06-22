@@ -7,7 +7,7 @@
     <Company>MeshIO</Company>
     <Version>1.0.0</Version>
     <PackageId>MeshIO.STL</PackageId>
-    <PackageTags>C# 3D fbx</PackageTags>
+    <PackageTags>C# 3D stl</PackageTags>
     <RepositoryUrl>https://github.com/DomCR/MeshIO</RepositoryUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryType>git</RepositoryType>
