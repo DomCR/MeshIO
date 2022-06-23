@@ -12,8 +12,6 @@ namespace MeshIO.Elements.Geometries.Layers
 
 		public LayerElementNormal() : base() { }
 
-		public LayerElementNormal(Geometry owner) : base(owner) { }
-
 		public void Add(XYZ normal, double defaulWheight = 0)
 		{
 			Normals.Add(normal);

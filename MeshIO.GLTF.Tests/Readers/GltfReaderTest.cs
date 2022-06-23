@@ -100,6 +100,8 @@ namespace MeshIO.GLTF.Tests.Readers
 		{
 			using (GltfReader reader = new GltfReader(path))
 			{
+				reader.OnNotification = this.onNotification;
+
 				return reader.Read();
 			}
 		}

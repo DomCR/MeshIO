@@ -2,8 +2,6 @@
 {
 	public class LayerElementHole : LayerElement
 	{
-		public LayerElementHole(Geometry owner) : base(owner)
-		{
-		}
+		public LayerElementHole() : base() { }
 	}
 }

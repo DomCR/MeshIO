@@ -2,8 +2,6 @@
 {
 	public class LayerElementPolygonGroup : LayerElement
 	{
-		public LayerElementPolygonGroup(Geometry owner) : base(owner)
-		{
-		}
+		public LayerElementPolygonGroup() : base() { }
 	}
 }

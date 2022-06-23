@@ -10,7 +10,5 @@ namespace MeshIO.Elements.Geometries.Layers
 		public List<double> Weights { get; set; } = new List<double>();
 
 		public LayerElementTangent() : base() { }
-
-		public LayerElementTangent(Geometry owner) : base(owner) { }
 	}
 }

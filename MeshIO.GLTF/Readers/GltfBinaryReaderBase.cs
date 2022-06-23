@@ -1,5 +1,6 @@
 ﻿using CSMath;
 using CSUtilities.IO;
+using MeshIO.Core;
 using MeshIO.Elements;
 using MeshIO.Elements.Geometries;
 using MeshIO.Elements.Geometries.Layers;
@@ -24,16 +25,26 @@ namespace MeshIO.GLTF
 			}
 		}
 
+		public NotificationHandler OnNotification { get; set; }
+
 		protected readonly Dictionary<int, List<Mesh>> _meshMap = new Dictionary<int, List<Mesh>>();
 		protected readonly Dictionary<int, Material> _materialMap = new Dictionary<int, Material>();
 		protected readonly GltfRoot _root;
 		protected StreamIO _chunk;
 		protected Dictionary<int, StreamIO> _buffers;   //TODO: implement gltf reader for multiple buffers
 
+
 		public GltfBinaryReaderBase(GltfRoot root, byte[] chunk)
 		{
 			this._root = root;
 			this._chunk = new StreamIO(chunk);
+		}
+
+		public Scene Read(NotificationHandler notification)
+		{
+			this.OnNotification = notification;
+
+			return this.Read();
 		}
 
 		public Scene Read()
@@ -43,10 +54,16 @@ namespace MeshIO.GLTF
 
 			foreach (int nodeIndex in rootScene.Nodes)
 			{
-				Node n = readNode(nodeIndex);
+				Node n = this.readNode(nodeIndex);
 
 				if (n != null)
+				{
 					scene.Nodes.Add(n);
+				}
+				else
+				{
+					this.notify($"Null noode found in scene {scene.Name} with index {nodeIndex}");
+				}
 			}
 
 			return scene;
@@ -55,8 +72,8 @@ namespace MeshIO.GLTF
 		/// <inheritdoc/>
 		public void Dispose()
 		{
-			_chunk.Dispose();
-			foreach (var item in _buffers.Values)
+			this._chunk.Dispose();
+			foreach (var item in this._buffers.Values)
 			{
 				item.Dispose();
 			}
@@ -69,12 +86,12 @@ namespace MeshIO.GLTF
 
 			if (gltfNode.Camera.HasValue)
 			{
-				node.Children.Add(readCamera(gltfNode.Camera.Value));
+				node.Children.Add(this.readCamera(gltfNode.Camera.Value));
 			}
 
 			gltfNode.Children?.ToList().ForEach((i) =>
 			{
-				Node n = readNode(i);
+				Node n = this.readNode(i);
 
 				if (n != null)
 					node.Children.Add(n);
@@ -113,7 +130,7 @@ namespace MeshIO.GLTF
 
 			if (gltfNode.Mesh.HasValue)
 			{
-				node.Children.AddRange(readPrimitivesInMesh(gltfNode.Mesh.Value, node));
+				node.Children.AddRange(this.readPrimitivesInMesh(gltfNode.Mesh.Value, node));
 			}
 
 			return node;
@@ -150,7 +167,7 @@ namespace MeshIO.GLTF
 
 			foreach (GltfMeshPrimitive p in gltfMesh.Primitives)
 			{
-				Mesh mesh = readPrimitive(p, out Material material);
+				Mesh mesh = this.readPrimitive(p, out Material material);
 				mesh.Name = gltfMesh.Name;
 				meshes.Add(mesh);
 
@@ -169,7 +186,7 @@ namespace MeshIO.GLTF
 				switch (att.Key)
 				{
 					case "POSITION":
-						mesh.Vertices = readXYZ(_root.Accessors[att.Value]);
+						mesh.Vertices = this.readXYZ(this._root.Accessors[att.Value]);
 						break;
 					case "NORMAL":
 						//TODO: Fix the gltf normal reading
@@ -193,10 +210,10 @@ namespace MeshIO.GLTF
 
 			if (p.Indices.HasValue)
 			{
-				mesh.Polygons.AddRange(readIndices(_root.Accessors[p.Indices.Value], p.Mode));
+				mesh.Polygons.AddRange(this.readIndices(this._root.Accessors[p.Indices.Value], p.Mode));
 
 				//Add missing layers
-				
+
 				//TODO: Fix the gltf normal reading
 				//var normals = new LayerElementNormal(mesh);
 				//normals.CalculateFlatNormals();
@@ -205,8 +222,8 @@ namespace MeshIO.GLTF
 
 			if (p.Material.HasValue)
 			{
-				material = readMaterial(p.Material.Value);
-				mesh.Layers.Add(new LayerElementMaterial(mesh));
+				material = this.readMaterial(p.Material.Value);
+				mesh.Layers.Add<LayerElementMaterial>();
 			}
 			else
 			{
@@ -218,14 +235,14 @@ namespace MeshIO.GLTF
 
 		private Material readMaterial(int index)
 		{
-			if (_materialMap.TryGetValue(index, out Material material))
+			if (this._materialMap.TryGetValue(index, out Material material))
 			{
 				return material;
 			}
 
-			GltfMaterial gltfMaterial = _root.Materials[index];
+			GltfMaterial gltfMaterial = this._root.Materials[index];
 			material = new Material(gltfMaterial.Name);
-			_materialMap.Add(index, material);
+			this._materialMap.Add(index, material);
 
 			//TODO: implement gltf material reader
 			if (gltfMaterial.PbrMetallicRoughness != null)
@@ -251,7 +268,7 @@ namespace MeshIO.GLTF
 			if (accessor.Type != GltfAccessor.TypeEnum.VEC3)
 				throw new Exception();
 
-			return readAccessor<XYZ>(getBufferStream(accessor), accessor.ComponentType, accessor.Count, 3);
+			return this.readAccessor<XYZ>(this.getBufferStream(accessor), accessor.ComponentType, accessor.Count, 3);
 		}
 
 		private IEnumerable<Polygon> readIndices(GltfAccessor accessor, GltfMeshPrimitive.ModeEnum mode)
@@ -259,12 +276,12 @@ namespace MeshIO.GLTF
 			if (!accessor.BufferView.HasValue)
 				return new List<Polygon>();
 
-			StreamIO stream = getBufferStream(accessor);
+			StreamIO stream = this.getBufferStream(accessor);
 
 			switch (mode)
 			{
 				case GltfMeshPrimitive.ModeEnum.TRIANGLES:
-					return readAccessor<Triangle>(stream, accessor.ComponentType, accessor.Count / 3, 3);
+					return this.readAccessor<Triangle>(stream, accessor.ComponentType, accessor.Count / 3, 3);
 				case GltfMeshPrimitive.ModeEnum.POINTS:
 				case GltfMeshPrimitive.ModeEnum.LINES:  //Works with the 3d lines, like polylines and lines
 				case GltfMeshPrimitive.ModeEnum.LINE_LOOP:
@@ -319,13 +336,18 @@ namespace MeshIO.GLTF
 
 		private StreamIO getBufferStream(GltfAccessor accessor)
 		{
-			GltfBufferView bufferView = _root.BufferViews[accessor.BufferView.Value];
-			GltfBuffer buffer = _root.Buffers[bufferView.Buffer];
+			GltfBufferView bufferView = this._root.BufferViews[accessor.BufferView.Value];
+			GltfBuffer buffer = this._root.Buffers[bufferView.Buffer];
 
-			StreamIO stream = new StreamIO(_chunk.GetBytes(0, buffer.ByteLength));
+			StreamIO stream = new StreamIO(this._chunk.GetBytes(0, buffer.ByteLength));
 			stream.Position = bufferView.ByteOffset + accessor.ByteOffset;
 
 			return stream;
+		}
+
+		private void notify(string message)
+		{
+			this.OnNotification?.Invoke(new NotificationArgs(message));
 		}
 	}
 }

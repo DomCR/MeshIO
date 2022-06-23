@@ -22,7 +22,7 @@ namespace MeshIO.Elements.Geometries.Layers
 
 		public List<int> Indices { get; } = new List<int>();
 
-		public Geometry Owner { get; set; }
+		public Geometry Owner { get; internal set; }
 
 		public LayerElement()
 		{
@@ -30,9 +30,9 @@ namespace MeshIO.Elements.Geometries.Layers
 			this.ReferenceMode = ReferenceMode.IndexToDirect;
 		}
 
-		public LayerElement(Geometry owner) : this()
+		public virtual LayerElement Clone()
 		{
-			this.Owner = owner;
+			throw new NotImplementedException();
 		}
 	}
 }

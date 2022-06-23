@@ -87,7 +87,7 @@ namespace MeshIO.GLTF
 			byte[] binChunk = _stream.ReadBytes((int)binChunkLength);
 			_binaryStream = new StreamIO(binChunk);
 
-			return GltfBinaryReaderBase.GetBynaryReader((int)_header.Version, _root, binChunk).Read();
+			return GltfBinaryReaderBase.GetBynaryReader((int)_header.Version, _root, binChunk).Read(this.OnNotification);
 		}
 
 		/// <inheritdoc/>

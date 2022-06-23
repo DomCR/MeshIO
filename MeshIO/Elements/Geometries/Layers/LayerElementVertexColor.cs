@@ -2,8 +2,6 @@
 {
 	public class LayerElementVertexColor : LayerElement
 	{
-		public LayerElementVertexColor(Geometry owner) : base(owner)
-		{
-		}
+		public LayerElementVertexColor() : base() { }
 	}
 }

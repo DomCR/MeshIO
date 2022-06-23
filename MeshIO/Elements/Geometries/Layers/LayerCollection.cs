@@ -16,10 +16,18 @@ namespace MeshIO.Elements.Geometries.Layers
 			this.Owner = geometry;
 		}
 
+		public void Add<T>()
+			where T : LayerElement, new()
+		{
+			T layerElement = new();
+			layerElement.Owner = this.Owner;
+			this._list.Add(layerElement);
+		}
+
 		public void Add(LayerElement layerElement)
 		{
 			if (layerElement.Owner != null)
-				throw new ArgumentException($"The layer element already has an owner {this.Owner.Name}", nameof(layerElement));
+				throw new ArgumentException($"The layer element already has an owner {this.Owner.Name}, use Clone() to add a copy", nameof(layerElement));
 
 			layerElement.Owner = this.Owner;
 			this._list.Add(layerElement);

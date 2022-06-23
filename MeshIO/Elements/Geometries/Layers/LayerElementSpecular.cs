@@ -2,8 +2,6 @@
 {
 	public class LayerElementSpecular : LayerElement
 	{
-		public LayerElementSpecular(Geometry owner) : base(owner)
-		{
-		}
+		public LayerElementSpecular() : base() { }
 	}
 }

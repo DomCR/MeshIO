@@ -2,8 +2,6 @@
 {
 	public class LayerElementUserData : LayerElement
 	{
-		public LayerElementUserData(Geometry owner) : base(owner)
-		{
-		}
+		public LayerElementUserData() : base() { }
 	}
 }

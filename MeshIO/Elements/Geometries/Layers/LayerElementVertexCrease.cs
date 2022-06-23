@@ -2,8 +2,6 @@
 {
 	public class LayerElementVertexCrease : LayerElement
 	{
-		public LayerElementVertexCrease(Geometry owner) : base(owner)
-		{
-		}
+		public LayerElementVertexCrease() : base() { }
 	}
 }
