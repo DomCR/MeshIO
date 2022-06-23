@@ -1,0 +1,17 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:CSUtilities.Wpf.Styles"
+    xmlns:c="clr-namespace:CSUtilities.Wpf.Controls">
+
+    <!--<Style TargetType="{x:Type c:SorterHeaderControl}" x:Key="SorterHeader">
+
+    </Style>
+
+    <Style TargetType="{x:Type c:SorterListView}" x:Key="SorterListView">
+        <Style.Resources>
+            <Style TargetType="{x:Type GridViewColumnHeader}" BasedOn="{StaticResource SorterHeader}" />
+        </Style.Resources>
+    </Style>-->
+    
+</ResourceDictionary>
