@@ -1,5 +1,6 @@
 ﻿using CSUtilities.Converters;
 using CSUtilities.IO;
+using MeshIO.Core;
 using MeshIO.Elements;
 using MeshIO.GLTF.Exceptions;
 using MeshIO.GLTF.Schema;
@@ -10,13 +11,18 @@ using System.IO;
 
 namespace MeshIO.GLTF
 {
-	public class GltfReader : IDisposable
+	public class GltfReader : ReaderBase, IDisposable
 	{
 		private GlbHeader _header;
 		private GltfRoot _root;
-		private readonly StreamIO _stream;
 		private StreamIO _binaryStream;
+		private readonly StreamIO _stream;
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GltfReader"/> class for the specified file
+		/// </summary>
+		/// <param name="path">The complete file path to read to</param>
+		/// <exception cref="ArgumentNullException"></exception>
 		public GltfReader(string path)
 		{
 			if (string.IsNullOrEmpty(path))
@@ -25,6 +31,12 @@ namespace MeshIO.GLTF
 			_stream = new StreamIO(new FileStream(path, FileMode.Open));
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GltfReader"/> class for the specified stream
+		/// </summary>
+		/// <param name="stream">The stream to write to.</param>
+		/// <exception cref="ArgumentNullException"></exception>
+		/// <exception cref="ArgumentException"></exception>
 		public GltfReader(Stream stream)
 		{
 			if (stream == null)
@@ -36,6 +48,11 @@ namespace MeshIO.GLTF
 			_stream = new StreamIO(stream);
 		}
 
+		/// <summary>
+		/// Read gltf file
+		/// </summary>
+		/// <returns></returns>
+		/// <exception cref="GltfReaderException"></exception>
 		public Scene Read()
 		{
 			//The 12-byte header consists of three 4-byte entries:
@@ -73,6 +90,7 @@ namespace MeshIO.GLTF
 			return GltfBinaryReaderBase.GetBynaryReader((int)_header.Version, _root, binChunk).Read();
 		}
 
+		/// <inheritdoc/>
 		public void Dispose()
 		{
 			_stream.Dispose();
