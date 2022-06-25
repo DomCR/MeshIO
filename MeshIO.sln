@@ -83,6 +83,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MeshIO.STL.Tests", "MeshIO.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MeshIO.GLTF.Tests", "MeshIO.GLTF.Tests\MeshIO.GLTF.Tests.csproj", "{E3F96FBD-A530-40C7-A533-B0F2C636FC70}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MeshIO.Integration", "MeshIO.Integration\MeshIO.Integration.csproj", "{9FE68B56-C45B-4AB4-8A16-3F267980F048}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -129,6 +131,10 @@ Global
 		{E3F96FBD-A530-40C7-A533-B0F2C636FC70}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E3F96FBD-A530-40C7-A533-B0F2C636FC70}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E3F96FBD-A530-40C7-A533-B0F2C636FC70}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9FE68B56-C45B-4AB4-8A16-3F267980F048}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9FE68B56-C45B-4AB4-8A16-3F267980F048}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9FE68B56-C45B-4AB4-8A16-3F267980F048}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9FE68B56-C45B-4AB4-8A16-3F267980F048}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -146,14 +152,13 @@ Global
 		{411B6122-5EF6-46DB-A8F2-43E9C1841E4A} = {D5A86352-D79D-4308-819A-2C4402CBCE96}
 		{9C8FFB66-0E53-49E5-88F6-F77F5F70BF95} = {4B0FFF9E-199B-4025-9CD2-0C8CE4ECB4C6}
 		{E3F96FBD-A530-40C7-A533-B0F2C636FC70} = {4B0FFF9E-199B-4025-9CD2-0C8CE4ECB4C6}
+		{9FE68B56-C45B-4AB4-8A16-3F267980F048} = {4B0FFF9E-199B-4025-9CD2-0C8CE4ECB4C6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B96D2DF1-9226-4CEE-BF70-43C8318F59DC}
 	EndGlobalSection
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		CSUtilities\CSMath\CSMath.projitems*{3f391f00-a310-4681-be94-15329d662a3d}*SharedItemsImports = 5
 		CSUtilities\CSMath\CSMath.projitems*{411b6122-5ef6-46db-a8f2-43e9c1841e4a}*SharedItemsImports = 13
-		CSUtilities\CSUtilities\CSUtilities.projitems*{9ea2ba2c-39bf-451a-a2ef-1aa0b9e2ec7b}*SharedItemsImports = 5
 		CSUtilities\CSUtilities\CSUtilities.projitems*{b4ef345d-52b9-47f1-aa2a-b4ae85f62efc}*SharedItemsImports = 13
 		CSUtilities\CSUtilities\CSUtilities.projitems*{d1ea3b08-85cc-4085-baa1-c47040e7e621}*SharedItemsImports = 5
 	EndGlobalSection

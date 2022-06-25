@@ -75,7 +75,7 @@ namespace MeshIO.GLTF
 				throw new GltfReaderException("Chunk type does not match", _stream.Position);
 
 			_root = JsonConvert.DeserializeObject<GltfRoot>(_stream.ReadString((int)jsonChunkLength));
-
+			
 			//Chunk 1 bin
 			uint binChunkLength = _stream.ReadUInt<LittleEndianConverter>();
 			string binChunkType = _stream.ReadString(4);

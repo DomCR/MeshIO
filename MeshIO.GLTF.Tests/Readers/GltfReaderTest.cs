@@ -48,7 +48,6 @@ namespace MeshIO.GLTF.Tests.Readers
 					GlbFiles.Add(glb);
 				}
 
-
 				string draco = Path.Combine(dir, "glTF-Draco", $"{name}.gltf");
 				if (File.Exists(draco))
 				{
