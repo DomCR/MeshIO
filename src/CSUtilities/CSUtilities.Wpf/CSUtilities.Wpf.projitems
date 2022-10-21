@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>e20e9a63-e588-4485-b6cb-c411e2acc3cf</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>CSUtilities.Wpf</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Attributes\NotifyPropertyChangedAttribute.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)BaseValueConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)BaseViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\SorterHeaderControl.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\SorterListView.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)RelayCommand.cs" />
+  </ItemGroup>
+</Project>
