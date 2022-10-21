@@ -61,12 +61,12 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "CSUtilities", "CSUtilities\
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{006DAC54-BEE3-4878-900F-4E698B519501}"
 	ProjectSection(SolutionItems) = preProject
-		.github\FUNDING.yml = .github\FUNDING.yml
+		..\.github\FUNDING.yml = ..\.github\FUNDING.yml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{FF66D7A6-6DCE-41DE-B30F-492988B2DF63}"
 	ProjectSection(SolutionItems) = preProject
-		.github\workflows\build_n_test.yml = .github\workflows\build_n_test.yml
+		..\.github\workflows\build_n_test.yml = ..\.github\workflows\build_n_test.yml
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MeshIO.FBX.Tests", "MeshIO.FBX.Tests\MeshIO.FBX.Tests.csproj", "{60FE28C0-704E-4C4B-A2CD-929039A16F9E}"
