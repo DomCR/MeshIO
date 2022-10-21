@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [ master ]
 
+defaults:
+  run:
+   working-directory: ./src
+
 env:
   GITHUB_WORKFLOW: BUILD_TEST
 
