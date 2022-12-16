@@ -27,14 +27,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MeshIO\MeshIO.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Include="..\README.md">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MeshIO\MeshIO.csproj" />
   </ItemGroup>
 
 </Project>

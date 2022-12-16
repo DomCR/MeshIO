@@ -12,6 +12,7 @@
   <ItemGroup>
     <ProjectReference Include="..\MeshIO.FBX\MeshIO.FBX.csproj" />
     <ProjectReference Include="..\MeshIO.GLTF\MeshIO.GLTF.csproj" />
+    <ProjectReference Include="..\MeshIO\MeshIO.csproj" />
   </ItemGroup>
 
 </Project>
