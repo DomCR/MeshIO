@@ -21,12 +21,6 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "CSMath", "CSUtilities\CSMat
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "CSUtilities", "CSUtilities\CSUtilities\CSUtilities.shproj", "{AD858F2B-04A1-41DD-BB3B-DDE4804CD2E6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MeshIO.FBX.Tests", "Tests\MeshIO.FBX.Tests\MeshIO.FBX.Tests.csproj", "{25B664D9-F79A-4691-AE7C-6D3419B42559}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MeshIO.Tests", "Tests\MeshIO.Tests\MeshIO.Tests.csproj", "{641896D9-EF04-4B03-94B7-C2C695739E7D}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MeshIO.STL.Tests", "Tests\MeshIO.STL.Tests\MeshIO.STL.Tests.csproj", "{CB10843F-F020-4211-A061-9EBC3BBF01CC}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Github Actions", "Github Actions", "{907EB71A-E08D-4483-BC11-B96E1F65BDF6}"
 	ProjectSection(SolutionItems) = preProject
 		..\.github\workflows\build_n_test.yml = ..\.github\workflows\build_n_test.yml
@@ -40,33 +34,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "repo", "repo", "{F37B65A4-9
 		..\README.md = ..\README.md
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FileSamples", "FileSamples", "{3DE9AEB8-4024-4EB6-ACC8-4B91FBE0AC6A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MeshIO.FBX.Tests", "MeshIO.FBX.Tests\MeshIO.FBX.Tests.csproj", "{264D4186-7537-4302-8BE9-1A3B56E6709C}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Fbx", "Fbx", "{9A04E517-0664-42C5-B472-BF733382057A}"
-	ProjectSection(SolutionItems) = preProject
-		Tests\FileSamples\fbx\sample_FBX200611_ascii.fbx = Tests\FileSamples\fbx\sample_FBX200611_ascii.fbx
-		Tests\FileSamples\fbx\sample_FBX200611_binary.fbx = Tests\FileSamples\fbx\sample_FBX200611_binary.fbx
-		Tests\FileSamples\fbx\sample_FBX200900_ascii.fbx = Tests\FileSamples\fbx\sample_FBX200900_ascii.fbx
-		Tests\FileSamples\fbx\sample_FBX200900_binary.fbx = Tests\FileSamples\fbx\sample_FBX200900_binary.fbx
-		Tests\FileSamples\fbx\sample_FBX201000_ascii.fbx = Tests\FileSamples\fbx\sample_FBX201000_ascii.fbx
-		Tests\FileSamples\fbx\sample_FBX201000_binary.fbx = Tests\FileSamples\fbx\sample_FBX201000_binary.fbx
-		Tests\FileSamples\fbx\sample_FBX201100_ascii.fbx = Tests\FileSamples\fbx\sample_FBX201100_ascii.fbx
-		Tests\FileSamples\fbx\sample_FBX201100_binary.fbx = Tests\FileSamples\fbx\sample_FBX201100_binary.fbx
-		Tests\FileSamples\fbx\sample_FBX201200_ascii.fbx = Tests\FileSamples\fbx\sample_FBX201200_ascii.fbx
-		Tests\FileSamples\fbx\sample_FBX201200_binary.fbx = Tests\FileSamples\fbx\sample_FBX201200_binary.fbx
-		Tests\FileSamples\fbx\sample_FBX201300_ascii.fbx = Tests\FileSamples\fbx\sample_FBX201300_ascii.fbx
-		Tests\FileSamples\fbx\sample_FBX201300_binary.fbx = Tests\FileSamples\fbx\sample_FBX201300_binary.fbx
-		Tests\FileSamples\fbx\sample_FBX201400_ascii.fbx = Tests\FileSamples\fbx\sample_FBX201400_ascii.fbx
-		Tests\FileSamples\fbx\sample_FBX201400_binary.fbx = Tests\FileSamples\fbx\sample_FBX201400_binary.fbx
-		Tests\FileSamples\fbx\sample_FBX201600_ascii.fbx = Tests\FileSamples\fbx\sample_FBX201600_ascii.fbx
-		Tests\FileSamples\fbx\sample_FBX201600_binary.fbx = Tests\FileSamples\fbx\sample_FBX201600_binary.fbx
-		Tests\FileSamples\fbx\sample_FBX201800_ascii.fbx = Tests\FileSamples\fbx\sample_FBX201800_ascii.fbx
-		Tests\FileSamples\fbx\sample_FBX201800_binary.fbx = Tests\FileSamples\fbx\sample_FBX201800_binary.fbx
-		Tests\FileSamples\fbx\sample_FBX201900_ascii.fbx = Tests\FileSamples\fbx\sample_FBX201900_ascii.fbx
-		Tests\FileSamples\fbx\sample_FBX201900_binary.fbx = Tests\FileSamples\fbx\sample_FBX201900_binary.fbx
-		Tests\FileSamples\fbx\sample_FBX202000_ascii.fbx = Tests\FileSamples\fbx\sample_FBX202000_ascii.fbx
-		Tests\FileSamples\fbx\sample_FBX202000_binary.fbx = Tests\FileSamples\fbx\sample_FBX202000_binary.fbx
-	EndProjectSection
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MeshIO.STL.Tests", "MeshIO.STL.Tests\MeshIO.STL.Tests.csproj", "{2A24034A-98C3-49C2-8175-48F03FE53081}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MeshIO.Tests", "MeshIO.Tests\MeshIO.Tests.csproj", "{94C45D19-8231-437F-AB4D-02FA072A923C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -94,18 +66,18 @@ Global
 		{9EA2BA2C-39BF-451A-A2EF-1AA0B9E2EC7B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9EA2BA2C-39BF-451A-A2EF-1AA0B9E2EC7B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9EA2BA2C-39BF-451A-A2EF-1AA0B9E2EC7B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{25B664D9-F79A-4691-AE7C-6D3419B42559}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{25B664D9-F79A-4691-AE7C-6D3419B42559}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{25B664D9-F79A-4691-AE7C-6D3419B42559}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{25B664D9-F79A-4691-AE7C-6D3419B42559}.Release|Any CPU.Build.0 = Release|Any CPU
-		{641896D9-EF04-4B03-94B7-C2C695739E7D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{641896D9-EF04-4B03-94B7-C2C695739E7D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{641896D9-EF04-4B03-94B7-C2C695739E7D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{641896D9-EF04-4B03-94B7-C2C695739E7D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CB10843F-F020-4211-A061-9EBC3BBF01CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CB10843F-F020-4211-A061-9EBC3BBF01CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CB10843F-F020-4211-A061-9EBC3BBF01CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CB10843F-F020-4211-A061-9EBC3BBF01CC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{264D4186-7537-4302-8BE9-1A3B56E6709C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{264D4186-7537-4302-8BE9-1A3B56E6709C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{264D4186-7537-4302-8BE9-1A3B56E6709C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{264D4186-7537-4302-8BE9-1A3B56E6709C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2A24034A-98C3-49C2-8175-48F03FE53081}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2A24034A-98C3-49C2-8175-48F03FE53081}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2A24034A-98C3-49C2-8175-48F03FE53081}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2A24034A-98C3-49C2-8175-48F03FE53081}.Release|Any CPU.Build.0 = Release|Any CPU
+		{94C45D19-8231-437F-AB4D-02FA072A923C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{94C45D19-8231-437F-AB4D-02FA072A923C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{94C45D19-8231-437F-AB4D-02FA072A923C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{94C45D19-8231-437F-AB4D-02FA072A923C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -113,12 +85,10 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{411B6122-5EF6-46DB-A8F2-43E9C1841E4A} = {D5A86352-D79D-4308-819A-2C4402CBCE96}
 		{AD858F2B-04A1-41DD-BB3B-DDE4804CD2E6} = {D5A86352-D79D-4308-819A-2C4402CBCE96}
-		{25B664D9-F79A-4691-AE7C-6D3419B42559} = {4B0FFF9E-199B-4025-9CD2-0C8CE4ECB4C6}
-		{641896D9-EF04-4B03-94B7-C2C695739E7D} = {4B0FFF9E-199B-4025-9CD2-0C8CE4ECB4C6}
-		{CB10843F-F020-4211-A061-9EBC3BBF01CC} = {4B0FFF9E-199B-4025-9CD2-0C8CE4ECB4C6}
 		{907EB71A-E08D-4483-BC11-B96E1F65BDF6} = {F37B65A4-9A24-41EA-9A72-D3439074C3D2}
-		{3DE9AEB8-4024-4EB6-ACC8-4B91FBE0AC6A} = {4B0FFF9E-199B-4025-9CD2-0C8CE4ECB4C6}
-		{9A04E517-0664-42C5-B472-BF733382057A} = {3DE9AEB8-4024-4EB6-ACC8-4B91FBE0AC6A}
+		{264D4186-7537-4302-8BE9-1A3B56E6709C} = {4B0FFF9E-199B-4025-9CD2-0C8CE4ECB4C6}
+		{2A24034A-98C3-49C2-8175-48F03FE53081} = {4B0FFF9E-199B-4025-9CD2-0C8CE4ECB4C6}
+		{94C45D19-8231-437F-AB4D-02FA072A923C} = {4B0FFF9E-199B-4025-9CD2-0C8CE4ECB4C6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B96D2DF1-9226-4CEE-BF70-43C8318F59DC}

@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\MeshIO.FBX\MeshIO.FBX.csproj" />
+    <ProjectReference Include="..\MeshIO.FBX\MeshIO.FBX.csproj" />
   </ItemGroup>
 
 </Project>
