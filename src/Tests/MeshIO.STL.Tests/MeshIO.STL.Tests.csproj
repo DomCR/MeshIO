@@ -20,8 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MeshIO.STL\MeshIO.STL.csproj" />
-    <ProjectReference Include="..\MeshIO\MeshIO.csproj" />
+    <ProjectReference Include="..\..\MeshIO.STL\MeshIO.STL.csproj" />
   </ItemGroup>
 
 </Project>
