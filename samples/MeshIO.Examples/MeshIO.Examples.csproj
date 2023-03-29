@@ -10,8 +10,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MeshIO.FBX\MeshIO.FBX.csproj" />
-    <ProjectReference Include="..\MeshIO.GLTF\MeshIO.GLTF.csproj" />
+    <ProjectReference Include="..\..\src\MeshIO.FBX\MeshIO.FBX.csproj" />
+    <ProjectReference Include="..\..\src\MeshIO.GLTF\MeshIO.GLTF.csproj" />
+    <ProjectReference Include="..\..\src\MeshIO.OBJ\MeshIO.OBJ.csproj" />
+    <ProjectReference Include="..\..\src\MeshIO.STL\MeshIO.STL.csproj" />
   </ItemGroup>
 
 </Project>
