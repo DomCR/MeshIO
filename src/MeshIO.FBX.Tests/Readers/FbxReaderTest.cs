@@ -13,7 +13,7 @@ namespace MeshIO.FBX.Tests.Readers
 {
 	public class FbxReaderTest
 	{
-		private const string _samplesFolder = "../../../../samples/fbx";
+		private const string _samplesFolder = "../../../../Tests/FileSamples/fbx";
 
 		public static readonly TheoryData<string> AsciiFiles;
 

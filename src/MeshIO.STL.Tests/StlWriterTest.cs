@@ -13,7 +13,7 @@ namespace MeshIO.STL.Tests
 {
 	public class StlWriterTest
 	{
-		private const string _samplesFolder = "../../../../samples/out";
+		private const string _samplesFolder = "../../../../Tests/out/stl";
 
 		private static readonly Mesh _mesh;
 

@@ -14,7 +14,7 @@ namespace MeshIO.STL.Tests
 {
 	public class StlReaderTest
 	{
-		private const string _samplesFolder = "../../../../samples/stl";
+		private const string _samplesFolder = "../../../../Tests/FileSamples/stl";
 
 		public static readonly TheoryData<string> AsciiFiles;
 
