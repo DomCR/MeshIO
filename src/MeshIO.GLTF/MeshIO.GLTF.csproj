@@ -5,39 +5,43 @@
     <LangVersion>9.0</LangVersion>
     <Authors>DomCr</Authors>
     <Company>MeshIO</Company>
-    <Version>1.0.0</Version>
-    <PackageId>MeshIO.STL</PackageId>
-    <PackageTags>C# 3D stl</PackageTags>
+    <PackageId>MeshIO.GLTF</PackageId>
+    <PackageTags>C# 3D glb gltf</PackageTags>
     <RepositoryUrl>https://github.com/DomCR/MeshIO</RepositoryUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryType>git</RepositoryType>
     <PackageProjectUrl>https://github.com/DomCR/MeshIO</PackageProjectUrl>
     <Copyright>Copyright (c) 2022 Albert Domenech</Copyright>
-    <Description>MeshIO module for stl format.</Description>
+    <Description>MeshIO module for glb-gltf format.</Description>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <PropertyGroup>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <Version>1.0.0</Version>
+    <Version>1.0.0-alpha</Version>
   </PropertyGroup>
 
+
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net5.0|AnyCPU'">
-    <DocumentationFile>bin\MeshIO.STL.xml</DocumentationFile>
+    <DocumentationFile>bin\MeshIO.FBX.xml</DocumentationFile>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\MeshIO\MeshIO.csproj" />
   </ItemGroup>
 
-  <Import Project="..\CSUtilities\CSUtilities\CSUtilities.projitems" Label="Shared" />
-
   <ItemGroup>
-    <None Include="..\README.md">
+    <None Include="..\..\README.md">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
   </ItemGroup>
+
+  <Import Project="..\CSUtilities\CSUtilities\CSUtilities.projitems" Label="Shared" />
 
 </Project>

@@ -57,8 +57,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "obj", "obj", "{590110F8-095
 		file_samples\obj\teapot.obj = file_samples\obj\teapot.obj
 	EndProjectSection
 EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "CSUtilities", "CSUtilities\CSUtilities\CSUtilities.shproj", "{B4EF345D-52B9-47F1-AA2A-B4AE85F62EFC}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{006DAC54-BEE3-4878-900F-4E698B519501}"
 	ProjectSection(SolutionItems) = preProject
 		.github\FUNDING.yml = .github\FUNDING.yml
@@ -71,8 +69,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MeshIO.FBX.Tests", "MeshIO.FBX.Tests\MeshIO.FBX.Tests.csproj", "{60FE28C0-704E-4C4B-A2CD-929039A16F9E}"
 EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "CSMath", "CSUtilities\CSMath\CSMath.shproj", "{411B6122-5EF6-46DB-A8F2-43E9C1841E4A}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{4B0FFF9E-199B-4025-9CD2-0C8CE4ECB4C6}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Submodules", "Submodules", "{D5A86352-D79D-4308-819A-2C4402CBCE96}"
@@ -80,6 +76,10 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MeshIO.STL", "MeshIO.STL\MeshIO.STL.csproj", "{9EA2BA2C-39BF-451A-A2EF-1AA0B9E2EC7B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MeshIO.STL.Tests", "MeshIO.STL.Tests\MeshIO.STL.Tests.csproj", "{9C8FFB66-0E53-49E5-88F6-F77F5F70BF95}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "CSMath", "CSUtilities\CSMath\CSMath.shproj", "{411B6122-5EF6-46DB-A8F2-43E9C1841E4A}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "CSUtilities", "CSUtilities\CSUtilities\CSUtilities.shproj", "{AD858F2B-04A1-41DD-BB3B-DDE4804CD2E6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -133,12 +133,12 @@ Global
 		{0A337B82-E010-42F4-88A8-9381AA7476CD} = {9C0B5243-FD21-4933-9269-5B3A958D2B83}
 		{0DC52F2F-8232-430F-B0C9-B207F64254D7} = {4B0FFF9E-199B-4025-9CD2-0C8CE4ECB4C6}
 		{590110F8-095C-49C7-80B2-C1D63588F4D6} = {9C0B5243-FD21-4933-9269-5B3A958D2B83}
-		{B4EF345D-52B9-47F1-AA2A-B4AE85F62EFC} = {D5A86352-D79D-4308-819A-2C4402CBCE96}
 		{006DAC54-BEE3-4878-900F-4E698B519501} = {DA7FF092-3DA1-4942-9FF6-B42F1CDBD0C6}
 		{FF66D7A6-6DCE-41DE-B30F-492988B2DF63} = {006DAC54-BEE3-4878-900F-4E698B519501}
 		{60FE28C0-704E-4C4B-A2CD-929039A16F9E} = {4B0FFF9E-199B-4025-9CD2-0C8CE4ECB4C6}
-		{411B6122-5EF6-46DB-A8F2-43E9C1841E4A} = {D5A86352-D79D-4308-819A-2C4402CBCE96}
 		{9C8FFB66-0E53-49E5-88F6-F77F5F70BF95} = {4B0FFF9E-199B-4025-9CD2-0C8CE4ECB4C6}
+		{411B6122-5EF6-46DB-A8F2-43E9C1841E4A} = {D5A86352-D79D-4308-819A-2C4402CBCE96}
+		{AD858F2B-04A1-41DD-BB3B-DDE4804CD2E6} = {D5A86352-D79D-4308-819A-2C4402CBCE96}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B96D2DF1-9226-4CEE-BF70-43C8318F59DC}
@@ -147,7 +147,7 @@ Global
 		CSUtilities\CSMath\CSMath.projitems*{3f391f00-a310-4681-be94-15329d662a3d}*SharedItemsImports = 5
 		CSUtilities\CSMath\CSMath.projitems*{411b6122-5ef6-46db-a8f2-43e9c1841e4a}*SharedItemsImports = 13
 		CSUtilities\CSUtilities\CSUtilities.projitems*{9ea2ba2c-39bf-451a-a2ef-1aa0b9e2ec7b}*SharedItemsImports = 5
-		CSUtilities\CSUtilities\CSUtilities.projitems*{b4ef345d-52b9-47f1-aa2a-b4ae85f62efc}*SharedItemsImports = 13
+		CSUtilities\CSUtilities\CSUtilities.projitems*{ad858f2b-04a1-41dd-bb3b-dde4804cd2e6}*SharedItemsImports = 13
 		CSUtilities\CSUtilities\CSUtilities.projitems*{d1ea3b08-85cc-4085-baa1-c47040e7e621}*SharedItemsImports = 5
 	EndGlobalSection
 EndGlobal
