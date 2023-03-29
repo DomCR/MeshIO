@@ -11,10 +11,10 @@ env:
 
 jobs:
   build:
-
     runs-on: windows-latest
-    env:
-     working-directory: ./src
+    defaults:
+     run:
+      working-directory: ./src
 
     steps:
     - name: Checkout
@@ -24,10 +24,7 @@ jobs:
         submodules: true
     - name: Restore dependencies
       run: dotnet restore
-      working-directory: ./src
     - name: Build
       run: dotnet build --configuration Release --no-restore
-      working-directory: ./src
     - name: Test
       run: dotnet test --configuration Release --no-build --verbosity normal
-      working-directory: ./src
