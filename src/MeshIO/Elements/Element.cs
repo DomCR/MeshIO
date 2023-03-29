@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MeshIO.Elements
 {
@@ -14,7 +10,7 @@ namespace MeshIO.Elements
 		/// <summary>
 		/// Unique id to identify this element
 		/// </summary>
-		public Guid Id { get; internal set; }
+		public ulong? Id { get; internal set; } = null;
 
 		/// <summary>
 		/// Name of the element.
@@ -26,7 +22,7 @@ namespace MeshIO.Elements
 		/// </summary>
 		public PropertyCollection Properties { get; }
 
-		[Obsolete]
+		[Obsolete("use the public ulong to administrate ids")]
 		internal ulong? _id = null;
 
 		/// <summary>
@@ -39,8 +35,6 @@ namespace MeshIO.Elements
 			this.Name = name;
 
 			this.Properties = new PropertyCollection(this);
-
-			this.Id = Guid.NewGuid();
 
 			this._id = Utils.CreateId();
 		}

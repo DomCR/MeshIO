@@ -93,7 +93,7 @@ namespace MeshIO.FBX.Converters
 				this._objects.Add(Convert.ToUInt64(n.Properties[0]), n);
 			}
 
-			foreach (FbxNode n in this.getChildren(scene._id.Value))
+			foreach (FbxNode n in this.getChildren(scene.Id.Value))
 			{
 				Element element = this.ToElement(n);
 

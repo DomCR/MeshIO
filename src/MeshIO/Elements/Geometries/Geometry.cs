@@ -1,11 +1,6 @@
 ﻿using CSMath;
-using MeshIO.Elements.Geometries;
 using MeshIO.Elements.Geometries.Layers;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MeshIO.Elements.Geometries
 {
