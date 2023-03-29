@@ -31,6 +31,47 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{FB60
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MeshIO.Examples", "..\samples\MeshIO.Examples\MeshIO.Examples.csproj", "{F538BC8A-C13D-4C5F-BF5D-0CCC842271C8}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Github Actions", "Github Actions", "{907EB71A-E08D-4483-BC11-B96E1F65BDF6}"
+	ProjectSection(SolutionItems) = preProject
+		..\.github\workflows\build_n_test.yml = ..\.github\workflows\build_n_test.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "repo", "repo", "{F37B65A4-9A24-41EA-9A72-D3439074C3D2}"
+	ProjectSection(SolutionItems) = preProject
+		..\.editorconfig = ..\.editorconfig
+		..\.gitignore = ..\.gitignore
+		..\.gitmodules = ..\.gitmodules
+		..\README.md = ..\README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FileSamples", "FileSamples", "{3DE9AEB8-4024-4EB6-ACC8-4B91FBE0AC6A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Fbx", "Fbx", "{9A04E517-0664-42C5-B472-BF733382057A}"
+	ProjectSection(SolutionItems) = preProject
+		Tests\FileSamples\fbx\sample_FBX200611_ascii.fbx = Tests\FileSamples\fbx\sample_FBX200611_ascii.fbx
+		Tests\FileSamples\fbx\sample_FBX200611_binary.fbx = Tests\FileSamples\fbx\sample_FBX200611_binary.fbx
+		Tests\FileSamples\fbx\sample_FBX200900_ascii.fbx = Tests\FileSamples\fbx\sample_FBX200900_ascii.fbx
+		Tests\FileSamples\fbx\sample_FBX200900_binary.fbx = Tests\FileSamples\fbx\sample_FBX200900_binary.fbx
+		Tests\FileSamples\fbx\sample_FBX201000_ascii.fbx = Tests\FileSamples\fbx\sample_FBX201000_ascii.fbx
+		Tests\FileSamples\fbx\sample_FBX201000_binary.fbx = Tests\FileSamples\fbx\sample_FBX201000_binary.fbx
+		Tests\FileSamples\fbx\sample_FBX201100_ascii.fbx = Tests\FileSamples\fbx\sample_FBX201100_ascii.fbx
+		Tests\FileSamples\fbx\sample_FBX201100_binary.fbx = Tests\FileSamples\fbx\sample_FBX201100_binary.fbx
+		Tests\FileSamples\fbx\sample_FBX201200_ascii.fbx = Tests\FileSamples\fbx\sample_FBX201200_ascii.fbx
+		Tests\FileSamples\fbx\sample_FBX201200_binary.fbx = Tests\FileSamples\fbx\sample_FBX201200_binary.fbx
+		Tests\FileSamples\fbx\sample_FBX201300_ascii.fbx = Tests\FileSamples\fbx\sample_FBX201300_ascii.fbx
+		Tests\FileSamples\fbx\sample_FBX201300_binary.fbx = Tests\FileSamples\fbx\sample_FBX201300_binary.fbx
+		Tests\FileSamples\fbx\sample_FBX201400_ascii.fbx = Tests\FileSamples\fbx\sample_FBX201400_ascii.fbx
+		Tests\FileSamples\fbx\sample_FBX201400_binary.fbx = Tests\FileSamples\fbx\sample_FBX201400_binary.fbx
+		Tests\FileSamples\fbx\sample_FBX201600_ascii.fbx = Tests\FileSamples\fbx\sample_FBX201600_ascii.fbx
+		Tests\FileSamples\fbx\sample_FBX201600_binary.fbx = Tests\FileSamples\fbx\sample_FBX201600_binary.fbx
+		Tests\FileSamples\fbx\sample_FBX201800_ascii.fbx = Tests\FileSamples\fbx\sample_FBX201800_ascii.fbx
+		Tests\FileSamples\fbx\sample_FBX201800_binary.fbx = Tests\FileSamples\fbx\sample_FBX201800_binary.fbx
+		Tests\FileSamples\fbx\sample_FBX201900_ascii.fbx = Tests\FileSamples\fbx\sample_FBX201900_ascii.fbx
+		Tests\FileSamples\fbx\sample_FBX201900_binary.fbx = Tests\FileSamples\fbx\sample_FBX201900_binary.fbx
+		Tests\FileSamples\fbx\sample_FBX202000_ascii.fbx = Tests\FileSamples\fbx\sample_FBX202000_ascii.fbx
+		Tests\FileSamples\fbx\sample_FBX202000_binary.fbx = Tests\FileSamples\fbx\sample_FBX202000_binary.fbx
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -84,6 +125,9 @@ Global
 		{641896D9-EF04-4B03-94B7-C2C695739E7D} = {4B0FFF9E-199B-4025-9CD2-0C8CE4ECB4C6}
 		{CB10843F-F020-4211-A061-9EBC3BBF01CC} = {4B0FFF9E-199B-4025-9CD2-0C8CE4ECB4C6}
 		{F538BC8A-C13D-4C5F-BF5D-0CCC842271C8} = {FB600453-CDE1-4CEE-A54A-2224F1C9EAE2}
+		{907EB71A-E08D-4483-BC11-B96E1F65BDF6} = {F37B65A4-9A24-41EA-9A72-D3439074C3D2}
+		{3DE9AEB8-4024-4EB6-ACC8-4B91FBE0AC6A} = {4B0FFF9E-199B-4025-9CD2-0C8CE4ECB4C6}
+		{9A04E517-0664-42C5-B472-BF733382057A} = {3DE9AEB8-4024-4EB6-ACC8-4B91FBE0AC6A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B96D2DF1-9226-4CEE-BF70-43C8318F59DC}
