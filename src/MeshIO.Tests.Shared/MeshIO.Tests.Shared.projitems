@@ -10,5 +10,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)FolderPath.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ReaderTestsBase.cs" />
   </ItemGroup>
 </Project>

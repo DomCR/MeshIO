@@ -7,10 +7,8 @@ using Xunit;
 
 namespace MeshIO.STL.Tests
 {
-    public class StlWriterTest
+	public class StlWriterTest
 	{
-		private const string _samplesFolder = "../../../../Tests/out/stl";
-
 		private static readonly Mesh _mesh;
 
 		static StlWriterTest()
@@ -37,7 +35,7 @@ namespace MeshIO.STL.Tests
 				return;
 			}
 
-			string path = Path.Combine(_samplesFolder, "stl_ascii.stl");
+			string path = Path.Combine(FolderPath.OutFilesStl, "stl_ascii.stl");
 
 			using (StlWriter wr = new StlWriter(path))
 			{
@@ -53,7 +51,7 @@ namespace MeshIO.STL.Tests
 				return;
 			}
 
-			string path = Path.Combine(_samplesFolder, "stl_binary.stl");
+			string path = Path.Combine(FolderPath.OutFilesStl, "stl_binary.stl");
 
 			using (StlWriter wr = new StlWriter(path))
 			{

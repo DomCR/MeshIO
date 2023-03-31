@@ -1,46 +1,39 @@
-﻿using MeshIO.Core;
-using MeshIO.Entities.Geometries;
+﻿using MeshIO.Entities.Geometries;
+using MeshIO.Tests.Shared;
 using System.IO;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace MeshIO.STL.Tests
 {
-    public class StlReaderTest
+	public class StlReaderTest : ReaderTestsBase
 	{
-		private const string _samplesFolder = "../../../../Tests/FileSamples/stl";
-
 		public static readonly TheoryData<string> AsciiFiles;
 
 		public static readonly TheoryData<string> BinaryFiles;
 
-		private readonly ITestOutputHelper _output;
-
 		static StlReaderTest()
 		{
 			AsciiFiles = new TheoryData<string>();
-			foreach (string file in Directory.GetFiles(_samplesFolder, "*_ascii.stl"))
+			foreach (string file in Directory.GetFiles(FolderPath.InFilesStl, "*_ascii.stl"))
 			{
 				AsciiFiles.Add(file);
 			}
 
 			BinaryFiles = new TheoryData<string>();
-			foreach (string file in Directory.GetFiles(_samplesFolder, "*_binary.stl"))
+			foreach (string file in Directory.GetFiles(FolderPath.InFilesStl, "*_binary.stl"))
 			{
 				BinaryFiles.Add(file);
 			}
 		}
 
-		public StlReaderTest(ITestOutputHelper output)
-		{
-			this._output = output;
-		}
+		public StlReaderTest(ITestOutputHelper output) : base(output) { }
 
 		[Theory]
 		[MemberData(nameof(BinaryFiles))]
 		public void IsBinaryTest(string test)
 		{
-			using (StlReader reader = new StlReader(test, onNotification))
+			using (StlReader reader = new StlReader(test))
 			{
 				Assert.True(reader.IsBinary());
 			}
@@ -50,7 +43,7 @@ namespace MeshIO.STL.Tests
 		[MemberData(nameof(AsciiFiles))]
 		public void IsAsciiTest(string test)
 		{
-			using (StlReader reader = new StlReader(test, onNotification))
+			using (StlReader reader = new StlReader(test))
 			{
 				Assert.False(reader.IsBinary());
 			}
@@ -72,15 +65,11 @@ namespace MeshIO.STL.Tests
 
 		private Mesh readFile(string path)
 		{
-			using (StlReader reader = new StlReader(path, onNotification))
+			using (StlReader reader = new StlReader(path))
 			{
+				reader.OnNotification += this.onNotification;
 				return reader.Read();
 			}
-		}
-
-		private void onNotification(NotificationArgs e)
-		{
-			this._output.WriteLine(e.Message);
 		}
 	}
 }

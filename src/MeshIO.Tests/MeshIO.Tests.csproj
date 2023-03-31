@@ -22,4 +22,6 @@
     <ProjectReference Include="..\MeshIO\MeshIO.csproj" />
   </ItemGroup>
 
+  <Import Project="..\MeshIO.Tests.Shared\MeshIO.Tests.Shared.projitems" Label="Shared" />
+
 </Project>

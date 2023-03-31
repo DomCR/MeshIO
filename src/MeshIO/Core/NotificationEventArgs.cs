@@ -10,7 +10,7 @@ namespace MeshIO.Core
 
 		public Exception Exception { get; }
 
-		public NotificationEventArgs(string message, NotificationType notificationType = NotificationType.None, Exception exception = null)
+		public NotificationEventArgs(string message, NotificationType notificationType = NotificationType.Information, Exception exception = null)
 		{
 			this.Message = message;
 			this.NotificationType = notificationType;

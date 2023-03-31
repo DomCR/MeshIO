@@ -1,4 +1,4 @@
-﻿using MeshIO.Core;
+﻿using MeshIO.Tests.Shared;
 using System;
 using System.IO;
 using Xunit;
@@ -6,13 +6,11 @@ using Xunit.Abstractions;
 
 namespace MeshIO.FBX.Tests
 {
-	public class FbxReaderTest
+	public class FbxReaderTest : ReaderTestsBase
 	{
 		public static readonly TheoryData<string> AsciiFiles;
 
 		public static readonly TheoryData<string> BinaryFiles;
-
-		private readonly ITestOutputHelper _output;
 
 		static FbxReaderTest()
 		{
@@ -29,10 +27,7 @@ namespace MeshIO.FBX.Tests
 			}
 		}
 
-		public FbxReaderTest(ITestOutputHelper output)
-		{
-			_output = output;
-		}
+		public FbxReaderTest(ITestOutputHelper output) : base(output) { }
 
 		[Theory]
 		[MemberData(nameof(AsciiFiles))]
@@ -79,11 +74,6 @@ namespace MeshIO.FBX.Tests
 
 				return reader.Read();
 			}
-		}
-
-		private void onNotification(object sender, NotificationEventArgs e)
-		{
-			_output.WriteLine(e.Message);
 		}
 	}
 }

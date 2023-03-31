@@ -10,10 +10,10 @@ using System.Text.RegularExpressions;
 
 namespace MeshIO.STL
 {
-    /// <summary>
-    /// Reader for STL files in ascii or binary
-    /// </summary>
-    public class StlReader : ReaderBase, IDisposable
+	/// <summary>
+	/// Reader for STL files in ascii or binary
+	/// </summary>
+	public class StlReader : ReaderBase
 	{
 		private StreamIO _stream;
 
@@ -21,23 +21,19 @@ namespace MeshIO.STL
 		/// Initializes a new instance of the <see cref="StlReader"/> class for the specified file.
 		/// </summary>
 		/// <param name="path">The complete file path to read to.</param>
-		/// <param name="onNotification"></param>
-		public StlReader(string path, NotificationHandler onNotification = null)
+		public StlReader(string path)
 		{
 			if (string.IsNullOrEmpty(path))
 				throw new ArgumentNullException(nameof(path));
 
 			this._stream = new StreamIO(path, FileMode.Open, FileAccess.Read);
-
-			this.OnNotification = onNotification;
 		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="FbxReader"/> class for the specified stream.
 		/// </summary>
 		/// <param name="stream">The stream to write to.</param>
-		/// <param name="errorLevel"></param>
-		public StlReader(Stream stream, NotificationHandler onNotification = null)
+		public StlReader(Stream stream)
 		{
 			if (stream == null)
 				throw new ArgumentNullException(nameof(stream));
@@ -46,8 +42,6 @@ namespace MeshIO.STL
 				throw new ArgumentException("The stream must support seeking. Try reading the data into a buffer first");
 
 			this._stream = new StreamIO(stream);
-
-			this.OnNotification = onNotification;
 		}
 
 		/// <summary>
@@ -72,7 +66,7 @@ namespace MeshIO.STL
 			this._stream.Position = 0;
 
 			string header = this._stream.ReadString(80);
-			this.OnNotification?.Invoke(new NotificationArgs(header.Replace("\0", "")));
+			this.triggerNotification(header.Replace("\0", ""), NotificationType.Information);
 
 			Mesh mesh = new Mesh();
 			LayerElementNormal normals = new LayerElementNormal();
@@ -131,7 +125,7 @@ namespace MeshIO.STL
 		}
 
 		/// <inheritdoc/>
-		public void Dispose()
+		public override void Dispose()
 		{
 			this._stream.Dispose();
 		}
