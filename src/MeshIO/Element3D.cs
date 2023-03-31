@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace MeshIO
+﻿namespace MeshIO
 {
 	/// <summary>
 	/// Base class for all the elements contained in the 3D environment
@@ -42,50 +39,5 @@ namespace MeshIO
 		{
 			return $"{this.GetType().Name}:{this.Name}";
 		}
-	}
-
-	public abstract class SceneElement : Element3D
-	{
-		/// <summary>
-		/// Scene where this element belongs to
-		/// </summary>
-		public Scene Scene { get; }
-
-		private readonly Dictionary<ulong, Element3D> _elements = new Dictionary<ulong, Element3D>();
-
-		public SceneElement() : base() { }
-
-		public SceneElement(string name) : base(name) { }
-	}
-
-	public class Scene : SceneElement
-	{
-		public Node RootNode { get; } = new Node();
-
-		public Scene() : base() { }
-
-		public Scene(string name) : base(name) { }
-	}
-
-	public class Node : SceneElement
-	{
-		[Obsolete]
-		public bool? MultiLayer { get; set; }
-		[Obsolete]
-		public bool? MultiTake { get; set; }
-		[Obsolete]
-		public bool Shading { get; set; } = true;
-		[Obsolete]
-		public string Culling { get; set; } = "CullingOff";
-
-		public Transform Transform { get; internal set; } = new Transform();
-
-		public Element3D Parent { get; }
-
-		public List<Element3D> Children { get; }
-
-		public Node() : base() { }
-
-		public Node(string name) : base(name) { }
 	}
 }
