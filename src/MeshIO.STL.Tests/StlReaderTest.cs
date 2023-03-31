@@ -1,18 +1,12 @@
 ﻿using MeshIO.Core;
-using MeshIO.Elements;
-using MeshIO.Elements.Geometries;
-using System;
-using System.Collections.Generic;
+using MeshIO.Entities.Geometries;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace MeshIO.STL.Tests
 {
-	public class StlReaderTest
+    public class StlReaderTest
 	{
 		private const string _samplesFolder = "../../../../Tests/FileSamples/stl";
 

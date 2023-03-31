@@ -1,17 +1,11 @@
 ﻿using MeshIO.Core;
-using MeshIO.Elements;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace MeshIO.FBX.Tests.Readers
 {
-	public class FbxReaderTest
+    public class FbxReaderTest
 	{
 		private const string _samplesFolder = "../../../../Tests/FileSamples/fbx";
 

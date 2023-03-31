@@ -1,5 +1,4 @@
-﻿using MeshIO.Elements;
-using System;
+﻿using System;
 using System.IO;
 
 namespace MeshIO.FBX

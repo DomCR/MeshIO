@@ -1,12 +1,13 @@
 ﻿using CSMath;
 using CSUtilities.IO;
-using MeshIO.Elements;
-using MeshIO.Elements.Geometries;
-using MeshIO.Elements.Geometries.Layers;
+using MeshIO.Entities.Geometries.Layers;
 using MeshIO.GLTF.Schema.V2;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using MeshIO.Entities.Geometries;
+using MeshIO.Shaders;
+using MeshIO.Entities;
 
 namespace MeshIO.GLTF
 {
@@ -46,7 +47,7 @@ namespace MeshIO.GLTF
 				Node n = readNode(nodeIndex);
 
 				if (n != null)
-					scene.Nodes.Add(n);
+					scene.RootNode.Children.Add(n);
 			}
 
 			return scene;
@@ -138,7 +139,7 @@ namespace MeshIO.GLTF
 			return camera;
 		}
 
-		protected Element readElement(int index)
+		protected Element3D readElement(int index)
 		{
 			throw new NotImplementedException();
 		}

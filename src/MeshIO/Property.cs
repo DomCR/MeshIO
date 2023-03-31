@@ -1,5 +1,4 @@
-﻿using MeshIO.Elements;
-using System;
+﻿using System;
 
 namespace MeshIO
 {
@@ -9,9 +8,9 @@ namespace MeshIO
 
 		public object Value { get; set; }
 
-		public Element Owner { get; internal set; }
+		public Element3D Owner { get; internal set; }
 
-		public Property(string name, Element owner)
+		public Property(string name, Element3D owner)
 		{
 			this.Name = name;
 			this.Owner = owner;
@@ -21,7 +20,7 @@ namespace MeshIO
 
 		public Property(string name, object value) : this(name, null, value) { }
 
-		public Property(string name, Element owner, object value) : this(name, owner)
+		public Property(string name, Element3D owner, object value) : this(name, owner)
 		{
 			this.Value = value;
 		}
@@ -43,12 +42,12 @@ namespace MeshIO
 	{
 		public new T Value { get; set; }
 
-		public Property(string name, Element owner) : base(name, owner) { }
+		public Property(string name, Element3D owner) : base(name, owner) { }
 
 		public Property(string name) : base(name, null) { }
 
 		public Property(string name, T value) : base(name, null, value) { }
 
-		public Property(string name, Element owner, T value) : base(name, owner, value) { }
+		public Property(string name, Element3D owner, T value) : base(name, owner, value) { }
 	}
 }

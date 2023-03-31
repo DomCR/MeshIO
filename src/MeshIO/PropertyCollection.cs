@@ -1,14 +1,11 @@
-﻿using MeshIO.Elements;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MeshIO
 {
-	public class PropertyCollection : IEnumerable<Property>
+    public class PropertyCollection : IEnumerable<Property>
 	{
 		public Property this[int index] { get { return _properties.Values.ElementAt(index); } }
 
@@ -18,21 +15,21 @@ namespace MeshIO
 
 		private readonly Dictionary<string, Property> _properties = new Dictionary<string, Property>();
 
-		private Element _owner;
+		public Element3D Owner { get; }
 
-		public PropertyCollection(Element owner)
-		{
-			_owner = owner;
-		}
+        public PropertyCollection(Element3D owner)
+        {
+            Owner = owner;
+        }
 
-		public void Add(Property property)
+        public void Add(Property property)
 		{
 			if (property.Owner != null)
 				throw new ArgumentException("Property already has an owner", nameof(property));
 
 			_properties.Add(property.Name, property);
 
-			property.Owner = this._owner;
+			property.Owner = this.Owner;
 		}
 
 		public bool Contains(string name)

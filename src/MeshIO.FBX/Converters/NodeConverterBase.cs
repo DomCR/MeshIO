@@ -1,23 +1,21 @@
 ﻿using CSMath;
 using MeshIO.Core;
-using MeshIO.Elements;
-using MeshIO.Elements.Geometries;
-using MeshIO.Elements.Geometries.Layers;
+using MeshIO.Entities.Geometries.Layers;
+using MeshIO.Entities.Geometries;
 using MeshIO.FBX.Exceptions;
+using MeshIO.Shaders;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MeshIO.FBX.Converters
 {
-	/// <summary>
-	/// Base class to convert a node structure fbx <see cref="FbxRootNode"/> into a <see cref="Scene"/>
-	/// </summary>
-	public abstract class NodeConverterBase : INodeConverter
+    /// <summary>
+    /// Base class to convert a node structure fbx <see cref="FbxRootNode"/> into a <see cref="Scene"/>
+    /// </summary>
+    public abstract class NodeConverterBase : INodeConverter
 	{
 		public NotificationHandler OnNotification { get; set; }
 
@@ -95,15 +93,15 @@ namespace MeshIO.FBX.Converters
 
 			foreach (FbxNode n in this.getChildren(scene.Id.Value))
 			{
-				Element element = this.ToElement(n);
+				Element3D element = this.ToElement(n);
 
 				switch (element)
 				{
 					case Node fbxNode:
-						scene.Nodes.Add(fbxNode);
+						scene.RootNode.Children.Add(fbxNode);
 						break;
 					default:
-						this.notify($"Element is not a {typeof(Node).FullName} is a {element.GetType().FullName}");
+						this.notify($"Element3D is not a {typeof(Node).FullName} is a {element.GetType().FullName}");
 						break;
 				}
 			}
@@ -111,9 +109,9 @@ namespace MeshIO.FBX.Converters
 			return scene;
 		}
 
-		public Element ToElement(FbxNode node)
+		public Element3D ToElement(FbxNode node)
 		{
-			Element element = null;
+			Element3D element = null;
 
 			switch (node.Name)
 			{
@@ -140,9 +138,9 @@ namespace MeshIO.FBX.Converters
 			return element;
 		}
 
-		public void BuildElement(FbxNode node, Element element, string prefix)
+		public void BuildElement(FbxNode node, Element3D element, string prefix)
 		{
-			element._id = Convert.ToUInt64(node.Properties[0]);
+			element.Id = Convert.ToUInt64(node.Properties[0]);
 
 			string name = node.Properties[1].ToString();
 			if (name.StartsWith(prefix))
@@ -246,7 +244,7 @@ namespace MeshIO.FBX.Converters
 			return property;
 		}
 
-		public Element BuildModel(FbxNode node)
+		public Element3D BuildModel(FbxNode node)
 		{
 			Node model = new Node();
 
@@ -297,9 +295,9 @@ namespace MeshIO.FBX.Converters
 			}
 
 			//Get the children for this Node
-			foreach (FbxNode n in this.getChildren(model._id.Value))
+			foreach (FbxNode n in this.getChildren(model.Id.Value))
 			{
-				Element child = this.ToElement(n);
+				Element3D child = this.ToElement(n);
 
 				if (child == null)
 					continue;
@@ -310,7 +308,7 @@ namespace MeshIO.FBX.Converters
 			return model;
 		}
 
-		public Element BuildMaterial(FbxNode node)
+		public Element3D BuildMaterial(FbxNode node)
 		{
 			Material material = new Material();
 
@@ -394,9 +392,9 @@ namespace MeshIO.FBX.Converters
 			return material;
 		}
 
-		public Element BuildGeometryObject(FbxNode node)
+		public Element3D BuildGeometryObject(FbxNode node)
 		{
-			Element geometry = null;
+			Element3D geometry = null;
 
 			switch (node.Properties[2].ToString())
 			{
@@ -448,7 +446,7 @@ namespace MeshIO.FBX.Converters
 			return mesh;
 		}
 
-		public Element BuildNodeAttribute(FbxNode node)
+		public Element3D BuildNodeAttribute(FbxNode node)
 		{
 			switch (node.Properties[2].ToString())
 			{
@@ -765,7 +763,7 @@ namespace MeshIO.FBX.Converters
 			}
 		}
 
-		private bool isCommonElementField(Element element, FbxNode node, List<Property> properties)
+		private bool isCommonElementField(Element3D element, FbxNode node, List<Property> properties)
 		{
 			switch (node.Name)
 			{
@@ -858,7 +856,7 @@ namespace MeshIO.FBX.Converters
 		{
 			Scene scene = new Scene();
 
-			scene._id = 0;
+			scene.Id = 0;
 
 			return scene;
 		}

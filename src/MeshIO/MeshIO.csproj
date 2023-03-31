@@ -1,19 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net5.0;net48;netstandard2.1</TargetFrameworks>
-    <LangVersion>9.0</LangVersion>
-    <Authors>DomCr</Authors>
-    <Company>MeshIO</Company>
+    <TargetFrameworks>net6.0;net5.0;net48;netstandard2.1</TargetFrameworks>
     <PackageId>MeshIO</PackageId>
     <PackageTags>C# 3D</PackageTags>
-    <RepositoryUrl>https://github.com/DomCR/MeshIO</RepositoryUrl>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <RepositoryType>git</RepositoryType>
-    <PackageProjectUrl>https://github.com/DomCR/MeshIO</PackageProjectUrl>
-    <Copyright>Copyright (c) 2022 Albert Domenech</Copyright>
     <Description>3D library in pure C# that allows reading and writing in multiple formats.</Description>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild Condition="'$(Configuration)' == 'Release'">True</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <PropertyGroup>

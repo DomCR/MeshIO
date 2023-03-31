@@ -1,13 +1,8 @@
-﻿using MeshIO.Elements;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
 
 namespace MeshIO.FBX
 {
-	public interface IFbxReader : IDisposable
+    public interface IFbxReader : IDisposable
 	{
 		/// <summary>
 		/// Checks the version of the file

@@ -2,6 +2,7 @@
 
 namespace MeshIO
 {
+	[Obsolete]
 	internal static class Utils
 	{
 		///<remarks>

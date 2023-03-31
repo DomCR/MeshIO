@@ -1,5 +1,4 @@
 ﻿using MeshIO.Core;
-using MeshIO.Elements;
 using MeshIO.FBX.Converters;
 using MeshIO.FBX.Exceptions;
 using System;
@@ -62,7 +61,6 @@ namespace MeshIO.FBX
 
 			return converter.ConvertScene();
 		}
-
 
 		/// <inheritdoc/>
 		public FbxRootNode Parse()

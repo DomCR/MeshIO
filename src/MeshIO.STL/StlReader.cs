@@ -2,18 +2,18 @@
 using CSUtilities.Converters;
 using CSUtilities.IO;
 using MeshIO.Core;
-using MeshIO.Elements.Geometries;
-using MeshIO.Elements.Geometries.Layers;
+using MeshIO.Entities.Geometries;
+using MeshIO.Entities.Geometries.Layers;
 using System;
 using System.IO;
 using System.Text.RegularExpressions;
 
 namespace MeshIO.STL
 {
-	/// <summary>
-	/// Reader for STL files in ascii or binary
-	/// </summary>
-	public class StlReader : ReaderBase, IDisposable
+    /// <summary>
+    /// Reader for STL files in ascii or binary
+    /// </summary>
+    public class StlReader : ReaderBase, IDisposable
 	{
 		private StreamIO _stream;
 

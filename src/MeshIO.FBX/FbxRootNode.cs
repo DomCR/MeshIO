@@ -1,5 +1,4 @@
-﻿using MeshIO.Elements;
-using MeshIO.FBX.Converters;
+﻿using MeshIO.FBX.Converters;
 
 namespace MeshIO.FBX
 {

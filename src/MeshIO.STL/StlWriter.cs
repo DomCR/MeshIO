@@ -1,16 +1,15 @@
 ﻿using CSMath;
 using CSUtilities.IO;
-using MeshIO.Core;
-using MeshIO.Elements.Geometries;
-using MeshIO.Elements.Geometries.Layers;
+using MeshIO.Entities.Geometries.Layers;
 using System;
 using System.IO;
 using System.Linq;
 using System.Text;
+using MeshIO.Entities.Geometries;
 
 namespace MeshIO.STL
 {
-	public class StlWriter : IDisposable
+    public class StlWriter : IDisposable
 	{
 		private StreamIO _stream;
 

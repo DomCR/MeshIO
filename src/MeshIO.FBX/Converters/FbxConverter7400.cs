@@ -1,6 +1,4 @@
-﻿using MeshIO.Elements;
-
-namespace MeshIO.FBX.Converters
+﻿namespace MeshIO.FBX.Converters
 {
 	/// <summary>
 	/// Converts a fbx scene to a <see cref="FbxRootNode"/> following the standards of the version <see cref="FbxVersion.v7400"/>

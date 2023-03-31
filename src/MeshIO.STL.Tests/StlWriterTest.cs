@@ -1,17 +1,13 @@
 ﻿using CSMath;
-using MeshIO.Elements.Geometries;
-using MeshIO.Elements.Geometries.Layers;
+using MeshIO.Entities.Geometries;
+using MeshIO.Entities.Geometries.Layers;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace MeshIO.STL.Tests
 {
-	public class StlWriterTest
+    public class StlWriterTest
 	{
 		private const string _samplesFolder = "../../../../Tests/out/stl";
 

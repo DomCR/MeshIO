@@ -1,11 +1,4 @@
-﻿using MeshIO.Elements;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MeshIO.FBX
+﻿namespace MeshIO.FBX
 {
 	//P : ["PropName", "PropType", "Label(?)", "Flags", __values__, …]
 	public class FbxProperty : Property
@@ -24,11 +17,11 @@ namespace MeshIO.FBX
 
 		public PropertyFlags Flags { get; set; }
 
-		public FbxProperty(string name, Element owner) : base(name, owner) { }
+		public FbxProperty(string name, Element3D owner) : base(name, owner) { }
 
-		public FbxProperty(string name, Element owner, object value) : base(name, owner, value) { }
+		public FbxProperty(string name, Element3D owner, object value) : base(name, owner, value) { }
 
-		public FbxProperty(string name, Element owner, object value, string typeName, string typeLabel, PropertyFlags flags) : base(name, owner, value)
+		public FbxProperty(string name, Element3D owner, object value, string typeName, string typeLabel, PropertyFlags flags) : base(name, owner, value)
 		{
 			this.FbxTypeName = typeName;
 			this.TypeLabel = typeLabel;
