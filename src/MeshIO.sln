@@ -23,6 +23,7 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "CSUtilities", "CSUtilities\
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Github Actions", "Github Actions", "{907EB71A-E08D-4483-BC11-B96E1F65BDF6}"
 	ProjectSection(SolutionItems) = preProject
+		..\.github\workflows\build.yml = ..\.github\workflows\build.yml
 		..\.github\workflows\build_n_test.yml = ..\.github\workflows\build_n_test.yml
 	EndProjectSection
 EndProject
