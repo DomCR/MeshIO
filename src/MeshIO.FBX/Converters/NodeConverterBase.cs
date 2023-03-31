@@ -17,7 +17,7 @@ namespace MeshIO.FBX.Converters
     /// </summary>
     public abstract class NodeConverterBase : INodeConverter
 	{
-		public NotificationHandler OnNotification { get; set; }
+		public event NotificationEventHandler OnNotification;
 
 		public FbxVersion Version { get { return this._root.Version; } }
 
@@ -33,7 +33,7 @@ namespace MeshIO.FBX.Converters
 
 		protected readonly FbxRootNode _root;
 
-		public static INodeConverter GetConverter(FbxRootNode root, NotificationHandler onNotification)
+		public static INodeConverter GetConverter(FbxRootNode root)
 		{
 			INodeConverter converter = null;
 
@@ -57,12 +57,10 @@ namespace MeshIO.FBX.Converters
 				case FbxVersion.v7200:
 				case FbxVersion.v7300:
 				case FbxVersion.v7400:
-					converter = new NodeConverter7400(root, onNotification);
-					break;
 				case FbxVersion.v7500:
 				case FbxVersion.v7600:
 				case FbxVersion.v7700:
-					converter = new NodeConverter7400(root, onNotification);
+					converter = new NodeConverter7000(root);
 					break;
 				default:
 					throw new Exception($"Unknown fbx version : {root.Version}");
@@ -73,10 +71,9 @@ namespace MeshIO.FBX.Converters
 			return converter;
 		}
 
-		public NodeConverterBase(FbxRootNode root, NotificationHandler onNotification)
+		public NodeConverterBase(FbxRootNode root)
 		{
 			this._root = root;
-			this.OnNotification = onNotification;
 
 			this.checkFileSections();
 		}
@@ -863,7 +860,7 @@ namespace MeshIO.FBX.Converters
 
 		private void notify(string message, [CallerMemberName] string caller = null)
 		{
-			this.OnNotification?.Invoke(new NotificationArgs($"{caller} | {message}"));
+			this.OnNotification?.Invoke(this, new NotificationEventArgs($"{caller} | {message}"));
 		}
 	}
 }

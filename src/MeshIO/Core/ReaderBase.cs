@@ -6,20 +6,22 @@ using System.Threading.Tasks;
 
 namespace MeshIO.Core
 {
-	public delegate void NotificationHandler(NotificationArgs e);
+	public delegate void NotificationEventHandler(object sender, NotificationEventArgs e);
 
-	public class NotificationArgs 
+	public abstract class ReaderBase : IDisposable
 	{
-		public string Message { get; }
+		public event NotificationEventHandler OnNotification;
 
-		public NotificationArgs(string message)
+		public abstract void Dispose();
+
+		protected void triggerNotification(string message, NotificationType notificationType, Exception ex = null)
 		{
-			this.Message = message;
+			this.onNotificationEvent(this, new NotificationEventArgs(message, notificationType, ex));
 		}
-	}
 
-	public class ReaderBase
-	{
-		public NotificationHandler OnNotification { get; set; }
+		protected void onNotificationEvent(object sender, NotificationEventArgs e)
+		{
+			this.OnNotification?.Invoke(this, e);
+		}
 	}
 }

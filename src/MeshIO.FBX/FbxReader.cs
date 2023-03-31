@@ -6,11 +6,11 @@ using System.IO;
 
 namespace MeshIO.FBX
 {
-	public class FbxReader : ReaderBase, IFbxReader
+	public class FbxReader : ReaderBase
 	{
-		private Stream _stream;
+		public ErrorLevel ErrorLevel { get; }
 
-		private ErrorLevel _errorLevel;
+		private Stream _stream;
 
 		private FbxRootNode _root;
 
@@ -19,14 +19,7 @@ namespace MeshIO.FBX
 		/// </summary>
 		/// <param name="path">The complete file path to read to.</param>
 		/// <param name="errorLevel">When to throw an <see cref="FbxException"/></param>
-		public FbxReader(string path, ErrorLevel errorLevel)
-		{
-			if (string.IsNullOrEmpty(path))
-				throw new ArgumentNullException(nameof(path));
-
-			_stream = new FileStream(path, FileMode.Open);
-			_errorLevel = errorLevel;
-		}
+		public FbxReader(string path, ErrorLevel errorLevel) : this(new FileStream(path, FileMode.Open), errorLevel) { }
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="FbxReader"/> class for the specified stream.
@@ -41,8 +34,9 @@ namespace MeshIO.FBX
 			if (!stream.CanSeek)
 				throw new ArgumentException("The stream must support seeking. Try reading the data into a buffer first");
 
-			_stream = stream;
-			_errorLevel = errorLevel;
+			this.ErrorLevel = errorLevel;
+
+			this._stream = stream;
 		}
 
 		/// <inheritdoc/>
@@ -57,7 +51,8 @@ namespace MeshIO.FBX
 		public Scene Read()
 		{
 			_root ??= this.Parse();
-			INodeConverter converter = NodeConverterBase.GetConverter(_root, this.OnNotification);
+			INodeConverter converter = NodeConverterBase.GetConverter(_root);
+			converter.OnNotification += this.onNotificationEvent;
 
 			return converter.ConvertScene();
 		}
@@ -69,18 +64,18 @@ namespace MeshIO.FBX
 
 			if (FbxBinary.ReadHeader(_stream))
 			{
-				parser = new FbxBinaryParser(_stream, _errorLevel);
+				parser = new FbxBinaryParser(_stream, ErrorLevel);
 			}
 			else
 			{
-				parser = new FbxAsciiParser(_stream, _errorLevel);
+				parser = new FbxAsciiParser(_stream, ErrorLevel);
 			}
 
 			return parser.Parse();
 		}
 
 		/// <inheritdoc/>
-		public void Dispose()
+		public override void Dispose()
 		{
 			_stream.Dispose();
 		}
@@ -89,11 +84,11 @@ namespace MeshIO.FBX
 		/// Read fbx file.
 		/// </summary>
 		/// <returns></returns>
-		public static Scene Read(string path, ErrorLevel errorLevel, NotificationHandler notificationHandler = null)
+		public static Scene Read(string path, ErrorLevel errorLevel, NotificationEventHandler notificationHandler = null)
 		{
 			using (FbxReader reader = new FbxReader(path, errorLevel))
 			{
-				reader.OnNotification = notificationHandler;
+				reader.OnNotification += notificationHandler;
 				return reader.Read();
 			}
 		}
@@ -102,11 +97,11 @@ namespace MeshIO.FBX
 		/// Parse the document into a node structure.
 		/// </summary>
 		/// <returns></returns>
-		public static FbxRootNode Parse(string path, ErrorLevel errorLevel, NotificationHandler notificationHandler = null)
+		public static FbxRootNode Parse(string path, ErrorLevel errorLevel, NotificationEventHandler notificationHandler = null)
 		{
 			using (FbxReader reader = new FbxReader(path, errorLevel))
 			{
-				reader.OnNotification = notificationHandler;
+				reader.OnNotification += notificationHandler;
 				return reader.Parse();
 			}
 		}
@@ -115,11 +110,11 @@ namespace MeshIO.FBX
 		/// Read fbx file.
 		/// </summary>
 		/// <returns></returns>
-		public static Scene Read(Stream stream, ErrorLevel errorLevel, NotificationHandler notificationHandler = null)
+		public static Scene Read(Stream stream, ErrorLevel errorLevel, NotificationEventHandler notificationHandler = null)
 		{
 			using (FbxReader reader = new FbxReader(stream, errorLevel))
 			{
-				reader.OnNotification = notificationHandler;
+				reader.OnNotification += notificationHandler;
 				return reader.Read();
 			}
 		}
@@ -128,11 +123,11 @@ namespace MeshIO.FBX
 		/// Parse the document into a node structure.
 		/// </summary>
 		/// <returns></returns>
-		public static FbxRootNode Parse(Stream stream, ErrorLevel errorLevel, NotificationHandler notificationHandler = null)
+		public static FbxRootNode Parse(Stream stream, ErrorLevel errorLevel, NotificationEventHandler notificationHandler = null)
 		{
 			using (FbxReader reader = new FbxReader(stream, errorLevel))
 			{
-				reader.OnNotification = notificationHandler;
+				reader.OnNotification += notificationHandler;
 				return reader.Parse();
 			}
 		}

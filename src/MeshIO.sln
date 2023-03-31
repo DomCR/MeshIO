@@ -69,6 +69,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "fbx", "fbx", "{076BCEF4-748
 		Tests\FileSamples\fbx\sample_FBX202000_binary.fbx = Tests\FileSamples\fbx\sample_FBX202000_binary.fbx
 	EndProjectSection
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "MeshIO.Tests.Shared", "MeshIO.Tests.Shared\MeshIO.Tests.Shared.shproj", "{F82685A4-99C9-4B22-B9A9-C8897C9965C4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -120,15 +122,18 @@ Global
 		{94C45D19-8231-437F-AB4D-02FA072A923C} = {4B0FFF9E-199B-4025-9CD2-0C8CE4ECB4C6}
 		{B073A785-90A3-44C0-9807-FA0C223E4BDA} = {4B0FFF9E-199B-4025-9CD2-0C8CE4ECB4C6}
 		{076BCEF4-7488-4832-BF4F-1328BD6EC753} = {B073A785-90A3-44C0-9807-FA0C223E4BDA}
+		{F82685A4-99C9-4B22-B9A9-C8897C9965C4} = {4B0FFF9E-199B-4025-9CD2-0C8CE4ECB4C6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B96D2DF1-9226-4CEE-BF70-43C8318F59DC}
 	EndGlobalSection
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		MeshIO.Tests.Shared\MeshIO.Tests.Shared.projitems*{264d4186-7537-4302-8be9-1a3b56e6709c}*SharedItemsImports = 5
 		CSUtilities\CSMath\CSMath.projitems*{3f391f00-a310-4681-be94-15329d662a3d}*SharedItemsImports = 5
 		CSUtilities\CSMath\CSMath.projitems*{411b6122-5ef6-46db-a8f2-43e9c1841e4a}*SharedItemsImports = 13
 		CSUtilities\CSUtilities\CSUtilities.projitems*{9ea2ba2c-39bf-451a-a2ef-1aa0b9e2ec7b}*SharedItemsImports = 5
 		CSUtilities\CSUtilities\CSUtilities.projitems*{ad858f2b-04a1-41dd-bb3b-dde4804cd2e6}*SharedItemsImports = 13
 		CSUtilities\CSUtilities\CSUtilities.projitems*{d1ea3b08-85cc-4085-baa1-c47040e7e621}*SharedItemsImports = 5
+		MeshIO.Tests.Shared\MeshIO.Tests.Shared.projitems*{f82685a4-99c9-4b22-b9a9-c8897c9965c4}*SharedItemsImports = 13
 	EndGlobalSection
 EndGlobal

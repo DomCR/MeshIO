@@ -37,12 +37,12 @@ namespace MeshIO.FBX.Converters
                 case FbxVersion.v7200:
                 case FbxVersion.v7300:
                 case FbxVersion.v7400:
-                    converter = new FbxConverter7400(scene);
+                    converter = new FbxConverter7000(scene);
                     break;
                 case FbxVersion.v7500:
                 case FbxVersion.v7600:
                 case FbxVersion.v7700:
-                    converter = new FbxConverter7400(scene);
+                    converter = new FbxConverter7000(scene);
                     break;
                 default:
                     throw new NotSupportedException($"Incompatible version {version}");
