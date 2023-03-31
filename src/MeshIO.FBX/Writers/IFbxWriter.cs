@@ -2,6 +2,7 @@
 
 namespace MeshIO.FBX
 {
+	[Obsolete]
 	public interface IFbxWriter: IDisposable
 	{
 		/// <summary>

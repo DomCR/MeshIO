@@ -7,4 +7,7 @@ public static class FolderPath
 
 	public static readonly string InFilesFbx = Path.Combine(InFiles, "fbx");
 	public static readonly string OutFilesFbx = Path.Combine(OutFiles, "fbx");
+
+	public static readonly string InFilesGltf = Path.Combine(InFiles, "glb-gltf");
+	public static readonly string OutFilesGltf = Path.Combine(OutFiles, "glb-gltf");
 }
