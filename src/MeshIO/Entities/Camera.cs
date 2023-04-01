@@ -2,36 +2,22 @@
 
 namespace MeshIO.Entities
 {
-    public class Camera : Entity
-    {
-        /// <summary>
-        /// Camera's projection types
-        /// </summary>
-        public enum ProjectionType
-        {
-            /// <summary>
-            /// The camera uses perspective projection
-            /// </summary>
-            Perspective,
+	public class Camera : Entity
+	{
+		public XYZ Position { get; set; }
 
-            /// <summary>
-            /// The camera uses orthographic projection
-            /// </summary>
-            Orthographic,
-        }
+		public XYZ UpVector { get; set; }
 
-        public XYZ Position { get; set; }
+		public double FieldOfView { get; set; }
 
-        public XYZ UpVector { get; set; }
+		public double FieldOfViewX { get; set; }
 
-        public double FieldOfView { get; set; }
+		public double FieldOfViewY { get; set; }
 
-        public double FieldOfViewX { get; set; }
+		public ProjectionType ProjectionType { get; set; }
 
-        public double FieldOfViewY { get; set; }
+		public Camera() : base() { }
 
-        public Camera() : base() { }
-
-        public Camera(string name) : base(name) { }
-    }
+		public Camera(string name) : base(name) { }
+	}
 }
