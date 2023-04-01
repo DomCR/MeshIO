@@ -95,7 +95,7 @@ namespace MeshIO.FBX.Converters
 				switch (element)
 				{
 					case Node fbxNode:
-						scene.RootNode.Children.Add(fbxNode);
+						scene.RootNode.Nodes.Add(fbxNode);
 						break;
 					default:
 						this.notify($"Element3D is not a {typeof(Node).FullName} is a {element.GetType().FullName}");
@@ -299,7 +299,7 @@ namespace MeshIO.FBX.Converters
 				if (child == null)
 					continue;
 
-				model.Children.Add(child);
+				model.Nodes.Add(child);
 			}
 
 			return model;

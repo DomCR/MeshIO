@@ -2,12 +2,24 @@
 
 namespace MeshIO
 {
+	/// <summary>
+	/// User defined property
+	/// </summary>
 	public class Property
 	{
+		/// <summary>
+		/// Property name
+		/// </summary>
 		public string Name { get; }
 
+		/// <summary>
+		/// Property value
+		/// </summary>
 		public object Value { get; set; }
 
+		/// <summary>
+		/// 3D object that owns this property
+		/// </summary>
 		public Element3D Owner { get; internal set; }
 
 		public Property(string name, Element3D owner)
@@ -25,6 +37,13 @@ namespace MeshIO
 			this.Value = value;
 		}
 
+		/// <summary>
+		/// Convert a property into its typed equivalent
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="property"></param>
+		/// <returns></returns>
+		/// <exception cref="ArgumentException"></exception>
 		public static Property<T> ConvertProperty<T>(Property property)
 		{
 			Property<T> typed = new Property<T>(property.Name, property.Owner);

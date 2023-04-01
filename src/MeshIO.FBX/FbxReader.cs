@@ -19,14 +19,14 @@ namespace MeshIO.FBX
 		/// </summary>
 		/// <param name="path">The complete file path to read to.</param>
 		/// <param name="errorLevel">When to throw an <see cref="FbxException"/></param>
-		public FbxReader(string path, ErrorLevel errorLevel) : this(new FileStream(path, FileMode.Open), errorLevel) { }
+		public FbxReader(string path, ErrorLevel errorLevel = ErrorLevel.Permissive) : this(new FileStream(path, FileMode.Open), errorLevel) { }
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="FbxReader"/> class for the specified stream.
 		/// </summary>
 		/// <param name="stream">The stream to write to.</param>
 		/// <param name="errorLevel"></param>
-		public FbxReader(Stream stream, ErrorLevel errorLevel)
+		public FbxReader(Stream stream, ErrorLevel errorLevel = ErrorLevel.Permissive)
 		{
 			if (stream == null)
 				throw new ArgumentNullException(nameof(stream));
@@ -84,7 +84,7 @@ namespace MeshIO.FBX
 		/// Read fbx file.
 		/// </summary>
 		/// <returns></returns>
-		public static Scene Read(string path, ErrorLevel errorLevel, NotificationEventHandler notificationHandler = null)
+		public static Scene Read(string path, ErrorLevel errorLevel = ErrorLevel.Permissive, NotificationEventHandler notificationHandler = null)
 		{
 			using (FbxReader reader = new FbxReader(path, errorLevel))
 			{
@@ -97,7 +97,7 @@ namespace MeshIO.FBX
 		/// Parse the document into a node structure.
 		/// </summary>
 		/// <returns></returns>
-		public static FbxRootNode Parse(string path, ErrorLevel errorLevel, NotificationEventHandler notificationHandler = null)
+		public static FbxRootNode Parse(string path, ErrorLevel errorLevel = ErrorLevel.Permissive, NotificationEventHandler notificationHandler = null)
 		{
 			using (FbxReader reader = new FbxReader(path, errorLevel))
 			{
@@ -110,7 +110,7 @@ namespace MeshIO.FBX
 		/// Read fbx file.
 		/// </summary>
 		/// <returns></returns>
-		public static Scene Read(Stream stream, ErrorLevel errorLevel, NotificationEventHandler notificationHandler = null)
+		public static Scene Read(Stream stream, ErrorLevel errorLevel = ErrorLevel.Permissive, NotificationEventHandler notificationHandler = null)
 		{
 			using (FbxReader reader = new FbxReader(stream, errorLevel))
 			{
@@ -123,7 +123,7 @@ namespace MeshIO.FBX
 		/// Parse the document into a node structure.
 		/// </summary>
 		/// <returns></returns>
-		public static FbxRootNode Parse(Stream stream, ErrorLevel errorLevel, NotificationEventHandler notificationHandler = null)
+		public static FbxRootNode Parse(Stream stream, ErrorLevel errorLevel = ErrorLevel.Permissive, NotificationEventHandler notificationHandler = null)
 		{
 			using (FbxReader reader = new FbxReader(stream, errorLevel))
 			{

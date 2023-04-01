@@ -1,24 +1,35 @@
-# MeshIO ![Build](https://github.com/DomCr/MeshIO/actions/workflows/build_n_test.yml/badge.svg) ![License](https://img.shields.io/github/license/DomCr/ACadSharp)
+# MeshIO ![Build](https://github.com/DomCr/MeshIO/actions/workflows/build_n_test.yml/badge.svg) ![License](https://img.shields.io/github/license/DomCr/ACadSharp) ![nuget](https://img.shields.io/nuget/v/MeshIO)
 
-C# 3D library.
+C# modular library to read/write and modify different 3D formats.
 
-# MeshIO.FBX
+Here you can find a sample project that shows [how to use](https://github.com/DomCR/MeshIO/tree/master/samples) MeshIO.
 
-Based upon [FBXWriter](https://github.com/hamish-milne/FbxWriter) by [Hamish Milne](https://github.com/hamish-milne).
+## MeshIO modules
 
-**Current features**:
+Each module integrates a different 3D format, all of them use MeshIO as a core library so it makes easier to modify and convert 
+the different 3D formats.
 
-- Read and Write FBX binary files
-- Read and Write FBX ASCII files
+### MeshIO.FBX
 
-# MeshIO.STL
+- Read/Write FBX binary files
+- Read/Write FBX ASCII files
+- Parse FBX files in a node base structure
+- Process and add custom `FbxProperties`
 
-Read a mesh from STL file
+For more [information](https://github.com/DomCR/MeshIO/tree/master/src/MeshIO.FBX).
 
-**Current features**:
+### MeshIO.STL
 
-- Read and write STL binary files
-- Read and write STL ASCII files
+- Read/Write STL binary files
+- Read/Write STL ASCII files
+
+For more [information](https://github.com/DomCR/MeshIO/tree/master/src/MeshIO.STL).
+
+### MeshIO.GLTF
+
+- Read/Write GLB files
+
+For more [information](https://github.com/DomCR/MeshIO/tree/master/src/MeshIO.GLTF).
 
 Contributing
 ------------
