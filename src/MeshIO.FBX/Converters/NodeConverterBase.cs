@@ -9,13 +9,14 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using MeshIO.FBX.Mappers;
 
 namespace MeshIO.FBX.Converters
 {
-    /// <summary>
-    /// Base class to convert a node structure fbx <see cref="FbxRootNode"/> into a <see cref="Scene"/>
-    /// </summary>
-    public abstract class NodeConverterBase : INodeConverter
+	/// <summary>
+	/// Base class to convert a node structure fbx <see cref="FbxRootNode"/> into a <see cref="Scene"/>
+	/// </summary>
+	public abstract class NodeConverterBase : INodeConverter
 	{
 		public event NotificationEventHandler OnNotification;
 
@@ -26,6 +27,8 @@ namespace MeshIO.FBX.Converters
 		public FbxNode SectionObjects { get; set; }
 
 		public FbxNode SectionConnections { get; set; }
+
+		public FbxNode SectionDefinitions { get;  set; }
 
 		protected System.Text.RegularExpressions.Regex _propertiesRegex = new System.Text.RegularExpressions.Regex(@"(Properties).*?[\d]+");
 
@@ -608,6 +611,10 @@ namespace MeshIO.FBX.Converters
 						break;
 					case "Connections":
 						this.SectionConnections = this.setRootSection(this.SectionConnections, item);
+						break;
+					case "Definitions":
+						this.SectionDefinitions = this.setRootSection(this.SectionDefinitions, item);
+						var d = new FbxDefinitionMapper(item);
 						break;
 					default:
 						this.notify($"Unknown root node with name : {item.Name}");

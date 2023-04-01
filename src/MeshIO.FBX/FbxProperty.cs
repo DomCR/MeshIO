@@ -8,11 +8,13 @@
 		public const string LclScaling = "Lcl Scaling";
 		public const string LclRotation = "Lcl Rotation";
 
-		public const string Show = "Show";	//IsVisible
-		public const string Freeze = "Freeze";	//
+		public const string Show = "Show";  //IsVisible
+		public const string Freeze = "Freeze";  //
 
 		//Material Properties
 		public const string AmbientColor = "AmbientColor";
+
+		public static readonly System.Text.RegularExpressions.Regex PropertiesRegex = new System.Text.RegularExpressions.Regex(@"(Properties).*?[\d]+");
 
 		public string FbxTypeName { get; set; }
 
