@@ -5,14 +5,29 @@
 	/// </summary>
 	public enum FbxVersion
 	{
+		/// <summary>
+		/// FBX version 2.0
+		/// </summary>
 		v2000 = 2000,
 		v2001 = 2001,
+		/// <summary>
+		/// FBX version 3.0
+		/// </summary>
 		v3000 = 3000,
 		v3001 = 3001,
+		/// <summary>
+		/// FBX version 4.0
+		/// </summary>
 		v4000 = 4000,
 		v4001 = 4001,
 		v4050 = 4050,
+		/// <summary>
+		/// FBX version 5.0
+		/// </summary>
 		v5000 = 5000,
+		/// <summary>
+		/// FBX version 5.8
+		/// </summary>
 		v5800 = 5800,
 		/// <summary>
 		/// FBX version 6.0
