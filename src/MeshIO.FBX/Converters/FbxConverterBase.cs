@@ -162,7 +162,7 @@ namespace MeshIO.FBX.Converters
         {
             _objects = new FbxNode("Objects");
 
-            foreach (Element3D item in this._scene.RootNode.Children)
+            foreach (Element3D item in this._scene.RootNode.Nodes)
             {
                 FbxNode c = buildElementNode(item);
 
@@ -221,7 +221,7 @@ namespace MeshIO.FBX.Converters
             node.Nodes.Add(new FbxNode("Shading", n.Shading ? 'T' : 'F'));
             node.Nodes.Add(new FbxNode("Culling", n.Culling));
 
-            foreach (Element3D item in n.Children)
+            foreach (Element3D item in n.Nodes)
             {
                 buildElementNode(item);
 

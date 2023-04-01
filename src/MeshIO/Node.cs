@@ -27,7 +27,7 @@ namespace MeshIO
 		/// <summary>
 		/// Get all linked elements to this node
 		/// </summary>
-		public List<Element3D> Children { get; } = new List<Element3D>();
+		public List<Element3D> Nodes { get; } = new List<Element3D>();
 
 		public Node() : base() { }
 

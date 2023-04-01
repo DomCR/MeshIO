@@ -137,6 +137,7 @@ namespace MeshIO.FBX
 			var validFooterExtension = CheckFooter(_stream, document.Version);
 			if (_errorLevel >= ErrorLevel.Strict && !validFooterExtension)
 				throw new FbxException(dataPos, "Invalid footer");
+
 			return document;
 		}
 
