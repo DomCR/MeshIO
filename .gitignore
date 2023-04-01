@@ -357,3 +357,4 @@ MigrationBackup/
 
 # Exceptions
 !MeshIO.OBJ
+/local

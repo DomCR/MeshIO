@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\MeshIO.FBX\MeshIO.FBX.csproj" />
+    <ProjectReference Include="..\..\src\MeshIO.GLTF\MeshIO.GLTF.csproj" />
+    <ProjectReference Include="..\..\src\MeshIO.OBJ\MeshIO.OBJ.csproj" />
+    <ProjectReference Include="..\..\src\MeshIO.STL\MeshIO.STL.csproj" />
+  </ItemGroup>
+
+</Project>
