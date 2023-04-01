@@ -9,8 +9,6 @@ namespace MeshIO
 		/// </summary>
 		public Scene Scene { get; }
 
-		private readonly Dictionary<ulong, Element3D> _elements = new Dictionary<ulong, Element3D>();
-
 		public SceneElement() : base() { }
 
 		public SceneElement(string name) : base(name) { }
