@@ -15,6 +15,11 @@ namespace MeshIO
 		public string Culling { get; set; } = "CullingOff";
 
 		/// <summary>
+		/// The node and all the components are visible or not
+		/// </summary>
+		public bool IsVisible { get; set; } = true;
+
+		/// <summary>
 		/// Get the local transform for this node
 		/// </summary>
 		public Transform Transform { get; internal set; } = new Transform();
