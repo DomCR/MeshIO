@@ -80,7 +80,6 @@ namespace MeshIO.FBX.Converters
 
 		public Scene ConvertScene()
 		{
-
 			Scene scene = this.buildScene(this.SectionDocuments);
 
 			foreach (FbxNode n in this.SectionObjects.Nodes)

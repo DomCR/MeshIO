@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MeshIO.Core;
+using System;
 using System.IO;
 
 namespace MeshIO.FBX
@@ -6,7 +7,7 @@ namespace MeshIO.FBX
 	/// <summary>
 	/// Implements a <see cref="FbxWriter"/> for writing fbx files.
 	/// </summary>
-	public class FbxWriter : IFbxWriter
+	public class FbxWriter : WriterBase
 	{
 		/// <summary>
 		/// Version to be used in the fbx file.
@@ -46,28 +47,36 @@ namespace MeshIO.FBX
 			this.Version = version;
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Write a <see cref="Scene"/> into a fbx an ascii file.
+		/// </summary>
 		public void WriteAscii(Scene scene)
 		{
 			using (FbxAsciiWriter writer = new FbxAsciiWriter(this._stream))
 				writer.Write(FbxRootNode.CreateFromScene(scene, this.Version));
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Write an <see cref="Scene"/> into an fbx binary file.
+		/// </summary>
 		public void WriteBinary(Scene scene)
 		{
 			using (FbxBinaryWriter writer = new FbxBinaryWriter(this._stream))
 				writer.Write(FbxRootNode.CreateFromScene(scene, this.Version));
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Write a <see cref="FbxRootNode"/> into a fbx an ascii file.
+		/// </summary>
 		public void WriteAscii(FbxRootNode root)
 		{
 			using (FbxAsciiWriter writer = new FbxAsciiWriter(this._stream))
 				writer.Write(root);
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Write a <see cref="FbxRootNode"/> into a fbx an ascii file.
+		/// </summary>
 		public void WriteBinary(FbxRootNode root)
 		{
 			using (FbxBinaryWriter writer = new FbxBinaryWriter(this._stream))
@@ -75,7 +84,7 @@ namespace MeshIO.FBX
 		}
 
 		/// <inheritdoc/>
-		public void Dispose()
+		public override void Dispose()
 		{
 			_stream.Dispose();
 		}
