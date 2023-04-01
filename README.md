@@ -2,6 +2,8 @@
 
 C# modular library to read/write and modify different 3D formats.
 
+Here you can find a sample project that shows [how to use](https://github.com/DomCR/MeshIO/tree/master/samples) MeshIO.
+
 ## MeshIO modules
 
 Each module integrates a different 3D format, all of them use MeshIO as a core library so it makes easier to modify and convert 
