@@ -6,6 +6,8 @@
 	/// </remarks>
 	public class NodeConverter7000 : NodeConverterBase
 	{
+		public override string PropertiesToken { get { return "Properties70"; } }
+
 		public NodeConverter7000(FbxRootNode root) : base(root) { }
 	}
 }

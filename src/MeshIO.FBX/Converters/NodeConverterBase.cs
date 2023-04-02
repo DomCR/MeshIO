@@ -20,6 +20,16 @@ namespace MeshIO.FBX.Converters
 	{
 		public event NotificationEventHandler OnNotification;
 
+		public const string TokenModel = "Model";
+
+		public const string TokenGeometry = "Geometry";
+
+		public const string TokenMaterial = "Material";
+
+		public string PrefixSeparator { get { return "::"; } }
+
+		public abstract string PropertiesToken { get; }
+
 		public FbxVersion Version { get { return this._root.Version; } }
 
 		public FbxNode SectionDocuments { get; set; }
@@ -28,7 +38,7 @@ namespace MeshIO.FBX.Converters
 
 		public FbxNode SectionConnections { get; set; }
 
-		public FbxNode SectionDefinitions { get;  set; }
+		public FbxNode SectionDefinitions { get; set; }
 
 		protected System.Text.RegularExpressions.Regex _propertiesRegex = new System.Text.RegularExpressions.Regex(@"(Properties).*?[\d]+");
 
@@ -249,7 +259,7 @@ namespace MeshIO.FBX.Converters
 
 			List<Property> properties = new List<Property>();
 
-			this.BuildElement(node, model, "Model::");
+			this.BuildElement(node, model, $"{TokenModel}{PrefixSeparator}");
 
 			foreach (FbxNode n in node.Nodes)
 			{
@@ -267,6 +277,7 @@ namespace MeshIO.FBX.Converters
 					case "Culling":
 						model.Culling = (string)n.Value;
 						break;
+					case "Properties60":
 					default:
 						if (!this.isCommonElementField(model, n, properties))
 							this.notify($"Unknow node while building Model:: with name {n.Name}");
@@ -313,7 +324,7 @@ namespace MeshIO.FBX.Converters
 
 			List<Property> properties = new List<Property>();
 
-			this.BuildElement(node, material, "Material::");
+			this.BuildElement(node, material, $"{TokenMaterial}{PrefixSeparator}");
 
 			foreach (FbxNode n in node.Nodes)
 			{
@@ -414,7 +425,7 @@ namespace MeshIO.FBX.Converters
 
 			List<Property> properties = new List<Property>();
 
-			this.BuildElement(node, mesh, "Geometry::");
+			this.BuildElement(node, mesh, $"{TokenGeometry}{PrefixSeparator}");
 
 			foreach (FbxNode n in node)
 			{
