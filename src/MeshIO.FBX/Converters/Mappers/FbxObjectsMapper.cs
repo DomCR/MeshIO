@@ -178,183 +178,175 @@ namespace MeshIO.FBX.Converters.Mappers
 			}
 
 			//Mesh layers
-			if (node.TryGetNode("LayerElementNormal", out FbxNode layerElementNormal))
-			{
-				mesh.Layers.Add(this.mapLayerElementNormal(node));
-			}
+			this.mapGeometryLayers(mesh, node);
 
 			return mesh;
 		}
 
-		private bool mapCommonLayer(LayerElement layer, FbxNode node)
+		private void mapGeometryLayers(Geometry geometry, FbxNode node)
 		{
-			switch (node.Name)
+			if (node.TryGetNode("LayerElementNormal", out FbxNode layerElementNormal))
 			{
-				case "Version":
-					return true;
-				case "Name":
-					layer.Name = node.Value as string;
-					return true;
-				case "MappingInformationType":
-					if (Enum.TryParse<MappingMode>((string)node.Value, out MappingMode mappingMode))
-					{
-						layer.MappingMode = mappingMode;
-					}
-					else
-					{
-						this.notify("Could not parse MappingMode");
-					}
-					return true;
-				case "ReferenceInformationType":
-					if (Enum.TryParse<ReferenceMode>((string)node.Value, out ReferenceMode referenceMode))
-					{
-						layer.ReferenceMode = referenceMode;
-					}
-					else
-					{
-						this.notify("Could not parse MappingMode");
-					}
-					return true;
-				default:
-					return false;
+				geometry.Layers.Add(this.mapLayerElementNormal(layerElementNormal));
+			}
+
+			if (node.TryGetNode("LayerElementBinormal", out FbxNode layerElementBinormal))
+			{
+				geometry.Layers.Add(this.mapLayerElementBinormal(layerElementBinormal));
+			}
+
+			if (node.TryGetNode("LayerElementTangent", out FbxNode layerElementTangent))
+			{
+				geometry.Layers.Add(this.mapLayerElementTangent(layerElementTangent));
+			}
+
+			if (node.TryGetNode("LayerElementMaterial", out FbxNode layerElementMaterial))
+			{
+				geometry.Layers.Add(this.BuildLayerElementMaterial(layerElementMaterial));
+			}
+
+			if (node.TryGetNode("LayerElementUV", out FbxNode layerElementUV))
+			{
+				geometry.Layers.Add(this.mapLayerElementUV(layerElementUV));
+			}
+
+			if (node.TryGetNode("LayerElementSmoothing", out FbxNode layerElementSmoothing))
+			{
+				geometry.Layers.Add(this.mapLayerElementSmoothing(layerElementSmoothing));
 			}
 		}
 
-		public LayerElement mapLayerElementNormal(FbxNode node)
+		private void mapCommonLayer(LayerElement layer, FbxNode node)
+		{
+			if (node.TryGetNode("Name", out FbxNode name))
+			{
+				layer.Name = name.Value as string;
+			}
+
+			if (node.TryGetNode("MappingInformationType", out FbxNode mappingInformationType))
+			{
+				if (Enum.TryParse<MappingMode>((string)mappingInformationType.Value, out MappingMode mappingMode))
+				{
+					layer.MappingMode = mappingMode;
+				}
+				else
+				{
+					this.notify($"Could not parse MappingMode | {mappingInformationType.Value}", Core.NotificationType.Warning);
+				}
+			}
+
+			if (node.TryGetNode("ReferenceInformationType", out FbxNode referenceInformationType))
+			{
+				if (Enum.TryParse<MappingMode>((string)referenceInformationType.Value, out MappingMode mappingMode))
+				{
+					layer.MappingMode = mappingMode;
+				}
+				else
+				{
+					this.notify($"Could not parse MappingMode | {referenceInformationType.Value}", Core.NotificationType.Warning);
+				}
+			}
+		}
+
+		private LayerElement mapLayerElementNormal(FbxNode node)
 		{
 			LayerElementNormal layer = new LayerElementNormal();
 
 			this.mapCommonLayer(layer, node);
 
-			foreach (FbxNode n in node)
+			if (node.TryGetNode("Normals", out FbxNode normals))
 			{
-				switch (n.Name)
-				{
-					case "Normals":
-						layer.Normals = this.arrToXYZ(this.arrToDoubleArray(n.Value as IEnumerable));
-						break;
-					case "NormalsW":
-						layer.Weights.AddRange(this.arrToDoubleArray(n.Value as IEnumerable));
-						break;
-					default:
-						if (!this.mapCommonLayer(layer, n))
-							this.notify($"Unknow node while building LayerElement with name {n.Name}");
-						break;
-				}
+				layer.Normals = this.arrToXYZ(this.arrToDoubleArray(normals.Value as IEnumerable));
+			}
+
+			if (node.TryGetNode("Normals", out FbxNode normalsw))
+			{
+				layer.Weights.AddRange(this.arrToDoubleArray(normalsw.Value as IEnumerable));
 			}
 
 			return layer;
 		}
 
-		public LayerElement BuildLayerElementBinormal(FbxNode node)
+		private LayerElement mapLayerElementBinormal(FbxNode node)
 		{
 			LayerElementBinormal layer = new LayerElementBinormal();
 
-			foreach (FbxNode n in node)
+			this.mapCommonLayer(layer, node);
+
+			if (node.TryGetNode("Binormals", out FbxNode normals))
 			{
-				switch (n.Name)
-				{
-					case "Binormals":
-						layer.Normals = this.arrToXYZ(this.arrToDoubleArray(n.Value as IEnumerable));
-						break;
-					case "BinormalsW":
-						layer.Weights.AddRange(this.arrToDoubleArray(n.Value as IEnumerable));
-						break;
-					default:
-						if (!this.mapCommonLayer(layer, n))
-							this.notify($"Unknow node while building LayerElement with name {n.Name}");
-						break;
-				}
+				layer.Normals = this.arrToXYZ(this.arrToDoubleArray(normals.Value as IEnumerable));
+			}
+
+			if (node.TryGetNode("BinormalsW", out FbxNode normalsw))
+			{
+				layer.Weights.AddRange(this.arrToDoubleArray(normalsw.Value as IEnumerable));
 			}
 
 			return layer;
 		}
 
-		public LayerElement BuildLayerElementTangent(FbxNode node)
+		private LayerElement mapLayerElementTangent(FbxNode node)
 		{
 			LayerElementTangent layer = new LayerElementTangent();
 
-			foreach (FbxNode n in node)
+			this.mapCommonLayer(layer, node);
+
+			if (node.TryGetNode("Tangents", out FbxNode normals))
 			{
-				switch (n.Name)
-				{
-					case "Tangents":
-						layer.Tangents = this.arrToXYZ(this.arrToDoubleArray(n.Value as IEnumerable));
-						break;
-					case "TangentsW":
-						layer.Weights.AddRange(this.arrToDoubleArray(n.Value as IEnumerable));
-						break;
-					default:
-						if (!this.mapCommonLayer(layer, n))
-							this.notify($"Unknow node while building LayerElement with name {n.Name}");
-						break;
-				}
+				layer.Tangents = this.arrToXYZ(this.arrToDoubleArray(normals.Value as IEnumerable));
+			}
+
+			if (node.TryGetNode("TangentsW", out FbxNode normalsw))
+			{
+				layer.Weights.AddRange(this.arrToDoubleArray(normalsw.Value as IEnumerable));
 			}
 
 			return layer;
 		}
 
-		public LayerElement BuildLayerElementUV(FbxNode node)
+		private LayerElement mapLayerElementUV(FbxNode node)
 		{
 			LayerElementUV layer = new LayerElementUV();
 
-			foreach (FbxNode n in node)
+			this.mapCommonLayer(layer, node);
+
+			if (node.TryGetNode("UV", out FbxNode uv))
 			{
-				switch (n.Name)
-				{
-					case "UV":
-						layer.UV.AddRange(this.arrToXY(this.arrToDoubleArray(n.Value as IEnumerable)));
-						break;
-					case "UVIndex":
-						layer.Indices.AddRange(this.toArr<int>(n.Value as IEnumerable));
-						break;
-					default:
-						if (!this.mapCommonLayer(layer, n))
-							this.notify($"Unknow node while building LayerElement with name {n.Name}");
-						break;
-				}
+				layer.UV = this.arrToXY(this.arrToDoubleArray(uv.Value as IEnumerable));
+			}
+
+			if (node.TryGetNode("UVIndex", out FbxNode indices))
+			{
+				layer.Indices.AddRange(this.toArr<int>(indices.Value as IEnumerable));
 			}
 
 			return layer;
 		}
 
-		public LayerElement BuildLayerElementSmoothing(FbxNode node)
+		private LayerElement mapLayerElementSmoothing(FbxNode node)
 		{
 			LayerElementSmoothing layer = new LayerElementSmoothing();
 
-			foreach (FbxNode n in node)
+			this.mapCommonLayer(layer, node);
+
+			if (node.TryGetNode("Smoothing", out FbxNode smooth))
 			{
-				switch (n.Name)
-				{
-					case "Smoothing":
-						layer.Smoothing.AddRange(this.toArr<int>(n.Value as IEnumerable));
-						break;
-					default:
-						if (!this.mapCommonLayer(layer, n))
-							this.notify($"Unknow node while building LayerElement with name {n.Name}");
-						break;
-				}
+				layer.Smoothing.AddRange(this.toArr<int>(smooth.Value as IEnumerable));
 			}
 
 			return layer;
 		}
 
-		public LayerElement BuildLayerElementMaterial(FbxNode node)
+		private LayerElement BuildLayerElementMaterial(FbxNode node)
 		{
 			LayerElementMaterial layer = new LayerElementMaterial();
 
-			foreach (FbxNode n in node)
+			this.mapCommonLayer(layer, node);
+
+			if (node.TryGetNode("Materials", out FbxNode materials))
 			{
-				switch (n.Name)
-				{
-					case "Materials":
-						layer.Indices.AddRange(this.toArr<int>(n.Value as IEnumerable));
-						break;
-					default:
-						if (!this.mapCommonLayer(layer, n))
-							this.notify($"Unknow node while building LayerElement with name {n.Name}");
-						break;
-				}
+				layer.Indices.AddRange(this.toArr<int>(materials.Value as IEnumerable));
 			}
 
 			return layer;

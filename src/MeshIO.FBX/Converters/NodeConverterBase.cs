@@ -673,7 +673,6 @@ namespace MeshIO.FBX.Converters
 						break;
 					case "Definitions":
 						this.SectionDefinitions = this.setRootSection(this.SectionDefinitions, item);
-						var d = new FbxDefinitionsMapper();
 						break;
 					default:
 						this.notify($"Unknown root node with name : {item.Name}");
