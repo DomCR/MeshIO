@@ -24,7 +24,7 @@ namespace MeshIO.FBX
 		/// <param name="version"><see cref="FbxVersion"/> format for the <see cref="FbxRootNode"/></param>
 		public static FbxRootNode CreateFromScene(Scene scene, FbxVersion version = FbxVersion.v7400)
 		{
-			IFbxConverter converter = FbxConverterBase.GetConverter(scene, version);
+			ISceneConverter converter = SceneConverterBase.GetConverter(scene, version);
 			return converter.ToRootNode();
 		}
 	}

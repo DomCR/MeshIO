@@ -1,5 +1,4 @@
 ﻿using CSMath;
-using MeshIO.Core;
 using MeshIO.Entities.Geometries.Layers;
 using MeshIO.Entities.Geometries;
 using MeshIO.FBX.Exceptions;
@@ -8,18 +7,15 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using MeshIO.FBX.Mappers;
+using MeshIO.FBX.Converters.Mappers;
 
 namespace MeshIO.FBX.Converters
 {
 	/// <summary>
 	/// Base class to convert a node structure fbx <see cref="FbxRootNode"/> into a <see cref="Scene"/>
 	/// </summary>
-	public abstract class NodeConverterBase : INodeConverter
+	public abstract class NodeConverterBase : ConverterBase, INodeConverter
 	{
-		public event NotificationEventHandler OnNotification;
-
 		public const string TokenModel = "Model";
 
 		public const string TokenGeometry = "Geometry";
@@ -39,6 +35,12 @@ namespace MeshIO.FBX.Converters
 		public FbxNode SectionConnections { get; set; }
 
 		public FbxNode SectionDefinitions { get; set; }
+
+		public FbxDefinitionsMapper MapDefinitions { get; private set; } = new FbxDefinitionsMapper();
+
+		public FbxObjectsMapper MapObjects { get; private set; } = new FbxObjectsMapper();
+
+		public FbxConnectionMapper MapConnections { get; private set; } = new FbxConnectionMapper();
 
 		protected System.Text.RegularExpressions.Regex _propertiesRegex = new System.Text.RegularExpressions.Regex(@"(Properties).*?[\d]+");
 
@@ -88,34 +90,70 @@ namespace MeshIO.FBX.Converters
 		{
 			this._root = root;
 
+			this.createMappers();
+
 			this.checkFileSections();
 		}
 
 		public Scene ConvertScene()
 		{
-			Scene scene = this.buildScene(this.SectionDocuments);
+			throw new NotImplementedException();
 
-			foreach (FbxNode n in this.SectionObjects.Nodes)
+			if (false)
 			{
-				this._objects.Add(Convert.ToUInt64(n.Properties[0]), n);
-			}
+				Scene scene = this.buildScene(this.SectionDocuments);
 
-			foreach (FbxNode n in this.getChildren(scene.Id.Value))
-			{
-				Element3D element = this.ToElement(n);
-
-				switch (element)
+				foreach (FbxNode n in this.SectionObjects.Nodes)
 				{
-					case Node fbxNode:
-						scene.RootNode.Nodes.Add(fbxNode);
-						break;
-					default:
-						this.notify($"Element3D is not a {typeof(Node).FullName} is a {element.GetType().FullName}");
-						break;
+					this._objects.Add(Convert.ToUInt64(n.Properties[0]), n);
 				}
-			}
 
-			return scene;
+				foreach (FbxNode n in this.getChildren(scene.Id.Value))
+				{
+					Element3D element = this.ToElement(n);
+
+					switch (element)
+					{
+						case Node fbxNode:
+							scene.RootNode.Nodes.Add(fbxNode);
+							break;
+						default:
+							this.notify($"Element3D is not a {typeof(Node).FullName} is a {element.GetType().FullName}");
+							break;
+					}
+				}
+
+				return scene; 
+			}
+		}
+
+		private void createMappers()
+		{
+			List<string> mappedSections = new List<string>();
+
+			this.createMapper(this.MapDefinitions, mappedSections);
+			this.createMapper(this.MapObjects, mappedSections);
+			this.createMapper(this.MapConnections, mappedSections);
+
+			//TODO: Search for not implemented sections
+			foreach (var item in this._root)
+			{
+
+			}
+		}
+
+		private void createMapper<T>(T mapper, List<string> mapped)
+			where T : IFbxMapper
+		{
+			if (this._root.TryGetNode(mapper.SectionName, out FbxNode node))
+			{
+				mapper.Map(node);
+				mapped.Add(mapper.SectionName);
+			}
+			else
+			{
+				this.notify("", Core.NotificationType.Warning);
+			}
 		}
 
 		public Element3D ToElement(FbxNode node)
@@ -124,13 +162,13 @@ namespace MeshIO.FBX.Converters
 
 			switch (node.Name)
 			{
-				case "Model":
-					element = this.BuildModel(node);
+				case FbxFileToken.Model:
+					element = this.ToNode(node);
 					break;
-				case "Material":
-					element = this.BuildMaterial(node);
+				case FbxFileToken.Material:
+					element = this.ToMaterial(node);
 					break;
-				case "Geometry":
+				case FbxFileToken.Geometry:
 					element = this.BuildGeometryObject(node);
 					break;
 				//case "NodeAttribute":
@@ -253,13 +291,13 @@ namespace MeshIO.FBX.Converters
 			return property;
 		}
 
-		public Element3D BuildModel(FbxNode node)
+		public Element3D ToNode(FbxNode node)
 		{
 			Node model = new Node();
 
 			List<Property> properties = new List<Property>();
 
-			this.BuildElement(node, model, $"{TokenModel}{PrefixSeparator}");
+			this.BuildElement(node, model, $"{FbxFileToken.Model}{PrefixSeparator}");
 
 			foreach (FbxNode n in node.Nodes)
 			{
@@ -318,7 +356,7 @@ namespace MeshIO.FBX.Converters
 			return model;
 		}
 
-		public Element3D BuildMaterial(FbxNode node)
+		public Element3D ToMaterial(FbxNode node)
 		{
 			Material material = new Material();
 
@@ -608,8 +646,18 @@ namespace MeshIO.FBX.Converters
 			return layer;
 		}
 
+		[Obsolete]
 		protected void checkFileSections()
 		{
+			if (this._root.TryGetNode(this.MapConnections.SectionName, out FbxNode connections))
+			{
+				this.MapConnections.Map(connections);
+			}
+			else
+			{
+
+			}
+
 			foreach (var item in this._root)
 			{
 				switch (item.Name)
@@ -625,7 +673,7 @@ namespace MeshIO.FBX.Converters
 						break;
 					case "Definitions":
 						this.SectionDefinitions = this.setRootSection(this.SectionDefinitions, item);
-						var d = new FbxDefinitionMapper(item);
+						var d = new FbxDefinitionsMapper();
 						break;
 					default:
 						this.notify($"Unknown root node with name : {item.Name}");
@@ -751,6 +799,7 @@ namespace MeshIO.FBX.Converters
 			return Polygons;
 		}
 
+		[Obsolete("use connections")]
 		protected IEnumerable<FbxNode> getChildren(ulong containerId)
 		{
 			foreach (FbxNode c in this.SectionConnections.Nodes)
@@ -873,11 +922,6 @@ namespace MeshIO.FBX.Converters
 			scene.Id = 0;
 
 			return scene;
-		}
-
-		private void notify(string message, [CallerMemberName] string caller = null)
-		{
-			this.OnNotification?.Invoke(this, new NotificationEventArgs($"{caller} | {message}"));
 		}
 	}
 }

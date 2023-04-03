@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace MeshIO.FBX
 {
@@ -45,7 +46,22 @@ namespace MeshIO.FBX
 		}
 
 		/// <summary>
-		/// Gets a named child node only if exists
+		/// Checks if the name of the node is repeated
+		/// </summary>
+		/// <param name="name"></param>
+		/// <returns></returns>
+		public bool MultipleNodes(string name)
+		{
+			return this.Nodes.Where(n => n.Name == name).Count() > 1;
+		}
+
+		public IEnumerable<FbxNode> GetNodes(string name)
+		{
+			return this.Nodes.Where(n => n.Name == name);
+		}
+
+		/// <summary>
+		/// Gets the first named node if exists
 		/// </summary>
 		/// <param name="name"></param>
 		/// <param name="node"></param>
