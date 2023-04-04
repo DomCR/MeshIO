@@ -2,6 +2,7 @@
 using MeshIO.Entities.Geometries;
 using MeshIO.Entities.Geometries.Layers;
 using MeshIO.FBX.Exceptions;
+using MeshIO.Shaders;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -57,6 +58,8 @@ namespace MeshIO.FBX.Converters.Mappers
 						element = this.mapGeometry(n);
 						break;
 					case TokenMaterial:
+						element = this.mapMaterial(n);
+						break;
 					default:
 						this.notify($"Unknown fbx object node with name : {n.Name}", Core.NotificationType.NotImplemented);
 						continue;
@@ -120,6 +123,33 @@ namespace MeshIO.FBX.Converters.Mappers
 			}
 
 			return model;
+		}
+
+		private Element3D mapMaterial(FbxNode node)
+		{
+			Material material = new Material();
+
+			this.mapCommon(material, node, $"{TokenMaterial}{PrefixSeparator}");
+
+			if (node.TryGetNode("ShadingModel", out FbxNode ShadingModel))
+			{
+				material.ShadingModel = ShadingModel.Value.ToString();
+			}
+
+			foreach (var p in this.mergeProperties(TokenModel, node))
+			{
+				switch (p.Name)
+				{
+					//TODO: finish material read
+					case FbxProperty.AmbientColor:
+						material.AmbientColor = (Color)p.Value;
+						continue;
+				}
+
+				material.Properties.Add(p);
+			}
+
+			return material;
 		}
 
 		private Element3D mapGeometry(FbxNode node)

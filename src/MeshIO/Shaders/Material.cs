@@ -1,5 +1,11 @@
 ﻿namespace MeshIO.Shaders
 {
+	/// <summary>
+	/// Base material class
+	/// </summary>
+	/// <remarks>
+	/// This class is a temporary placeholder to gather the material information
+	/// </remarks>
 	public class Material : Element3D
 	{
 		public string ShadingModel { get; set; } = "unknown";
@@ -22,8 +28,15 @@
 
 		public double EmissiveFactor { get; set; }
 
-		public Material() : base() { }
+		public Material() : this(string.Empty) { }
 
 		public Material(string name) : base(name) { }
+	}
+
+	public class PbrMaterial : Material
+	{
+		public PbrMaterial() : this(string.Empty) { }
+
+		public PbrMaterial(string name) : base(name) { }
 	}
 }
