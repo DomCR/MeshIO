@@ -6,7 +6,7 @@ using Xunit.Abstractions;
 
 namespace MeshIO.FBX.Tests
 {
-	public class FbxReaderTest : ReaderTestsBase
+	public class FbxReaderTest : IOTestsBase
 	{
 		public static readonly TheoryData<string> AsciiFiles;
 

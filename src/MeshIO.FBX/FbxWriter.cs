@@ -14,28 +14,27 @@ namespace MeshIO.FBX
 		/// </summary>
 		public FbxVersion Version { get; }
 
+		public Scene Scene { get; }
+
+		public FbxRootNode RootNode { get; }
+
 		private Stream _stream;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="FbxWriter"/> class for the specified file.
 		/// </summary>
 		/// <param name="path">The complete file path to write to.</param>
+		/// <param name="scene"></param>
 		/// <param name="version"></param>
-		public FbxWriter(string path, FbxVersion version = FbxVersion.v7400)
-		{
-			if (string.IsNullOrEmpty(path))
-				throw new ArgumentNullException(nameof(path));
-
-			this._stream = new FileStream(path, FileMode.Create);
-			this.Version = version;
-		}
+		public FbxWriter(string path, Scene scene, FbxVersion version = FbxVersion.v7400) : this(File.Create(path), scene, version) { }
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="FbxWriter"/> class for the specified stream.
 		/// </summary>
 		/// <param name="stream">The stream to write to.</param>
+		/// <param name="scene"></param>
 		/// <param name="version"></param>
-		public FbxWriter(Stream stream, FbxVersion version = FbxVersion.v7400)
+		public FbxWriter(Stream stream, Scene scene, FbxVersion version = FbxVersion.v7400)
 		{
 			if (stream == null)
 				throw new ArgumentNullException(nameof(stream));
@@ -43,8 +42,30 @@ namespace MeshIO.FBX
 			if (!stream.CanSeek)
 				throw new ArgumentException("The stream must support seeking. Try reading the data into a buffer first");
 
-			this._stream = stream;
+			this.Scene = scene;
 			this.Version = version;
+			this._stream = stream;
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="FbxWriter"/> class for the specified file.
+		/// </summary>
+		/// <param name="path">The complete file path to write to.</param>
+		/// <param name="rootNode"></param>
+		/// <param name="version"></param>
+		public FbxWriter(string path, FbxRootNode rootNode, FbxVersion version = FbxVersion.v7400) : this(File.Create(path), rootNode, version) { }
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="FbxWriter"/> class for the specified stream.
+		/// </summary>
+		/// <param name="stream">The stream to write to.</param>
+		/// <param name="rootNode"></param>
+		/// <param name="version"></param>
+		public FbxWriter(Stream stream, FbxRootNode rootNode, FbxVersion version = FbxVersion.v7400)
+		{
+			this.Version = version;
+			this.RootNode = rootNode;
+			this._stream = stream;
 		}
 
 		/// <summary>
@@ -91,13 +112,13 @@ namespace MeshIO.FBX
 
 		public static void WriteAscii(string path, Scene scene, FbxVersion version = FbxVersion.v7400)
 		{
-			using (FbxWriter writer = new FbxWriter(path, version))
+			using (FbxWriter writer = new FbxWriter(path, scene, version))
 				writer.WriteAscii(scene);
 		}
 
 		public static void WriteAscii(string path, FbxRootNode root)
 		{
-			using (FbxWriter writer = new FbxWriter(path, root.Version))
+			using (FbxWriter writer = new FbxWriter(path, root, root.Version))
 				writer.WriteAscii(root);
 		}
 
@@ -106,13 +127,13 @@ namespace MeshIO.FBX
 			if (path == null)
 				throw new ArgumentNullException(nameof(path));
 
-			using (FbxWriter writer = new FbxWriter(path, version))
+			using (FbxWriter writer = new FbxWriter(path, scene, version))
 				writer.WriteBinary(scene);
 		}
 
 		public static void WriteBinary(string path, FbxRootNode root)
 		{
-			using (FbxWriter writer = new FbxWriter(path, root.Version))
+			using (FbxWriter writer = new FbxWriter(path, root, root.Version))
 				writer.WriteBinary(root);
 		}
 	}
