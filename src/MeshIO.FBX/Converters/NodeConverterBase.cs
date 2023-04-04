@@ -83,12 +83,12 @@ namespace MeshIO.FBX.Converters
 		protected NodeConverterBase(FbxRootNode root)
 		{
 			this._root = root;
-
-			this.createMappers();
 		}
 
 		public Scene ConvertScene()
 		{
+			this.createMappers();
+
 			Scene scene = this.MapDocuments.RootScene;
 			this.MapObjects.MapElements(this.MapDefinitions);
 
@@ -106,10 +106,12 @@ namespace MeshIO.FBX.Converters
 			this.createMapper(this.MapObjects, mappedSections);
 			this.createMapper(this.MapConnections, mappedSections);
 
-			//TODO: Search for not implemented sections
-			foreach (var item in this._root)
+			foreach (FbxNode item in this._root)
 			{
-
+				if (!mappedSections.Contains(item.Name))
+				{
+					this.notify($"Seciton not implemented {item.Name}", Core.NotificationType.NotImplemented);
+				}
 			}
 		}
 
