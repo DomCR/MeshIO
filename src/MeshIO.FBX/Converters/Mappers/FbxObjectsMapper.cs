@@ -237,9 +237,9 @@ namespace MeshIO.FBX.Converters.Mappers
 
 			if (node.TryGetNode("ReferenceInformationType", out FbxNode referenceInformationType))
 			{
-				if (Enum.TryParse<MappingMode>((string)referenceInformationType.Value, out MappingMode mappingMode))
+				if (Enum.TryParse<ReferenceMode>((string)referenceInformationType.Value, out ReferenceMode referenceMode))
 				{
-					layer.MappingMode = mappingMode;
+					layer.ReferenceMode = referenceMode;
 				}
 				else
 				{
