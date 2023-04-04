@@ -15,10 +15,10 @@ namespace MeshIO.FBX.Converters.Mappers
 				throw new ArgumentException();
 		}
 
-		public virtual IEnumerable<Property> MapProperties(FbxNode node)
+		public virtual List<Property> MapProperties(FbxNode node)
 		{
 			if (!node.TryGetNode("Properties70", out FbxNode properties))
-				return Enumerable.Empty<Property>();
+				return new List<Property>();
 
 			List<Property> lst = new List<Property>();
 

@@ -85,14 +85,16 @@ namespace MeshIO.FBX.Converters.Mappers
 
 		private IEnumerable<Property> mergeProperties(string token, FbxNode node)
 		{
-			return this.MapProperties(node);
-
-			Dictionary<string, Property> result = new Dictionary<string, Property>();
-
 			var properties = this.MapProperties(node);
-			var definitions = this.DefinitionMap.GetDefinitions(token);
+			foreach (Property d in this.DefinitionMap.GetDefinitions(token))
+			{
+				if (!properties.Select(p => p.Name).Contains(d.Name))
+				{
+					properties.Add(d);
+				}
+			}
 
-			return result.Select(r => r.Value);
+			return properties;
 		}
 
 		private Element3D mapModel(FbxNode node)
