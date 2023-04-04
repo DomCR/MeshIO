@@ -37,7 +37,7 @@ namespace MeshIO.FBX.Converters.Mappers
 			this.ObjectsNode = node;
 		}
 
-		public void ConvertElements(FbxDefinitionsMapper definitions = null)
+		public void MapElements(FbxDefinitionsMapper definitions = null)
 		{
 			if (definitions != null)
 			{

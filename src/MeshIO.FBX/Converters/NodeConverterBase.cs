@@ -28,13 +28,7 @@ namespace MeshIO.FBX.Converters
 
 		public FbxVersion Version { get { return this._root.Version; } }
 
-		public FbxNode SectionDocuments { get; set; }
-
-		public FbxNode SectionObjects { get; set; }
-
-		public FbxNode SectionConnections { get; set; }
-
-		public FbxNode SectionDefinitions { get; set; }
+		public FbxDocumentsMapper MapDocuments { get; private set; } = new FbxDocumentsMapper();
 
 		public FbxDefinitionsMapper MapDefinitions { get; private set; } = new FbxDefinitionsMapper();
 
@@ -86,51 +80,28 @@ namespace MeshIO.FBX.Converters
 			return converter;
 		}
 
-		public NodeConverterBase(FbxRootNode root)
+		protected NodeConverterBase(FbxRootNode root)
 		{
 			this._root = root;
 
 			this.createMappers();
-
-			this.checkFileSections();
 		}
 
 		public Scene ConvertScene()
 		{
-			throw new NotImplementedException();
+			Scene scene = this.MapDocuments.RootScene;
+			this.MapObjects.MapElements(this.MapDefinitions);
 
-			if (false)
-			{
-				Scene scene = this.buildScene(this.SectionDocuments);
+			this.assignSubNodes(scene.RootNode);
 
-				foreach (FbxNode n in this.SectionObjects.Nodes)
-				{
-					this._objects.Add(Convert.ToUInt64(n.Properties[0]), n);
-				}
-
-				foreach (FbxNode n in this.getChildren(scene.Id.Value))
-				{
-					Element3D element = this.ToElement(n);
-
-					switch (element)
-					{
-						case Node fbxNode:
-							scene.RootNode.Nodes.Add(fbxNode);
-							break;
-						default:
-							this.notify($"Element3D is not a {typeof(Node).FullName} is a {element.GetType().FullName}");
-							break;
-					}
-				}
-
-				return scene; 
-			}
+			return scene;
 		}
 
 		private void createMappers()
 		{
 			List<string> mappedSections = new List<string>();
 
+			this.createMapper(this.MapDocuments, mappedSections);
 			this.createMapper(this.MapDefinitions, mappedSections);
 			this.createMapper(this.MapObjects, mappedSections);
 			this.createMapper(this.MapConnections, mappedSections);
@@ -145,6 +116,8 @@ namespace MeshIO.FBX.Converters
 		private void createMapper<T>(T mapper, List<string> mapped)
 			where T : IFbxMapper
 		{
+			mapper.OnNotification += this.mapperOnNotification;
+
 			if (this._root.TryGetNode(mapper.SectionName, out FbxNode node))
 			{
 				mapper.Map(node);
@@ -156,33 +129,29 @@ namespace MeshIO.FBX.Converters
 			}
 		}
 
-		public Element3D ToElement(FbxNode node)
+		private void assignSubNodes(Node node)
 		{
-			Element3D element = null;
-
-			switch (node.Name)
+			foreach (ulong id in this.MapConnections.GetChildren(node.Id))
 			{
-				case FbxFileToken.Model:
-					element = this.ToNode(node);
-					break;
-				case FbxFileToken.Material:
-					element = this.ToMaterial(node);
-					break;
-				case FbxFileToken.Geometry:
-					element = this.BuildGeometryObject(node);
-					break;
-				//case "NodeAttribute":
-				//	element = this.BuildNodeAttribute(node);
-				//	break;
-				//case "Object":
-				//case "ObjectMetaData":  //TODO: Link data with model
-				//	break;
-				default:
-					this.notify($"Unknown element node with name : {node.Name}");
-					break;
-			}
+				if (this.MapObjects.ObjectMap.TryGetValue(id, out Element3D sub))
+				{
+					node.Nodes.Add(sub);
 
-			return element;
+					if (sub is Node n)
+					{
+						this.assignSubNodes(n);
+					}
+				}
+				else
+				{
+					this.notify($"Unable to find {id}", Core.NotificationType.Warning);
+				}
+			}
+		}
+
+		protected void mapperOnNotification(object sender, Core.NotificationEventArgs e)
+		{
+			this.notify(e.Message, e.NotificationType, e.Exception);
 		}
 
 		public void BuildElement(FbxNode node, Element3D element, string prefix)
@@ -340,17 +309,6 @@ namespace MeshIO.FBX.Converters
 				}
 
 				model.Properties.Add(p);
-			}
-
-			//Get the children for this Node
-			foreach (FbxNode n in this.getChildren(model.Id.Value))
-			{
-				Element3D child = this.ToElement(n);
-
-				if (child == null)
-					continue;
-
-				model.Nodes.Add(child);
 			}
 
 			return model;
@@ -646,48 +604,6 @@ namespace MeshIO.FBX.Converters
 			return layer;
 		}
 
-		[Obsolete]
-		protected void checkFileSections()
-		{
-			if (this._root.TryGetNode(this.MapConnections.SectionName, out FbxNode connections))
-			{
-				this.MapConnections.Map(connections);
-			}
-			else
-			{
-
-			}
-
-			foreach (var item in this._root)
-			{
-				switch (item.Name)
-				{
-					case "Documents":
-						this.SectionDocuments = this.setRootSection(this.SectionDocuments, item);
-						break;
-					case "Objects":
-						this.SectionObjects = this.setRootSection(this.SectionObjects, item);
-						break;
-					case "Connections":
-						this.SectionConnections = this.setRootSection(this.SectionConnections, item);
-						break;
-					case "Definitions":
-						this.SectionDefinitions = this.setRootSection(this.SectionDefinitions, item);
-						break;
-					default:
-						this.notify($"Unknown root node with name : {item.Name}");
-						break;
-				}
-			}
-
-			if (this.SectionDocuments == null)
-				throw new FbxConverterException($"Root section not found: Documents");
-			if (this.SectionObjects == null)
-				throw new FbxConverterException($"Root section not found: Objects");
-			if (this.SectionConnections == null)
-				throw new FbxConverterException($"Root section not found: Connections");
-		}
-
 		protected FbxNode setRootSection(FbxNode property, FbxNode node)
 		{
 			if (property != null)
@@ -796,33 +712,6 @@ namespace MeshIO.FBX.Converters
 			}
 
 			return Polygons;
-		}
-
-		[Obsolete("use connections")]
-		protected IEnumerable<FbxNode> getChildren(ulong containerId)
-		{
-			foreach (FbxNode c in this.SectionConnections.Nodes)
-			{
-				if (Convert.ToUInt64(c.Properties[2]) == containerId)
-				{
-					string connectionType = c.Properties[0].ToString();
-
-					switch (connectionType)
-					{
-						case "OO":  // Object(source) to Object(destination).
-							break;
-						case "OP":  // Object(source) to Property(destination).
-						case "PO":  // Property(source) to Object(destination).
-						case "PP":  // Property(source) to Property(destination).
-						default:
-							throw new NotImplementedException();
-					}
-
-					ulong elementId = Convert.ToUInt64(c.Properties[1]);
-
-					yield return this._objects[elementId];
-				}
-			}
 		}
 
 		private bool isCommonElementField(Element3D element, FbxNode node, List<Property> properties)

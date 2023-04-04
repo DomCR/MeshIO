@@ -44,9 +44,14 @@ namespace MeshIO.FBX.Converters.Mappers
 			}
 		}
 
-		public IEnumerable<ulong> GetChildren(ulong parentId)
+		public IEnumerable<ulong> GetChildren(ulong? parentId)
 		{
-			if (this.Connections.TryGetValue(parentId, out HashSet<ulong> lst))
+			if(!parentId.HasValue)
+			{
+				return new List<ulong>();
+			}
+
+			if (this.Connections.TryGetValue(parentId.Value, out HashSet<ulong> lst))
 			{
 				return lst;
 			}

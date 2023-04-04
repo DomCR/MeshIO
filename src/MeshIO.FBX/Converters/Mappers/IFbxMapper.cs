@@ -1,7 +1,11 @@
-﻿namespace MeshIO.FBX.Converters.Mappers
+﻿using MeshIO.Core;
+
+namespace MeshIO.FBX.Converters.Mappers
 {
 	public interface IFbxMapper
 	{
+		public event NotificationEventHandler OnNotification;
+
 		string SectionName { get; }
 
 		/// <summary>

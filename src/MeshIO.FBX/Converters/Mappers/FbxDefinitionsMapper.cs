@@ -4,9 +4,9 @@ using System.Linq;
 
 namespace MeshIO.FBX.Converters.Mappers
 {
-	public class FbxDefinitionsMapper : IFbxMapper
+	public class FbxDefinitionsMapper : FbxMapperBase
 	{
-		public string SectionName { get { return "Definitions"; } }
+		public override string SectionName { get { return "Definitions"; } }
 
 		private readonly Dictionary<string, FbxNode> _definitions = new Dictionary<string, FbxNode>();
 
@@ -14,7 +14,7 @@ namespace MeshIO.FBX.Converters.Mappers
 		{
 		}
 
-		public void Map(FbxNode node)
+		public override void Map(FbxNode node)
 		{
 			foreach (FbxNode definition in node.Where(n => n.Name == "ObjectType"))
 			{
