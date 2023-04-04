@@ -30,7 +30,7 @@ namespace MeshIO.STL
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="FbxReader"/> class for the specified stream.
+		/// Initializes a new instance of the <see cref="StlReader"/> class for the specified stream.
 		/// </summary>
 		/// <param name="stream">The stream to write to.</param>
 		public StlReader(Stream stream)

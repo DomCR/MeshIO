@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MeshIO.Core;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MeshIO.OBJ
 {
-	public class ObjReader
+	public class ObjReader : ReaderBase
 	{
 		public ObjReader()
 		{
@@ -17,5 +18,11 @@ namespace MeshIO.OBJ
 		{
 
 		}
+
+		public override void Dispose()
+		{
+			throw new NotImplementedException();
+		}
+
 	}
 }

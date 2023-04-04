@@ -5,4 +5,8 @@
     <GeneratePackageOnBuild Condition="'$(Configuration)' == 'Release'">True</GeneratePackageOnBuild>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\MeshIO\MeshIO.csproj" />
+  </ItemGroup>
+
 </Project>
