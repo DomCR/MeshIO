@@ -5,37 +5,71 @@ using System.IO;
 using System.IO.Compression;
 using System.Runtime.InteropServices;
 using MeshIO.FBX.Exceptions;
+using MeshIO.FBX.Writers;
 
 namespace MeshIO.FBX
 {
 	/// <summary>
 	/// Writes an FBX document to a binary stream
 	/// </summary>
-	internal class FbxBinaryWriter : FbxBinary
+	internal class FbxBinaryWriter : FbxBinary, IFbxWriter
 	{
-		private readonly Stream output;
-		private readonly MemoryStream memory;
-		private readonly BinaryWriter stream;
-
-		readonly Stack<string> nodePath = new Stack<string>();
+		public FbxRootNode Root { get; }
 
 		/// <summary>
 		/// The minimum size of an array in bytes before it is compressed
 		/// </summary>
 		public int CompressionThreshold { get; set; } = 1024;
 
+		private readonly Stream output;
+		private readonly MemoryStream memory;
+		private readonly BinaryWriter stream;
+
+		private readonly Stack<string> nodePath = new Stack<string>();
+
 		/// <summary>
 		/// Creates a new writer
 		/// </summary>
+		/// <param name="root"></param>
 		/// <param name="stream"></param>
-		public FbxBinaryWriter(Stream stream)
+		public FbxBinaryWriter(FbxRootNode root, Stream stream)
 		{
 			if (stream == null)
 				throw new ArgumentNullException(nameof(stream));
-			output = stream;
+
+			this.Root = root;
+
+			this.output = stream;
+
 			// Wrap in a memory stream to guarantee seeking
-			memory = new MemoryStream();
-			this.stream = new BinaryWriter(memory, Encoding.ASCII);
+			this.memory = new MemoryStream();
+			this.stream = new BinaryWriter(this.memory, Encoding.ASCII);
+		}
+
+		/// <summary>
+		/// Writes an FBX file to the output
+		/// </summary>
+		public void Write()
+		{
+			this.stream.BaseStream.Position = 0;
+			WriteHeader(this.stream.BaseStream);
+			this.stream.Write((int)this.Root.Version);
+			// TODO: Do we write a top level node or not? Maybe check the version?
+			this.nodePath.Clear();
+			foreach (var node in this.Root.Nodes)
+				this.WriteNode(this.Root, node);
+			this.WriteNode(this.Root, null);
+			this.stream.Write(GenerateFooterCode(this.Root));
+			this.WriteFooter(this.stream, (int)this.Root.Version);
+			this.output.Write(this.memory.GetBuffer(), 0, (int)this.memory.Position);
+		}
+
+		/// <inheritdoc/>
+		public override void Dispose()
+		{
+			this.stream.Dispose();
+			this.memory.Dispose();
+			this.output.Dispose();
 		}
 
 		private delegate void PropertyWriter(BinaryWriter sw, object obj);
@@ -49,6 +83,11 @@ namespace MeshIO.FBX
 			{
 				this.id = id;
 				this.writer = writer;
+			}
+
+			public override string ToString()
+			{
+				return $"{id}:{this.writer.Method}";
 			}
 		}
 
@@ -103,22 +142,22 @@ namespace MeshIO.FBX
 
 		void WriteArray(Array array, Type elementType, PropertyWriter writer)
 		{
-			stream.Write(array.Length);
+			this.stream.Write(array.Length);
 
 			var size = array.Length * Marshal.SizeOf(elementType);
-			bool compress = size >= CompressionThreshold;
-			stream.Write(compress ? 1 : 0);
+			bool compress = size >= this.CompressionThreshold;
+			this.stream.Write(compress ? 1 : 0);
 
-			var sw = stream;
+			var sw = this.stream;
 			DeflateWithChecksum codec = null;
 
-			var compressLengthPos = stream.BaseStream.Position;
-			stream.Write(size); // Placeholder compressed length
-			var dataStart = stream.BaseStream.Position;
+			var compressLengthPos = this.stream.BaseStream.Position;
+			this.stream.Write(size); // Placeholder compressed length
+			var dataStart = this.stream.BaseStream.Position;
 			if (compress)
 			{
-				stream.Write(new byte[] { 0x58, 0x85 }, 0, 2); // Header bytes for DeflateStream settings
-				codec = new DeflateWithChecksum(stream.BaseStream, CompressionMode.Compress, true);
+				this.stream.Write(new byte[] { 0x58, 0x85 }, 0, 2); // Header bytes for DeflateStream settings
+				codec = new DeflateWithChecksum(this.stream.BaseStream, CompressionMode.Compress, true);
 				sw = new BinaryWriter(codec);
 			}
 			foreach (var obj in array)
@@ -134,16 +173,16 @@ namespace MeshIO.FBX
 					(byte)((checksum >> 8) & 0xFF),
 					(byte)(checksum & 0xFF),
 				};
-				stream.Write(bytes);
+				this.stream.Write(bytes);
 			}
 
 			// Now we can write the compressed data length, since we know the size
 			if (compress)
 			{
-				var dataEnd = stream.BaseStream.Position;
-				stream.BaseStream.Position = compressLengthPos;
-				stream.Write((int)(dataEnd - dataStart));
-				stream.BaseStream.Position = dataEnd;
+				var dataEnd = this.stream.BaseStream.Position;
+				this.stream.BaseStream.Position = compressLengthPos;
+				this.stream.Write((int)(dataEnd - dataStart));
+				this.stream.BaseStream.Position = dataEnd;
 			}
 		}
 
@@ -153,17 +192,17 @@ namespace MeshIO.FBX
 				return;
 			WriterInfo writerInfo;
 			if (!writePropertyActions.TryGetValue(obj.GetType(), out writerInfo))
-				throw new FbxException(nodePath, id,
+				throw new FbxException(this.nodePath, id,
 					"Invalid property type " + obj.GetType());
-			stream.Write((byte)writerInfo.id);
-			// ReSharper disable once AssignNullToNotNullAttribute
+			this.stream.Write((byte)writerInfo.id);
+
 			if (writerInfo.writer == null) // Array type
 			{
 				var elementType = obj.GetType().GetElementType();
-				WriteArray((Array)obj, elementType, writePropertyActions[elementType].writer);
+				this.WriteArray((Array)obj, elementType, writePropertyActions[elementType].writer);
 			}
 			else
-				writerInfo.writer(stream, obj);
+				writerInfo.writer(this.stream, obj);
 		}
 
 		// Data for a null node
@@ -176,51 +215,51 @@ namespace MeshIO.FBX
 			if (node == null)
 			{
 				var data = document.Version >= FbxVersion.v7500 ? nullData7500 : nullData;
-				stream.BaseStream.Write(data, 0, data.Length);
+				this.stream.BaseStream.Write(data, 0, data.Length);
 			}
 			else
 			{
-				nodePath.Push(node.Name ?? "");
+				this.nodePath.Push(node.Name ?? "");
 				var name = string.IsNullOrEmpty(node.Name) ? null : Encoding.ASCII.GetBytes(node.Name);
 				if (name != null && name.Length > byte.MaxValue)
-					throw new FbxException(stream.BaseStream.Position,
+					throw new FbxException(this.stream.BaseStream.Position,
 						"Node name is too long");
 
 				// Header
-				var endOffsetPos = stream.BaseStream.Position;
+				var endOffsetPos = this.stream.BaseStream.Position;
 				long propertyLengthPos;
 				if (document.Version >= FbxVersion.v7500)
 				{
-					stream.Write((long)0); // End offset placeholder
-					stream.Write((long)node.Properties.Count);
-					propertyLengthPos = stream.BaseStream.Position;
-					stream.Write((long)0); // Property length placeholder
+					this.stream.Write((long)0); // End offset placeholder
+					this.stream.Write((long)node.Properties.Count);
+					propertyLengthPos = this.stream.BaseStream.Position;
+					this.stream.Write((long)0); // Property length placeholder
 				}
 				else
 				{
-					stream.Write(0); // End offset placeholder
-					stream.Write(node.Properties.Count);
-					propertyLengthPos = stream.BaseStream.Position;
-					stream.Write(0); // Property length placeholder
+					this.stream.Write(0); // End offset placeholder
+					this.stream.Write(node.Properties.Count);
+					propertyLengthPos = this.stream.BaseStream.Position;
+					this.stream.Write(0); // Property length placeholder
 				}
 
-				stream.Write((byte)(name?.Length ?? 0));
+				this.stream.Write((byte)(name?.Length ?? 0));
 				if (name != null)
-					stream.Write(name);
+					this.stream.Write(name);
 
 				// Write properties and length
-				var propertyBegin = stream.BaseStream.Position;
+				var propertyBegin = this.stream.BaseStream.Position;
 				for (int i = 0; i < node.Properties.Count; i++)
 				{
-					WriteProperty(node.Properties[i], i);
+					this.WriteProperty(node.Properties[i], i);
 				}
-				var propertyEnd = stream.BaseStream.Position;
-				stream.BaseStream.Position = propertyLengthPos;
+				var propertyEnd = this.stream.BaseStream.Position;
+				this.stream.BaseStream.Position = propertyLengthPos;
 				if (document.Version >= FbxVersion.v7500)
-					stream.Write((long)(propertyEnd - propertyBegin));
+					this.stream.Write((long)(propertyEnd - propertyBegin));
 				else
-					stream.Write((int)(propertyEnd - propertyBegin));
-				stream.BaseStream.Position = propertyEnd;
+					this.stream.Write((int)(propertyEnd - propertyBegin));
+				this.stream.BaseStream.Position = propertyEnd;
 
 				// Write child nodes
 				if (node.Nodes.Count > 0)
@@ -229,49 +268,24 @@ namespace MeshIO.FBX
 					{
 						if (n == null)
 							continue;
-						WriteNode(document, n);
+						this.WriteNode(document, n);
 					}
-					WriteNode(document, null);
+					this.WriteNode(document, null);
 				}
 
 				// Write end offset
-				var dataEnd = stream.BaseStream.Position;
-				stream.BaseStream.Position = endOffsetPos;
+				var dataEnd = this.stream.BaseStream.Position;
+				this.stream.BaseStream.Position = endOffsetPos;
 				if (document.Version >= FbxVersion.v7500)
-					stream.Write((long)dataEnd);
+					this.stream.Write((long)dataEnd);
 				else
-					stream.Write((int)dataEnd);
-				stream.BaseStream.Position = dataEnd;
+					this.stream.Write((int)dataEnd);
+				this.stream.BaseStream.Position = dataEnd;
 
-				nodePath.Pop();
+				this.nodePath.Pop();
 			}
 		}
 
-		/// <summary>
-		/// Writes an FBX file to the output
-		/// </summary>
-		/// <param name="document"></param>
-		public void Write(FbxRootNode document)
-		{
-			stream.BaseStream.Position = 0;
-			WriteHeader(stream.BaseStream);
-			stream.Write((int)document.Version);
-			// TODO: Do we write a top level node or not? Maybe check the version?
-			nodePath.Clear();
-			foreach (var node in document.Nodes)
-				WriteNode(document, node);
-			WriteNode(document, null);
-			stream.Write(GenerateFooterCode(document));
-			WriteFooter(stream, (int)document.Version);
-			output.Write(memory.GetBuffer(), 0, (int)memory.Position);
-		}
 
-		/// <inheritdoc/>
-		public override void Dispose()
-		{
-			this.stream.Dispose();
-			this.memory.Dispose();
-			this.output.Dispose();
-		}
 	}
 }

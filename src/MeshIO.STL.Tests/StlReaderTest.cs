@@ -6,7 +6,7 @@ using Xunit.Abstractions;
 
 namespace MeshIO.STL.Tests
 {
-	public class StlReaderTest : ReaderTestsBase
+	public class StlReaderTest : IOTestsBase
 	{
 		public static readonly TheoryData<string> AsciiFiles;
 

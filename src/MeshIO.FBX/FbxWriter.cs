@@ -1,4 +1,5 @@
 ﻿using MeshIO.Core;
+using MeshIO.FBX.Writers;
 using System;
 using System.IO;
 
@@ -14,11 +15,20 @@ namespace MeshIO.FBX
 		/// </summary>
 		public FbxVersion Version { get; }
 
+		/// <summary>
+		/// Scene to write in the stream
+		/// </summary>
 		public Scene Scene { get; }
 
-		public FbxRootNode RootNode { get; }
+		/// <summary>
+		/// Root node to write in the stream
+		/// </summary>
+		/// <remarks>
+		/// This node will be generated before the file is writen
+		/// </remarks>
+		public FbxRootNode RootNode { get; private set; }
 
-		private Stream _stream;
+		private readonly Stream _stream;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="FbxWriter"/> class for the specified file.
@@ -68,73 +78,42 @@ namespace MeshIO.FBX
 			this._stream = stream;
 		}
 
-		/// <summary>
-		/// Write a <see cref="Scene"/> into a fbx an ascii file.
-		/// </summary>
-		public void WriteAscii(Scene scene)
+		public static void Write(Stream stream, Scene scene, FbxVersion version = FbxVersion.v7700, FbxFileFormat fileFormat = FbxFileFormat.Binary, NotificationEventHandler onNotification = null)
 		{
-			using (FbxAsciiWriter writer = new FbxAsciiWriter(this._stream))
-				writer.Write(FbxRootNode.CreateFromScene(scene, this.Version));
+			var root = FbxRootNode.CreateFromScene(scene, version);
+			Write(stream, root, version, fileFormat, onNotification);
+		}
+
+		public static void Write(Stream stream, FbxRootNode root, FbxVersion version = FbxVersion.v7700, FbxFileFormat fileFormat = FbxFileFormat.Binary, NotificationEventHandler onNotification = null)
+		{
+			using (FbxWriter writer = new FbxWriter(stream, root, version))
+			{
+				writer.OnNotification += onNotification;
+				writer.Write();
+			}
 		}
 
 		/// <summary>
-		/// Write an <see cref="Scene"/> into an fbx binary file.
+		/// Write a <see cref="MeshIO.Scene"/> into a fbx an ascii file.
 		/// </summary>
-		public void WriteBinary(Scene scene)
+		/// <param name="fileFormat"></param>
+		public void Write(FbxFileFormat fileFormat = FbxFileFormat.Binary)
 		{
-			using (FbxBinaryWriter writer = new FbxBinaryWriter(this._stream))
-				writer.Write(FbxRootNode.CreateFromScene(scene, this.Version));
-		}
+			if (this.RootNode == null)
+			{
+				this.RootNode = FbxRootNode.CreateFromScene(this.Scene, this.Version);
+			}
 
-		/// <summary>
-		/// Write a <see cref="FbxRootNode"/> into a fbx an ascii file.
-		/// </summary>
-		public void WriteAscii(FbxRootNode root)
-		{
-			using (FbxAsciiWriter writer = new FbxAsciiWriter(this._stream))
-				writer.Write(root);
-		}
-
-		/// <summary>
-		/// Write a <see cref="FbxRootNode"/> into a fbx an ascii file.
-		/// </summary>
-		public void WriteBinary(FbxRootNode root)
-		{
-			using (FbxBinaryWriter writer = new FbxBinaryWriter(this._stream))
-				writer.Write(root);
+			using (IFbxWriter writer = FbxWriterBase.GetWriter(this.RootNode, this._stream, fileFormat))
+			{
+				writer.Write();
+			}
 		}
 
 		/// <inheritdoc/>
 		public override void Dispose()
 		{
 			_stream.Dispose();
-		}
-
-		public static void WriteAscii(string path, Scene scene, FbxVersion version = FbxVersion.v7400)
-		{
-			using (FbxWriter writer = new FbxWriter(path, scene, version))
-				writer.WriteAscii(scene);
-		}
-
-		public static void WriteAscii(string path, FbxRootNode root)
-		{
-			using (FbxWriter writer = new FbxWriter(path, root, root.Version))
-				writer.WriteAscii(root);
-		}
-
-		public static void WriteBinary(string path, Scene scene, FbxVersion version = FbxVersion.v7400)
-		{
-			if (path == null)
-				throw new ArgumentNullException(nameof(path));
-
-			using (FbxWriter writer = new FbxWriter(path, scene, version))
-				writer.WriteBinary(scene);
-		}
-
-		public static void WriteBinary(string path, FbxRootNode root)
-		{
-			using (FbxWriter writer = new FbxWriter(path, root, root.Version))
-				writer.WriteBinary(root);
 		}
 	}
 }
