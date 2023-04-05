@@ -7,19 +7,7 @@ namespace MeshIO.FBX.Tests
 {
 	public class FbxWriterTest : IOTestsBase
 	{
-		public static readonly TheoryData<FbxVersion> Versions = new TheoryData<FbxVersion>();
-
-		static FbxWriterTest()
-		{
-			Versions.Add(FbxVersion.v7000);
-			Versions.Add(FbxVersion.v7100);
-			Versions.Add(FbxVersion.v7200);
-			Versions.Add(FbxVersion.v7300);
-			Versions.Add(FbxVersion.v7400);
-			Versions.Add(FbxVersion.v7500);
-			Versions.Add(FbxVersion.v7600);
-			Versions.Add(FbxVersion.v7700);
-		}
+		public static readonly TheoryData<FbxVersion> Versions = FbxTestCasesData.Versions;
 
 		public FbxWriterTest(ITestOutputHelper output) : base(output) { }
 
