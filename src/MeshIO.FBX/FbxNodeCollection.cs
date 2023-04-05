@@ -33,16 +33,16 @@ namespace MeshIO.FBX
 		public FbxNode GetRelative(string path)
 		{
 			var tokens = path.Split('/');
-			FbxNodeCollection n = this;
-			foreach (var t in tokens)
+			FbxNodeCollection current = this as FbxNodeCollection;
+			foreach (string t in tokens)
 			{
 				if (t == "")
 					continue;
-				n = n[t];
-				if (n == null)
+				current = current[t];
+				if (current == null)
 					break;
 			}
-			return n as FbxNode;
+			return current as FbxNode;
 		}
 
 		/// <summary>

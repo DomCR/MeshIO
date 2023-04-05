@@ -1,0 +1,22 @@
+Summary Info for sample_basic_box.max (at Frame 0)
+
+Objects:
+  				Cast	Receive	Motion			
+  Name	Type	Verts	Faces	Shadows	Shadows	Blur	Hidden	Frozen	Material (Type)
+-----------------	-----	-----	-----	-----	-----	-----	-----	------------
+  Box001	Box	8	12	Yes	Yes	No	No	No	default (Std)
+
+
+Scene Totals:
+  Objects: 1
+  Shapes: 0
+  Cameras: 0
+  Lights: 0
+  Helpers: 0
+  Space Warps: 0
+  Total: 1
+
+Mesh Totals:
+
+  Verts: 8
+  Faces: 12
