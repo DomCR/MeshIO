@@ -2,11 +2,17 @@
 
   <PropertyGroup>
     <TargetFrameworks>net6.0;net5.0;net48;netstandard2.1</TargetFrameworks>
-    <GeneratePackageOnBuild Condition="'$(Configuration)' == 'Release'">True</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\MeshIO\MeshIO.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include=".\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>
