@@ -11,6 +11,13 @@
     <RepositoryUrl>https://github.com/DomCR/MeshIO</RepositoryUrl>
     <PackageProjectUrl>https://github.com/DomCR/MeshIO</PackageProjectUrl>
     <Copyright>Copyright (c) 2023 Albert Domenech</Copyright>
+    <GeneratePackageOnBuild Condition="'$(Configuration)' == 'Release'">True</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <Version>2.0.0-alpha</Version>
   </PropertyGroup>
   
 </Project>
