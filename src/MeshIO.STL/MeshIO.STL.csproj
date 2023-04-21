@@ -2,30 +2,18 @@
 
   <PropertyGroup>
     <TargetFrameworks>net6.0;net5.0;net48;netstandard2.1</TargetFrameworks>
-    <Version>1.0.0</Version>
     <PackageId>MeshIO.STL</PackageId>
     <PackageTags>C# 3D stl</PackageTags>
-    <GeneratePackageOnBuild Condition="'$(Configuration)' == 'Release'">True</GeneratePackageOnBuild>
   </PropertyGroup>
 
-  <PropertyGroup>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
-    <Version>1.0.0</Version>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net5.0|AnyCPU'">
-    <DocumentationFile>bin\MeshIO.STL.xml</DocumentationFile>
-  </PropertyGroup>
-
-  <ItemGroup>
+   <ItemGroup>
     <ProjectReference Include="..\MeshIO\MeshIO.csproj" />
   </ItemGroup>
 
   <Import Project="..\CSUtilities\CSUtilities\CSUtilities.projitems" Label="Shared" />
 
   <ItemGroup>
-    <None Include="..\..\README.md">
+    <None Include=".\README.md">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>

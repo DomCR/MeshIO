@@ -5,17 +5,6 @@
     <PackageId>MeshIO.FBX</PackageId>
     <PackageTags>C# 3D fbx</PackageTags>
     <Description>MeshIO module for fbx format.</Description>
-    <GeneratePackageOnBuild Condition="'$(Configuration)' == 'Release'">True</GeneratePackageOnBuild>
-  </PropertyGroup>
-
-  <PropertyGroup>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
-    <Version>1.1.0-alpha</Version>
-  </PropertyGroup>
-  
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net5.0|AnyCPU'">
-    <DocumentationFile>bin\MeshIO.FBX.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
