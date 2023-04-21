@@ -1,0 +1,94 @@
+Summary Info for sample_base.max (at Frame 0)
+
+Objects:
+  				Cast	Receive	Motion			
+  Name	Type	Verts	Faces	Shadows	Shadows	Blur	Hidden	Frozen	Material (Type)
+-----------------	-----	-----	-----	-----	-----	-----	-----	------------
+  Box001	Box	8	12	Yes	Yes	No	No	No	01 - Default (Physical Material)
+  Cube	Box	8	12	Yes	Yes	No	No	No	default (Std)
+  Sphere001	Sphere	482	960	Yes	Yes	No	No	No	default (Std)
+  Camera_target.Target	Target	-	-	Yes	Yes	No	No	No	default (Std)
+  Teapot_default	Teapot	2082	4096	Yes	Yes	No	No	No	default (Std)
+  Teapot_invisible	Teapot	2082	4096	Yes	Yes	No	Yes	No	default (Std)
+  Teapot_frozen	Teapot	822	1600	Yes	Yes	No	No	Yes	default (Std)
+  Teapot_no_render	Teapot	822	1600	Yes	Yes	No	No	No	default (Std)
+  Teapot_as_box	Teapot	822	1600	Yes	Yes	No	No	No	default (Std)
+  TPhotometricLight001.Targ	Target	-	-	Yes	Yes	No	No	No	default (Std)
+  Camera002.Target	Target	-	-	Yes	Yes	No	No	No	default (Std)
+  Box003	Box	8	12	Yes	Yes	No	No	No	default (Std)
+  Box004	Box	8	12	Yes	Yes	No	No	No	default (Std)
+  Box005	Box	8	12	Yes	Yes	No	No	No	default (Std)
+  Box006	Box	8	12	Yes	Yes	No	No	No	default (Std)
+  Box002	Box	8	12	Yes	Yes	No	No	No	default (Std)
+  Cone001	Cone	146	288	Yes	Yes	No	No	No	default (Std)
+  Tube001	Tube	216	432	Yes	Yes	No	No	No	default (Std)
+  Tube002	Tube	216	432	Yes	Yes	No	No	No	default (Std)
+  Teapot_default_reference	Teapot	2082	4096	Yes	Yes	No	No	No	default (Std)
+  Teapot_default_instance	Teapot	2082	4096	Yes	Yes	No	No	No	default (Std)
+  Teapot_default_copy	Teapot	2082	4096	Yes	Yes	No	No	No	default (Std)
+  Sphere_parent	Sphere	482	960	Yes	Yes	No	No	No	default (Std)
+  Sphere007	Sphere	482	960	Yes	Yes	No	No	No	default (Std)
+  Sphere006	Sphere	482	960	Yes	Yes	No	No	No	default (Std)
+  Sphere005	Sphere	482	960	Yes	Yes	No	No	No	default (Std)
+  Sphere004	Sphere	482	960	Yes	Yes	No	No	No	default (Std)
+  Sphere003	Sphere	482	960	Yes	Yes	No	No	No	default (Std)
+
+
+Shapes:
+  					Cast	Receive	Motion		
+  Name	Type	Verts	Polygons	Render	Shadows	Shadows	Blur	Hidden	Frozen
+-----------------	-----	-----	-----	-----	-----	-----	-----	------------
+  Line001	Line	2	1	No	n/a	n/a	n/a	No	No
+  Rectangle001	Rectangl	4	1	No	n/a	n/a	n/a	No	No
+  Line002	Line	7	1	No	n/a	n/a	n/a	No	No
+  Line003	Line	5	1	No	n/a	n/a	n/a	No	No
+  Ellipse001	Ellipse	4	1	No	n/a	n/a	n/a	No	No
+  Circle001	Circle	4	1	No	n/a	n/a	n/a	No	No
+  Arc001	Arc	4	1	No	n/a	n/a	n/a	No	No
+  Arc002	Arc	4	1	No	n/a	n/a	n/a	No	No
+  Text001	Text	107	9	No	n/a	n/a	n/a	No	No
+
+
+Cameras:
+  		
+  Name	Type	Hidden	Frozen
+  ------------	-----	-----	-----
+  Camera001	Free Cam	No	No
+  Camera_target	Target C	No	No
+  Camera002	Target C	No	No
+  Camera003	Free Cam	No	No
+
+
+Lights:
+  		
+  Name	Type	Hidden	Frozen
+  ------------	-----	-----	-----
+  TPhotometricLight001	Target L	No	No
+  PhotometricLight001	Free Lig	No	No
+
+
+Helpers:
+  		
+  Name	Type	Hidden	Frozen
+  ------------	-----	-----	-----
+  Group001	Dummy	No	No
+
+
+Scene Totals:
+  Objects: 28
+  Shapes: 9
+  Cameras: 4
+  Lights: 2
+  Helpers: 1
+  Space Warps: 0
+  Total: 44
+
+Mesh Totals:
+
+  Verts: 16884
+  Faces: 33236
+Materials:
+
+   01 - Default  ( Physical Material )
+
+

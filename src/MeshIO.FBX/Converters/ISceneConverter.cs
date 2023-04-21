@@ -3,7 +3,7 @@
 	/// <summary>
 	/// Converts a fbx scene to a <see cref="FbxRootNode"/>
 	/// </summary>
-	public interface IFbxConverter
+	public interface ISceneConverter
 	{
 		FbxVersion Version { get; }
 

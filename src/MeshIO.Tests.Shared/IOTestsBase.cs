@@ -3,11 +3,11 @@ using Xunit.Abstractions;
 
 namespace MeshIO.Tests.Shared
 {
-	public class ReaderTestsBase
+	public abstract class IOTestsBase
 	{
 		protected readonly ITestOutputHelper _output;
 
-		public ReaderTestsBase(ITestOutputHelper output)
+		public IOTestsBase(ITestOutputHelper output)
 		{
 			_output = output;
 		}

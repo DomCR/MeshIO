@@ -10,6 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)FolderPath.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ReaderTestsBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)TestCaseFactory.cs" />
+    <Compile Include="..\MeshIO.Tests.Shared\IOTestsBase.cs" />
   </ItemGroup>
 </Project>
