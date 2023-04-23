@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace MeshIO.Entities.Geometries.Layers
 {
-    public class LayerElementNormal : LayerElement
+	public class LayerElementNormal : LayerElement
 	{
 		public List<XYZ> Normals { get; set; } = new List<XYZ>();
 
@@ -12,12 +12,30 @@ namespace MeshIO.Entities.Geometries.Layers
 
 		public LayerElementNormal() : base() { }
 
-		public LayerElementNormal(Geometry owner) : base(owner) { }
+		public LayerElementNormal(MappingMode mappingMode, ReferenceMode referenceMode) : base(mappingMode, referenceMode) { }
 
-		public void Add(XYZ normal, double defaulWheight = 0)
+		/// <summary>
+		/// Add a normal
+		/// </summary>
+		/// <param name="normal"></param>
+		/// <param name="wheight">wheight of the normal added</param>
+		public void Add(XYZ normal, double wheight = 0)
 		{
-			Normals.Add(normal);
-			Weights.Add(defaulWheight);
+			this.Normals.Add(normal);
+			this.Weights.Add(wheight);
+		}
+
+		/// <summary>
+		/// Add a collection of normals
+		/// </summary>
+		/// <param name="normals"></param>
+		/// <param name="wheight">wheight of the normal added</param>
+		public void AddRange(IEnumerable<XYZ> normals, double wheight = 0)
+		{
+			foreach (var normal in normals)
+			{
+				this.Add(normal, wheight);
+			}
 		}
 
 		public void CalculateFlatNormals()

@@ -1,5 +1,4 @@
 ﻿using CSMath;
-using MeshIO.Entities.Geometries.Layers;
 using System.Collections.Generic;
 
 namespace MeshIO.Entities.Geometries.Layers
@@ -10,6 +9,19 @@ namespace MeshIO.Entities.Geometries.Layers
 
 		public LayerElementUV() : base() { }
 
-		public LayerElementUV(Geometry owner) : base(owner) { }
+		public LayerElementUV(MappingMode mappingMode, ReferenceMode referenceMode) : base(mappingMode, referenceMode) { }
+
+		public void Add(XY uv)
+		{
+			this.UV.Add(uv);
+		}
+
+		public void AddRange(IEnumerable<XY> uvs)
+		{
+			foreach (var uv in uvs)
+			{
+				this.Add(uv);
+			}
+		}
 	}
 }
