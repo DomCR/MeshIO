@@ -3,7 +3,9 @@
 	public class Triangle : Polygon
 	{
 		public int Index0 { get; set; }
+
 		public int Index1 { get; set; }
+
 		public int Index2 { get; set; }
 
 		/// <summary>
@@ -22,13 +24,6 @@
 			Index0 = i0;
 			Index1 = i1;
 			Index2 = i2;
-		}
-
-		public Triangle(uint i0, uint i1, uint i2)
-		{
-			Index0 = (int)i0;
-			Index1 = (int)i1;
-			Index2 = (int)i2;
 		}
 
 		public override int[] ToArray()

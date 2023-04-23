@@ -5,19 +5,17 @@ namespace MeshIO.GLTF.Tests
 {
 	public class GltfReaderTests : IOTestsBase
 	{
-		public static readonly TheoryData<string> GlbFiles;
+		public static readonly TheoryData<string> GlbFiles = new TheoryData<string>();
 
-		public static readonly TheoryData<string> GltfFiles;
+		public static readonly TheoryData<string> GltfFiles = new TheoryData<string>();
 
 		static GltfReaderTests()
 		{
-			GlbFiles = new TheoryData<string>();
 			foreach (string file in Directory.GetFiles(FolderPath.InFilesGltf, "*.glb"))
 			{
 				GlbFiles.Add(file);
 			}
 
-			GltfFiles = new TheoryData<string>();
 			foreach (string file in Directory.GetFiles(FolderPath.InFilesGltf, "*.gltf"))
 			{
 				GltfFiles.Add(file);
