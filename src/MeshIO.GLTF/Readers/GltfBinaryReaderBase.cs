@@ -8,6 +8,7 @@ using System.Linq;
 using MeshIO.Entities.Geometries;
 using MeshIO.Shaders;
 using MeshIO.Entities;
+using MeshIO.GLTF.Exceptions;
 
 namespace MeshIO.GLTF
 {
@@ -39,7 +40,20 @@ namespace MeshIO.GLTF
 
 		public Scene Read()
 		{
-			GltfScene rootScene = this._root.Scenes[this._root.Scene.Value];
+			GltfScene rootScene = null;
+
+			if (this._root.Scene.HasValue)
+			{
+				rootScene = this._root.Scenes[this._root.Scene.Value];
+			}
+			else
+			{
+				rootScene = this._root.Scenes.FirstOrDefault();
+			}
+
+			if (rootScene == null)
+				throw new GltfReaderException("Scene not found");
+
 			Scene scene = new Scene(rootScene.Name);
 
 			foreach (int nodeIndex in rootScene.Nodes)
@@ -197,7 +211,7 @@ namespace MeshIO.GLTF
 				mesh.Polygons.AddRange(readIndices(_root.Accessors[p.Indices.Value], p.Mode));
 
 				//Add missing layers
-				
+
 				//TODO: Fix the gltf normal reading
 				//var normals = new LayerElementNormal(mesh);
 				//normals.CalculateFlatNormals();
@@ -207,7 +221,7 @@ namespace MeshIO.GLTF
 			if (p.Material.HasValue)
 			{
 				material = readMaterial(p.Material.Value);
-				mesh.Layers.Add(new LayerElementMaterial(mesh));
+				mesh.Layers.Add(new LayerElementMaterial());
 			}
 			else
 			{

@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MeshIO.Core
 {
@@ -12,6 +8,7 @@ namespace MeshIO.Core
 	{
 		public event NotificationEventHandler OnNotification;
 
+		/// <inheritdoc/>
 		public abstract void Dispose();
 
 		protected void triggerNotification(string message, NotificationType notificationType, Exception ex = null)
