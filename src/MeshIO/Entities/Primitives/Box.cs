@@ -6,46 +6,29 @@ using System.Linq;
 
 namespace MeshIO.Entities.Primitives
 {
-	public abstract class Primitive : Entity
-	{
-		public bool CastShadows { get; set; }
-
-		public bool ReceiveShadows { get; set; }
-
-		public abstract Mesh CreateMesh();
-
-		protected Mesh createMesh(List<XYZ> vertices, List<XYZ> normals, List<XY> uvs, List<Polygon> polygons)
-		{
-			Mesh mesh = new Mesh(this.Name);
-
-			mesh.CastShadows = this.CastShadows;
-			mesh.ReceiveShadows = this.ReceiveShadows;
-
-			mesh.Vertices.AddRange(vertices);
-			mesh.Polygons.AddRange(polygons);
-
-			LayerElementNormal layerNormals = new LayerElementNormal(MappingMode.ByControlPoint, ReferenceMode.Direct);
-			layerNormals.AddRange(normals);
-			mesh.Layers.Add(layerNormals);
-
-			LayerElementUV layerUvs = new LayerElementUV(MappingMode.ByControlPoint, ReferenceMode.Direct);
-			layerUvs.AddRange(uvs);
-			mesh.Layers.Add(layerUvs);
-
-			return mesh;
-		}
-	}
-
 	public class Box : Primitive
 	{
-		public double Length { get; set; } = 1.0;
+		public double XDimension { get; set; } = 1.0;
 
-		public double Width { get; set; } = 1.0;
+		public double YDimension { get; set; } = 1.0;
 
-		public double Height { get; set; } = 1.0;
+		public double ZDimension { get; set; } = 1.0;
 
 		public XYZ Center { get; set; } = XYZ.Zero;
 
+		public Box() : this(string.Empty) { }
+
+		public Box(string name) : base(name) { }
+
+		public Box(double xDimension, double yDimension, double zDimension, XYZ center) : this()
+		{
+			this.XDimension = xDimension;
+			this.YDimension = yDimension;
+			this.ZDimension = zDimension;
+			this.Center = center;
+		}
+
+		/// <inheritdoc/>
 		/// <remarks>
 		/// The current implementation returns a mesh with no shared vertices and the following layers:<br/>
 		/// <see cref="LayerElementNormal"/><br/>
@@ -61,12 +44,12 @@ namespace MeshIO.Entities.Primitives
 
 			int currQuad = 0;
 
-			this.createFace(2, 1, 0, -1, -1, this.Length, this.Height, this.Width, vertices, normals, uvs, polygons, ref currQuad);
-			this.createFace(2, 1, 0, 1, -1, this.Length, this.Height, 0.0 - this.Width, vertices, normals, uvs, polygons, ref currQuad);
-			this.createFace(0, 2, 1, 1, 1, this.Width, this.Length, this.Height, vertices, normals, uvs, polygons, ref currQuad);
-			this.createFace(0, 2, 1, 1, -1, this.Width, this.Length, 0.0 - this.Height, vertices, normals, uvs, polygons, ref currQuad);
-			this.createFace(0, 1, 2, 1, -1, this.Width, this.Height, this.Length, vertices, normals, uvs, polygons, ref currQuad);
-			this.createFace(0, 1, 2, -1, -1, this.Width, this.Height, 0.0 - this.Length, vertices, normals, uvs, polygons, ref currQuad);
+			this.createFace(2, 1, 0, -1, -1, this.ZDimension, this.YDimension, this.XDimension, vertices, normals, uvs, polygons, ref currQuad);
+			this.createFace(2, 1, 0, 1, -1, this.ZDimension, this.YDimension, 0.0 - this.XDimension, vertices, normals, uvs, polygons, ref currQuad);
+			this.createFace(0, 2, 1, 1, 1, this.XDimension, this.ZDimension, this.YDimension, vertices, normals, uvs, polygons, ref currQuad);
+			this.createFace(0, 2, 1, 1, -1, this.XDimension, this.ZDimension, 0.0 - this.YDimension, vertices, normals, uvs, polygons, ref currQuad);
+			this.createFace(0, 1, 2, 1, -1, this.XDimension, this.YDimension, this.ZDimension, vertices, normals, uvs, polygons, ref currQuad);
+			this.createFace(0, 1, 2, -1, -1, this.XDimension, this.YDimension, 0.0 - this.ZDimension, vertices, normals, uvs, polygons, ref currQuad);
 
 			return this.createMesh(vertices, normals, uvs, polygons.Cast<Polygon>().ToList());
 		}
