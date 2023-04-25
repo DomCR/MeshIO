@@ -26,6 +26,13 @@
 			Index2 = i2;
 		}
 
+		public Triangle(int[] arr)
+		{
+			Index0 = arr[0];
+			Index1 = arr[1];
+			Index2 = arr[2];
+		}
+
 		public override int[] ToArray()
 		{
 			return new int[] { Index0, Index1, Index2 };

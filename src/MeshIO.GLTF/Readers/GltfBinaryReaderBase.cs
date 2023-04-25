@@ -197,6 +197,7 @@ namespace MeshIO.GLTF
 					case "TANGENT":
 					case "TEXCOORD_0":
 					case "TEXCOORD_1":
+					case "TEXCOORD_2":
 					case "COLOR_0":
 					case "JOINTS_0":
 					case "WEIGHTS_0":
@@ -266,7 +267,7 @@ namespace MeshIO.GLTF
 			if (accessor.Type != GltfAccessor.TypeEnum.VEC3)
 				throw new Exception();
 
-			return readAccessor<XYZ>(getBufferStream(accessor), accessor.ComponentType, accessor.Count, 3);
+			return readAccessor<XYZ, double>(getBufferStream(accessor), accessor.ComponentType, accessor.Count, 3);
 		}
 
 		private IEnumerable<Polygon> readIndices(GltfAccessor accessor, GltfMeshPrimitive.ModeEnum mode)
@@ -279,7 +280,8 @@ namespace MeshIO.GLTF
 			switch (mode)
 			{
 				case GltfMeshPrimitive.ModeEnum.TRIANGLES:
-					return readAccessor<Triangle>(stream, accessor.ComponentType, accessor.Count / 3, 3);
+					//return this.readTriangles(stream, accessor.ComponentType, accessor.Count / 3, 3);
+					return readAccessor<Triangle, int>(stream, accessor.ComponentType, accessor.Count / 3, 3);
 				case GltfMeshPrimitive.ModeEnum.POINTS:
 				case GltfMeshPrimitive.ModeEnum.LINES:  //Works with the 3d lines, like polylines and lines
 				case GltfMeshPrimitive.ModeEnum.LINE_LOOP:
@@ -292,38 +294,45 @@ namespace MeshIO.GLTF
 			}
 		}
 
-		protected List<T> readAccessor<T>(StreamIO stream, GltfAccessor.ComponentTypeEnum componentType, int count, int nargs)
+		protected IEnumerable<Polygon> readTriangles(StreamIO stream, GltfAccessor.ComponentTypeEnum componentType, int count, int nargs)
+		{
+			throw new NotImplementedException();
+		}
+
+		protected List<T> readAccessor<T, R>(StreamIO stream, GltfAccessor.ComponentTypeEnum componentType, int count, int nargs)
 		{
 			List<T> vecs = new List<T>();
 
 			for (int i = 0; i < count; i++)
 			{
-				List<object> args = new List<object>();
+				List<R> args = new List<R>();
 
 				for (int j = 0; j < nargs; j++)
 				{
-
+					object value = null;
 					switch (componentType)
 					{
 						case GltfAccessor.ComponentTypeEnum.BYTE:
 						case GltfAccessor.ComponentTypeEnum.UNSIGNED_BYTE:
-							args.Add(stream.ReadByte());
+							value = (stream.ReadByte());
 							break;
 						case GltfAccessor.ComponentTypeEnum.SHORT:
-							args.Add(stream.ReadShort());
+							value = (stream.ReadShort());
 							break;
 						case GltfAccessor.ComponentTypeEnum.UNSIGNED_SHORT:
-							args.Add(stream.ReadUShort());
+							value = (stream.ReadUShort());
 							break;
 						case GltfAccessor.ComponentTypeEnum.UNSIGNED_INT:
-							args.Add(stream.ReadUInt());
+							value = (stream.ReadUInt());
 							break;
 						case GltfAccessor.ComponentTypeEnum.FLOAT:
-							args.Add(stream.ReadSingle());
+							value = stream.ReadSingle();
 							break;
 						default:
 							throw new Exception();
 					}
+
+					args.Add((R)Convert.ChangeType(value, typeof(R)));
 				}
 
 				vecs.Add((T)Activator.CreateInstance(typeof(T), args.ToArray()));
