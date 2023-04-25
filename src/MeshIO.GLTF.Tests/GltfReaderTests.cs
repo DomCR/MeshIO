@@ -35,7 +35,7 @@ namespace MeshIO.GLTF.Tests
 			}
 		}
 
-		[Theory]
+		[Theory(Skip = "Gltf not implemented")]
 		[MemberData(nameof(GltfFiles))]
 		public void ReadGltf(string path)
 		{

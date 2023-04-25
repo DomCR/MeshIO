@@ -44,7 +44,7 @@ namespace MeshIO.GLTF
 			this._header.Length = this._stream.ReadUInt<LittleEndianConverter>();
 
 			if (this._header.Version != 2)
-				throw new NotImplementedException($"Version {this._header.Version} not implemented");
+				throw new NotSupportedException($"Version {this._header.Version} not supported");
 
 			//Chunk 0 Json
 			uint jsonChunkLength = this._stream.ReadUInt<LittleEndianConverter>();
@@ -72,14 +72,17 @@ namespace MeshIO.GLTF
 			byte[] binChunk = this._stream.ReadBytes((int)binChunkLength);
 			this._binaryStream = new StreamIO(binChunk);
 
-			return GltfBinaryReaderBase.GetBynaryReader((int)this._header.Version, this._root, binChunk).Read();
+			var reader = GltfBinaryReaderBase.GetBynaryReader((int)this._header.Version, this._root, binChunk);
+			reader.OnNotification += onNotificationEvent;
+
+			return reader.Read();
 		}
 
 		/// <inheritdoc/>
 		public override void Dispose()
 		{
 			this._stream.Dispose();
-			this._binaryStream.Dispose();
+			this._binaryStream?.Dispose();
 		}
 	}
 }

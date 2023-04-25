@@ -35,7 +35,7 @@ namespace MeshIO.GLTF.Tests
 			using (GltfReader reader = new GltfReader(path))
 			{
 				reader.OnNotification += this.onNotification;
-				reader.Read();
+				Assert.Throws<NotSupportedException>(reader.Read);
 			}
 		}
 

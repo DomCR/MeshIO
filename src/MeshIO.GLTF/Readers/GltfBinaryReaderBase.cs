@@ -9,11 +9,14 @@ using MeshIO.Entities.Geometries;
 using MeshIO.Shaders;
 using MeshIO.Entities;
 using MeshIO.GLTF.Exceptions;
+using MeshIO.Core;
 
 namespace MeshIO.GLTF
 {
 	internal abstract class GltfBinaryReaderBase : IDisposable
 	{
+		public event NotificationEventHandler OnNotification;
+
 		public static GltfBinaryReaderBase GetBynaryReader(int version, GltfRoot root, byte[] chunk)
 		{
 			switch (version)
@@ -22,7 +25,7 @@ namespace MeshIO.GLTF
 					return new GltfBinaryReaderV2(root, chunk);
 				case 1:
 				default:
-					throw new NotImplementedException($"Version {version} not implemented");
+					throw new NotSupportedException($"Version {version} not supported");
 			}
 		}
 
@@ -203,13 +206,14 @@ namespace MeshIO.GLTF
 					case "WEIGHTS_0":
 						break;
 					default:
-						throw new Exception();
+						this.notify($"Attribute in mesh not identified {att.Key}", NotificationType.Warning);
+						break;
 				}
 			}
 
 			if (p.Indices.HasValue)
 			{
-				mesh.Polygons.AddRange(readIndices(_root.Accessors[p.Indices.Value], p.Mode));
+				mesh.Polygons.AddRange(readIndices(this._root.Accessors[p.Indices.Value], p.Mode));
 
 				//Add missing layers
 
@@ -350,6 +354,11 @@ namespace MeshIO.GLTF
 			stream.Position = bufferView.ByteOffset + accessor.ByteOffset;
 
 			return stream;
+		}
+
+		protected void notify(string message, NotificationType notificationType = NotificationType.Information, Exception ex = null)
+		{
+			this.OnNotification?.Invoke(this, new NotificationEventArgs(message, notificationType, ex));
 		}
 	}
 }
