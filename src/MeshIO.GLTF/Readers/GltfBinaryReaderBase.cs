@@ -85,6 +85,42 @@ namespace MeshIO.GLTF
 			GltfNode gltfNode = this._root.Nodes[index];
 			Node node = new Node(gltfNode.Name);
 
+			if (gltfNode.Skin.HasValue)
+			{
+				this.notify($"Gltf skin found in node {index} | {gltfNode.Name}", NotificationType.NotImplemented);
+			}
+
+			if (gltfNode.Matrix != null)
+			{
+				//Matrix is organized by columns
+				node.Transform = new Transform(new Matrix4(gltfNode.Matrix.Select(f => (double)f).ToArray()).Transpose());
+			}
+
+			if (gltfNode.Translation != null)
+			{
+				node.Transform.Translation = new XYZ(gltfNode.Translation.Select(f => (double)f).ToArray());
+			}
+
+			if (gltfNode.Rotation != null)
+			{
+				node.Transform.Rotation = new XYZ(gltfNode.Rotation.Select(f => (double)f).ToArray());
+			}
+
+			if (gltfNode.Scale != null)
+			{
+				node.Transform.Scale = new XYZ(gltfNode.Scale.Select(f => (double)f).ToArray());
+			}
+
+			if (gltfNode.Weights != null)
+			{
+				this.notify($"Gltf weights found in node {index} | {gltfNode.Name}", NotificationType.NotImplemented);
+			}
+
+			if (gltfNode.Mesh.HasValue)
+			{
+				node.Nodes.AddRange(readPrimitivesInMesh(gltfNode.Mesh.Value, node));
+			}
+
 			if (gltfNode.Camera.HasValue)
 			{
 				node.Nodes.Add(readCamera(gltfNode.Camera.Value));
@@ -98,42 +134,6 @@ namespace MeshIO.GLTF
 					node.Nodes.Add(n);
 			});
 
-			if (gltfNode.Skin.HasValue)
-			{
-				//TODO: read skin
-			}
-
-			if (gltfNode.Matrix != null)
-			{
-				//Matrix is organized by columns
-				node.Transform = new Transform(new Matrix4(gltfNode.Matrix.Select(f => (double)f).ToArray()).Transpose());
-			}
-
-			if (gltfNode.Rotation != null)
-			{
-				(node.Transform ??= new Transform()).Rotation = new XYZ(gltfNode.Rotation.Select(f => (double)f).ToArray());
-			}
-
-			if (gltfNode.Scale != null)
-			{
-				(node.Transform ??= new Transform()).Scale = new XYZ(gltfNode.Scale.Select(f => (double)f).ToArray());
-			}
-
-			if (gltfNode.Translation != null)
-			{
-				(node.Transform ??= new Transform()).Translation = new XYZ(gltfNode.Translation.Select(f => (double)f).ToArray());
-			}
-
-			if (gltfNode.Weights != null)
-			{
-				//TODO: Apply Weights matrix
-			}
-
-			if (gltfNode.Mesh.HasValue)
-			{
-				node.Nodes.AddRange(readPrimitivesInMesh(gltfNode.Mesh.Value, node));
-			}
-
 			return node;
 		}
 
@@ -146,19 +146,13 @@ namespace MeshIO.GLTF
 			switch (gltfCamera.Type)
 			{
 				case GltfCamera.TypeEnum.perspective:
-					break;
 				case GltfCamera.TypeEnum.orthographic:
-					break;
 				default:
-					throw new Exception();
+					this.notify($"Camera type not identified {gltfCamera.Type}", NotificationType.Warning);
+					break;
 			}
 
 			return camera;
-		}
-
-		protected Element3D readElement(int index)
-		{
-			throw new NotImplementedException();
 		}
 
 		protected List<Mesh> readPrimitivesInMesh(int index, Node parent)
@@ -187,15 +181,12 @@ namespace MeshIO.GLTF
 				switch (att.Key)
 				{
 					case "POSITION":
-						mesh.Vertices = readXYZ(_root.Accessors[att.Value]);
+						mesh.Vertices = this.readXYZ(_root.Accessors[att.Value]);
 						break;
 					case "NORMAL":
-						//TODO: Fix the gltf normal reading
-						//var normals = new LayerElementNormal(mesh);
-						//normals.Normals = readXYZ(_root.Accessors[att.Value]); //.Select(x => -x).ToList();
-						//normals.MappingInformationType = MappingMode.ByPolygon;
-						//normals.ReferenceInformationType = ReferenceMode.Direct;
-						//mesh.Layers.Add(normals);
+						var normals = new LayerElementNormal();
+						normals.Normals = readXYZ(_root.Accessors[att.Value]);
+						mesh.Layers.Add(normals);
 						break;
 					case "TANGENT":
 					case "TEXCOORD_0":
@@ -204,6 +195,7 @@ namespace MeshIO.GLTF
 					case "COLOR_0":
 					case "JOINTS_0":
 					case "WEIGHTS_0":
+						this.notify($"Attribute in mesh {att.Key}", NotificationType.NotImplemented);
 						break;
 					default:
 						this.notify($"Attribute in mesh not identified {att.Key}", NotificationType.Warning);
