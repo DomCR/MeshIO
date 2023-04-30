@@ -7,13 +7,13 @@
     <Description>3D library in pure C# that allows reading and writing in multiple formats.</Description>
   </PropertyGroup>
 
-  <Import Project="..\CSUtilities\CSMath\CSMath.projitems" Label="Shared" />
-
   <ItemGroup>
     <None Include="..\..\README.md">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
   </ItemGroup>
+
+  <Import Project="..\CSUtilities\CSMath\CSMath.projitems" Label="Shared" />
 
 </Project>

@@ -42,12 +42,13 @@ namespace MeshIO
 			}
 		}
 
-		public XYZ Rotation
+		public XYZ EulerRotation
 		{
-			get { throw new NotImplementedException(); }
+			get { return this._rotation; }
 			set
 			{
-				this._matrix *= Matrix4.CreateRotationMatrix(value.X, value.Y, value.Z);
+				this._rotation = value;
+				this.updateMatrix();
 			}
 		}
 
@@ -113,13 +114,17 @@ namespace MeshIO
 			}
 		}
 
+		private XYZ _translation = XYZ.Zero;
+		private XYZ _scale = new XYZ(1, 1, 1);
+		private XYZ _rotation = XYZ.Zero;
+
 		private Matrix4 _matrix;
 
 		public Transform()
 		{
 			this._matrix = Matrix4.Identity;
 			this.Translation = XYZ.Zero;
-			this.Rotation = XYZ.Zero;
+			this.EulerRotation = XYZ.Zero;
 			this.Quaternion = Quaternion.Identity;
 			this.Scale = new XYZ(1, 1, 1);
 			this._matrix.m33 = 1;
@@ -129,7 +134,7 @@ namespace MeshIO
 		{
 			this.Translation = translation;
 			this.Scale = scale;
-			this.Rotation = rotation;
+			this.EulerRotation = rotation;
 		}
 
 		public Transform(Matrix4 matrix)
@@ -260,6 +265,16 @@ namespace MeshIO
 			rotation.W = -qw;
 
 			return true;
+		}
+
+		private void updateMatrix()
+		{
+			//V0 TO fix
+			Matrix4 translationMatrix = Matrix4.CreateTranslation(this._translation);
+			Matrix4 rotationMatrix = Matrix4.CreateFromQuaternion(Quaternion.CreateFromYawPitchRoll(this._rotation));
+			Matrix4 scaleMatrix = Matrix4.CreateScale(this._scale);
+
+			this._matrix = translationMatrix * rotationMatrix * scaleMatrix;
 		}
 	}
 }
