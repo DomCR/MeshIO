@@ -5,6 +5,8 @@ namespace MeshIO.GLTF.Exceptions
 	[Serializable]
 	public class GltfReaderException : Exception
 	{
+		public GltfReaderException(string message) : base(message) { }
+
 		/// <summary>
 		/// An error at a binary stream offset.
 		/// </summary>

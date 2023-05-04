@@ -9,9 +9,5 @@ namespace MeshIO.Entities.Geometries.Layers
 		public List<XYZ> Tangents { get; set; } = new List<XYZ>();
 
 		public List<double> Weights { get; set; } = new List<double>();
-
-		public LayerElementTangent() : base() { }
-
-		public LayerElementTangent(Geometry owner) : base(owner) { }
 	}
 }

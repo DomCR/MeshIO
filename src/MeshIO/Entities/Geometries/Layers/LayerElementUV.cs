@@ -9,7 +9,5 @@ namespace MeshIO.Entities.Geometries.Layers
 		public List<XY> UV { get; set; } = new List<XY>();
 
 		public LayerElementUV() : base() { }
-
-		public LayerElementUV(Geometry owner) : base(owner) { }
-	}
+			}
 }
