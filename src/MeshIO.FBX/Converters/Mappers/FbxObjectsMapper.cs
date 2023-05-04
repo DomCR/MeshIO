@@ -108,7 +108,7 @@ namespace MeshIO.FBX.Converters.Mappers
 				switch (p.Name)
 				{
 					case FbxProperty.LclRotation:
-						model.Transform.Rotation = (XYZ)p.Value;
+						model.Transform.EulerRotation = (XYZ)p.Value;
 						continue;
 					case FbxProperty.LclScaling:
 						model.Transform.Scale = (XYZ)p.Value;

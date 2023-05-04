@@ -72,7 +72,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "fbx", "fbx", "{076BCEF4-748
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "MeshIO.Tests.Shared", "MeshIO.Tests.Shared\MeshIO.Tests.Shared.shproj", "{F82685A4-99C9-4B22-B9A9-C8897C9965C4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MeshIO.GLTF.Tests", "MeshIO.GLTF.Tests\MeshIO.GLTF.Tests.csproj", "{A6F2252F-C802-4317-BF05-073F31397AA1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MeshIO.GLTF.Tests", "MeshIO.GLTF.Tests\MeshIO.GLTF.Tests.csproj", "{A6F2252F-C802-4317-BF05-073F31397AA1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

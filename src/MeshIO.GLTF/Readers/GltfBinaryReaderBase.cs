@@ -103,7 +103,7 @@ namespace MeshIO.GLTF
 
 			if (gltfNode.Rotation != null)
 			{
-				node.Transform.Rotation = new XYZ(gltfNode.Rotation.Select(f => (double)f).ToArray());
+				node.Transform.EulerRotation = new XYZ(gltfNode.Rotation.Select(f => (double)f).ToArray());
 			}
 
 			if (gltfNode.Scale != null)
