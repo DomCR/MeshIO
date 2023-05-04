@@ -5,6 +5,9 @@ namespace MeshIO
 {
 	public class Transform
 	{
+		/// <summary>
+		/// Translation applied in the transformation
+		/// </summary>
 		public XYZ Translation
 		{
 			get { return this._translation; }
@@ -15,6 +18,9 @@ namespace MeshIO
 			}
 		}
 
+		/// <summary>
+		/// Scale applied in the transformation
+		/// </summary>
 		public XYZ Scale
 		{
 			get
@@ -31,6 +37,9 @@ namespace MeshIO
 			}
 		}
 
+		/// <summary>
+		/// Rotation in Euler angles, the value is in degrees
+		/// </summary>
 		public XYZ EulerRotation
 		{
 			get { return this._rotation; }
@@ -41,6 +50,9 @@ namespace MeshIO
 			}
 		}
 
+		/// <summary>
+		/// Rotation represented in quaternion form
+		/// </summary>
 		public Quaternion Quaternion
 		{
 			get
@@ -48,6 +60,11 @@ namespace MeshIO
 				return Quaternion.CreateFromYawPitchRoll(MathUtils.ToRadian(this._rotation));
 			}
 		}
+
+		/// <summary>
+		/// Transform matrix
+		/// </summary>
+		public Matrix4 Matrix { get { return this._matrix; } }
 
 		private XYZ _translation = XYZ.Zero;
 		private XYZ _scale = new XYZ(1, 1, 1);
@@ -57,11 +74,9 @@ namespace MeshIO
 
 		public Transform()
 		{
-			this._matrix = Matrix4.Identity;
 			this.Translation = XYZ.Zero;
 			this.EulerRotation = XYZ.Zero;
 			this.Scale = new XYZ(1, 1, 1);
-			this._matrix.m33 = 1;
 		}
 
 		public Transform(XYZ translation, XYZ scale, XYZ rotation) : this()
@@ -76,6 +91,11 @@ namespace MeshIO
 			this._matrix = matrix;
 		}
 
+		/// <summary>
+		/// Transform the point values
+		/// </summary>
+		/// <param name="xyz"></param>
+		/// <returns></returns>
 		public XYZ ApplyTransform(XYZ xyz)
 		{
 			return this._matrix * xyz;
