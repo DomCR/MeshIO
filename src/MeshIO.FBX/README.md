@@ -2,7 +2,7 @@
 
 Module to read/write and modify fbx files.
 
-## Main features
+## Features
 
 - Read/Write **FBX binary** files
 - Read/Write **FBX ASCII** files

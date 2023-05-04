@@ -27,7 +27,7 @@ For more [information](https://github.com/DomCR/MeshIO/tree/master/src/MeshIO.ST
 
 ### MeshIO.GLTF
 
-- Read/Write GLB files
+- Read GLB files
 
 For more [information](https://github.com/DomCR/MeshIO/tree/master/src/MeshIO.GLTF).
 
