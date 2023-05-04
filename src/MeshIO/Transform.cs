@@ -7,15 +7,11 @@ namespace MeshIO
 	{
 		public XYZ Translation
 		{
-			get
-			{
-				return new XYZ(this._matrix.m30, this._matrix.m31, this._matrix.m32);
-			}
+			get { return this._translation; }
 			set
 			{
-				this._matrix.m30 = value.X;
-				this._matrix.m31 = value.Y;
-				this._matrix.m32 = value.Z;
+				this._translation = value;
+				this.updateMatrix();
 			}
 		}
 
@@ -23,22 +19,15 @@ namespace MeshIO
 		{
 			get
 			{
-				double x = new XYZ(this._matrix.m00, this._matrix.m01, this._matrix.m02).GetLength();
-				double y = new XYZ(this._matrix.m10, this._matrix.m11, this._matrix.m12).GetLength();
-				double z = new XYZ(this._matrix.m20, this._matrix.m21, this._matrix.m22).GetLength();
-
-				return new XYZ(x, y, z);
+				return this._scale;
 			}
 			set
 			{
 				if (value.X == 0 || value.Y == 0 || value.Z == 0)
 					throw new ArgumentException("Scale value cannot be 0");
 
-				double x = new XYZ(this._matrix.m00, this._matrix.m01, this._matrix.m02).GetLength();
-				double y = new XYZ(this._matrix.m10, this._matrix.m11, this._matrix.m12).GetLength();
-				double z = new XYZ(this._matrix.m20, this._matrix.m21, this._matrix.m22).GetLength();
-
-				this._matrix *= Matrix4.CreateScalingMatrix(1.0 / x * value.X, 1.0 / y * value.Y, 1.0 / z * value.Z);
+				this._scale = value;
+				this.updateMatrix();
 			}
 		}
 
@@ -54,63 +43,9 @@ namespace MeshIO
 
 		public Quaternion Quaternion
 		{
-			get { throw new NotImplementedException(); }
-			set
+			get
 			{
-				//// Compute rotation matrix.
-				//double x2 = value.X + value.X;
-				//double y2 = value.Y + value.Y;
-				//double z2 = value.Z + value.Z;
-
-				//double wx2 = value.W * x2;
-				//double wy2 = value.W * y2;
-				//double wz2 = value.W * z2;
-				//double xx2 = value.X * x2;
-				//double xy2 = value.X * y2;
-				//double xz2 = value.X * z2;
-				//double yy2 = value.Y * y2;
-				//double yz2 = value.Y * z2;
-				//double zz2 = value.Z * z2;
-
-				//double q11 = 1.0f - yy2 - zz2;
-				//double q21 = xy2 - wz2;
-				//double q31 = xz2 + wy2;
-
-				//double q12 = xy2 + wz2;
-				//double q22 = 1.0f - xx2 - zz2;
-				//double q32 = yz2 - wx2;
-
-				//double q13 = xz2 - wy2;
-				//double q23 = yz2 + wx2;
-				//double q33 = 1.0f - xx2 - yy2;
-
-				//Matrix4 result = new Matrix4();
-
-				//// First row
-				//result.m00 = this._matrix.m00 * q11 + this._matrix.m10 * q21 + this._matrix.m20 * q31;
-				//result.m10 = this._matrix.m00 * q12 + this._matrix.m10 * q22 + this._matrix.m20 * q32;
-				//result.m20 = this._matrix.m00 * q13 + this._matrix.m10 * q23 + this._matrix.m20 * q33;
-				//result.m30 = this._matrix.m30;
-
-				//// Second row
-				//result.m01 = this._matrix.m01 * q11 + this._matrix.m11 * q21 + this._matrix.m21 * q31;
-				//result.m11 = this._matrix.m01 * q12 + this._matrix.m11 * q22 + this._matrix.m21 * q32;
-				//result.m21 = this._matrix.m01 * q13 + this._matrix.m11 * q23 + this._matrix.m21 * q33;
-				//result.m31 = this._matrix.m31;
-
-				//// Third row
-				//result.m02 = this._matrix.m02 * q11 + this._matrix.m12 * q21 + this._matrix.m22 * q31;
-				//result.m12 = this._matrix.m02 * q12 + this._matrix.m12 * q22 + this._matrix.m22 * q32;
-				//result.m22 = this._matrix.m02 * q13 + this._matrix.m12 * q23 + this._matrix.m22 * q33;
-				//result.m32 = this._matrix.m32;
-
-				//// Fourth row
-				//result.m03 = this._matrix.m03 * q11 + this._matrix.m13 * q21 + this._matrix.m23 * q31;
-				//result.m13 = this._matrix.m03 * q12 + this._matrix.m13 * q22 + this._matrix.m23 * q32;
-				//result.m23 = this._matrix.m03 * q13 + this._matrix.m13 * q23 + this._matrix.m23 * q33;
-				//result.m33 = this._matrix.m33;
-
-				//this._matrix = result;
+				return Quaternion.CreateFromYawPitchRoll(MathUtils.ToRadian(this._rotation));
 			}
 		}
 
@@ -125,7 +60,6 @@ namespace MeshIO
 			this._matrix = Matrix4.Identity;
 			this.Translation = XYZ.Zero;
 			this.EulerRotation = XYZ.Zero;
-			this.Quaternion = Quaternion.Identity;
 			this.Scale = new XYZ(1, 1, 1);
 			this._matrix.m33 = 1;
 		}
@@ -259,19 +193,18 @@ namespace MeshIO
 				qw = (cols[1].X - cols[0].Y) / s;
 			}
 
-			rotation.X = qx;
-			rotation.Y = qy;
-			rotation.Z = qz;
-			rotation.W = -qw;
+			rotation.X = -qx;
+			rotation.Y = -qy;
+			rotation.Z = -qz;
+			rotation.W = qw;
 
 			return true;
 		}
 
 		private void updateMatrix()
 		{
-			//V0 TO fix
 			Matrix4 translationMatrix = Matrix4.CreateTranslation(this._translation);
-			Matrix4 rotationMatrix = Matrix4.CreateFromQuaternion(Quaternion.CreateFromYawPitchRoll(this._rotation));
+			Matrix4 rotationMatrix = Matrix4.CreateFromQuaternion(this.Quaternion);
 			Matrix4 scaleMatrix = Matrix4.CreateScale(this._scale);
 
 			this._matrix = translationMatrix * rotationMatrix * scaleMatrix;

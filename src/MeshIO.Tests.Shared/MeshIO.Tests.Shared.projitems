@@ -9,6 +9,8 @@
     <Import_RootNamespace>MeshIO.Tests.Shared</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)AssertUtils.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CSMathRandom.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)FolderPath.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TestCaseFactory.cs" />
     <Compile Include="..\MeshIO.Tests.Shared\IOTestsBase.cs" />
