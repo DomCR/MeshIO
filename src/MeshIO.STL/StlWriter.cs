@@ -9,15 +9,23 @@ using MeshIO.Entities.Geometries;
 
 namespace MeshIO.STL
 {
-    public class StlWriter : IDisposable
+	public class StlWriter : IDisposable
 	{
+		private System.Globalization.NumberFormatInfo _nfi;
+
 		private StreamIO _stream;
+
+		private StlWriter()
+		{
+			this._nfi = new();
+			this._nfi.NumberDecimalSeparator = ".";
+		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StlWriter"/> class for the specified file.
 		/// </summary>
 		/// <param name="path">The complete file path to write to.</param>
-		public StlWriter(string path)
+		public StlWriter(string path) : this()
 		{
 			if (string.IsNullOrEmpty(path))
 				throw new ArgumentNullException(nameof(path));
@@ -29,7 +37,7 @@ namespace MeshIO.STL
 		/// Initializes a new instance of the <see cref="StlWriter"/> class for the specified stream.
 		/// </summary>
 		/// <param name="stream">The stream to write to.</param>
-		public StlWriter(Stream stream)
+		public StlWriter(Stream stream) : this()
 		{
 			if (stream == null)
 				throw new ArgumentNullException(nameof(stream));
@@ -51,7 +59,7 @@ namespace MeshIO.STL
 		public void WriteAscii(Mesh mesh)
 		{
 			this.validate(mesh);
-			
+
 			using (TextWriter tw = new StreamWriter(this._stream.Stream, new UTF8Encoding(false)))
 			{
 				tw.WriteLine($"solid {mesh.Name}");
@@ -61,7 +69,7 @@ namespace MeshIO.STL
 				{
 					XYZ normal = normals.Normals[i];
 
-					tw.WriteLine($"  facet normal {(float)normal.X} {(float)normal.Y} {(float)normal.Z}");
+					tw.WriteLine($"  facet normal {normal.X.ToString(this._nfi)} {normal.Y.ToString(this._nfi)} {normal.Z.ToString(this._nfi)}");
 
 					tw.WriteLine($"    outer loop");
 
@@ -69,7 +77,7 @@ namespace MeshIO.STL
 					{
 						var v = mesh.Vertices[item];
 
-						tw.WriteLine($"      vertex {(float)v.X} {(float)v.Y} {(float)v.Z}");
+						tw.WriteLine($"      vertex {v.X.ToString(this._nfi)} {v.Y.ToString(this._nfi)} {v.Z.ToString(this._nfi)}");
 					}
 
 					tw.WriteLine($"    endloop");
