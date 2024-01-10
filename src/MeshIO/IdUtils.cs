@@ -2,8 +2,7 @@
 
 namespace MeshIO
 {
-	[Obsolete]
-	internal static class Utils
+	internal static class IdUtils
 	{
 		///<remarks>
 		///Avoid duplicated ids in the tight loops.
@@ -16,13 +15,13 @@ namespace MeshIO
 		/// Creates an id as a long.
 		/// </summary>
 		/// <returns></returns>
-		public static long CreateId()
+		public static ulong CreateId()
 		{
 			lock (_syncLock)
 			{
 				byte[] buffer = new byte[8];
 				_random.NextBytes(buffer);
-				return Math.Abs(BitConverter.ToInt64(buffer, 0));
+				return BitConverter.ToUInt64(buffer, 0);
 			}
 		}
 	}

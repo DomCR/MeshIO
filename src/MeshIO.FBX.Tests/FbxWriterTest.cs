@@ -32,5 +32,21 @@ namespace MeshIO.FBX.Tests
 				writer.Write(FbxFileFormat.Binary);
 			}
 		}
+
+		[Theory]
+		[MemberData(nameof(Versions))]
+		public void WriteFbxWithMesh(FbxVersion version)
+		{
+			string path = Path.Combine(FolderPath.OutFilesFbx, $"box_{version}_ascii.fbx");
+
+			Scene scene = new Scene();
+			scene.RootNode.Nodes.Add(TestCaseFactory.CreateBox());
+
+			using (FbxWriter writer = new FbxWriter(path, scene, version))
+			{
+				writer.OnNotification += this.onNotification;
+				writer.Write(FbxFileFormat.ASCII);
+			}
+		}
 	}
 }

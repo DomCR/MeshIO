@@ -97,7 +97,7 @@ namespace MeshIO.FBX.Converters
 
 			node.Nodes.Add(new FbxNode("Count", 1));
 
-			FbxNode doc = new FbxNode("Document", Utils.CreateId(), "", "Scene");
+			FbxNode doc = new FbxNode("Document", IdUtils.CreateId(), "", "Scene");
 
 			FbxNode properties = new FbxNode("Properties70");
 			properties.Nodes.Add(new FbxNode("P", "SourceObject", "object", "", ""));
