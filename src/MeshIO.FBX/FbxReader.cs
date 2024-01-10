@@ -39,7 +39,10 @@ namespace MeshIO.FBX
 			this._stream = stream;
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Get the fbx version of the file
+		/// </summary>
+		/// <returns></returns>
 		public FbxVersion GetVersion()
 		{
 			_root ??= this.Parse();
@@ -47,7 +50,9 @@ namespace MeshIO.FBX
 			return _root.Version;
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Read the FBX file
+		/// </summary>
 		public Scene Read()
 		{
 			_root ??= this.Parse();
@@ -57,7 +62,10 @@ namespace MeshIO.FBX
 			return converter.ConvertScene();
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Parse the document into a node structure.
+		/// </summary>
+		/// <returns></returns>
 		public FbxRootNode Parse()
 		{
 			IFbxParser parser = null;
@@ -81,7 +89,7 @@ namespace MeshIO.FBX
 		}
 
 		/// <summary>
-		/// Read fbx file.
+		/// Read a fbx file into an scene
 		/// </summary>
 		/// <returns></returns>
 		public static Scene Read(string path, ErrorLevel errorLevel = ErrorLevel.Permissive, NotificationEventHandler notificationHandler = null)
@@ -107,7 +115,7 @@ namespace MeshIO.FBX
 		}
 
 		/// <summary>
-		/// Read fbx file.
+		/// Read a fbx stream into an scene
 		/// </summary>
 		/// <returns></returns>
 		public static Scene Read(Stream stream, ErrorLevel errorLevel = ErrorLevel.Permissive, NotificationEventHandler notificationHandler = null)

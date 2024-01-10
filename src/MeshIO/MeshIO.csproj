@@ -5,20 +5,7 @@
     <PackageId>MeshIO</PackageId>
     <PackageTags>C# 3D</PackageTags>
     <Description>3D library in pure C# that allows reading and writing in multiple formats.</Description>
-    <GeneratePackageOnBuild Condition="'$(Configuration)' == 'Release'">True</GeneratePackageOnBuild>
   </PropertyGroup>
-
-  <PropertyGroup>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
-    <Version>1.1.0-alpha</Version>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net5.0|AnyCPU'">
-    <DocumentationFile>bin\MeshIO.xml</DocumentationFile>
-  </PropertyGroup>
-
-  <Import Project="..\CSUtilities\CSMath\CSMath.projitems" Label="Shared" />
 
   <ItemGroup>
     <None Include="..\..\README.md">
@@ -26,5 +13,7 @@
       <PackagePath>\</PackagePath>
     </None>
   </ItemGroup>
+
+  <Import Project="..\CSUtilities\CSMath\CSMath.projitems" Label="Shared" />
 
 </Project>

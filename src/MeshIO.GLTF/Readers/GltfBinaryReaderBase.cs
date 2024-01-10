@@ -8,11 +8,15 @@ using System.Linq;
 using MeshIO.Entities.Geometries;
 using MeshIO.Shaders;
 using MeshIO.Entities;
+using MeshIO.GLTF.Exceptions;
+using MeshIO.Core;
 
 namespace MeshIO.GLTF
 {
 	internal abstract class GltfBinaryReaderBase : IDisposable
 	{
+		public event NotificationEventHandler OnNotification;
+
 		public static GltfBinaryReaderBase GetBynaryReader(int version, GltfRoot root, byte[] chunk)
 		{
 			switch (version)
@@ -21,7 +25,7 @@ namespace MeshIO.GLTF
 					return new GltfBinaryReaderV2(root, chunk);
 				case 1:
 				default:
-					throw new NotImplementedException($"Version {version} not implemented");
+					throw new NotSupportedException($"Version {version} not supported");
 			}
 		}
 
@@ -39,7 +43,20 @@ namespace MeshIO.GLTF
 
 		public Scene Read()
 		{
-			GltfScene rootScene = this._root.Scenes[this._root.Scene.Value];
+			GltfScene rootScene = null;
+
+			if (this._root.Scene.HasValue)
+			{
+				rootScene = this._root.Scenes[this._root.Scene.Value];
+			}
+			else
+			{
+				rootScene = this._root.Scenes.FirstOrDefault();
+			}
+
+			if (rootScene == null)
+				throw new GltfReaderException("Scene not found");
+
 			Scene scene = new Scene(rootScene.Name);
 
 			foreach (int nodeIndex in rootScene.Nodes)
@@ -68,6 +85,42 @@ namespace MeshIO.GLTF
 			GltfNode gltfNode = this._root.Nodes[index];
 			Node node = new Node(gltfNode.Name);
 
+			if (gltfNode.Skin.HasValue)
+			{
+				this.notify($"Gltf skin found in node {index} | {gltfNode.Name}", NotificationType.NotImplemented);
+			}
+
+			if (gltfNode.Matrix != null)
+			{
+				//Matrix is organized by columns
+				node.Transform = new Transform(new Matrix4(gltfNode.Matrix.Select(f => (double)f).ToArray()).Transpose());
+			}
+
+			if (gltfNode.Translation != null)
+			{
+				node.Transform.Translation = new XYZ(gltfNode.Translation.Select(f => (double)f).ToArray());
+			}
+
+			if (gltfNode.Rotation != null)
+			{
+				node.Transform.EulerRotation = new XYZ(gltfNode.Rotation.Select(f => (double)f).ToArray());
+			}
+
+			if (gltfNode.Scale != null)
+			{
+				node.Transform.Scale = new XYZ(gltfNode.Scale.Select(f => (double)f).ToArray());
+			}
+
+			if (gltfNode.Weights != null)
+			{
+				this.notify($"Gltf weights found in node {index} | {gltfNode.Name}", NotificationType.NotImplemented);
+			}
+
+			if (gltfNode.Mesh.HasValue)
+			{
+				node.Nodes.AddRange(readPrimitivesInMesh(gltfNode.Mesh.Value, node));
+			}
+
 			if (gltfNode.Camera.HasValue)
 			{
 				node.Nodes.Add(readCamera(gltfNode.Camera.Value));
@@ -81,42 +134,6 @@ namespace MeshIO.GLTF
 					node.Nodes.Add(n);
 			});
 
-			if (gltfNode.Skin.HasValue)
-			{
-				//TODO: read skin
-			}
-
-			if (gltfNode.Matrix != null)
-			{
-				//Matrix is organized by columns
-				node.Transform = new Transform(new Matrix4(gltfNode.Matrix.Select(f => (double)f).ToArray()).Transpose());
-			}
-
-			if (gltfNode.Rotation != null)
-			{
-				(node.Transform ??= new Transform()).Rotation = new XYZ(gltfNode.Rotation.Select(f => (double)f).ToArray());
-			}
-
-			if (gltfNode.Scale != null)
-			{
-				(node.Transform ??= new Transform()).Scale = new XYZ(gltfNode.Scale.Select(f => (double)f).ToArray());
-			}
-
-			if (gltfNode.Translation != null)
-			{
-				(node.Transform ??= new Transform()).Translation = new XYZ(gltfNode.Translation.Select(f => (double)f).ToArray());
-			}
-
-			if (gltfNode.Weights != null)
-			{
-				//TODO: Apply Weights matrix
-			}
-
-			if (gltfNode.Mesh.HasValue)
-			{
-				node.Nodes.AddRange(readPrimitivesInMesh(gltfNode.Mesh.Value, node));
-			}
-
 			return node;
 		}
 
@@ -129,19 +146,13 @@ namespace MeshIO.GLTF
 			switch (gltfCamera.Type)
 			{
 				case GltfCamera.TypeEnum.perspective:
-					break;
 				case GltfCamera.TypeEnum.orthographic:
-					break;
 				default:
-					throw new Exception();
+					this.notify($"Camera type not identified {gltfCamera.Type}", NotificationType.Warning);
+					break;
 			}
 
 			return camera;
-		}
-
-		protected Element3D readElement(int index)
-		{
-			throw new NotImplementedException();
 		}
 
 		protected List<Mesh> readPrimitivesInMesh(int index, Node parent)
@@ -170,34 +181,34 @@ namespace MeshIO.GLTF
 				switch (att.Key)
 				{
 					case "POSITION":
-						mesh.Vertices = readXYZ(_root.Accessors[att.Value]);
+						mesh.Vertices = this.readXYZ(_root.Accessors[att.Value]);
 						break;
 					case "NORMAL":
-						//TODO: Fix the gltf normal reading
-						//var normals = new LayerElementNormal(mesh);
-						//normals.Normals = readXYZ(_root.Accessors[att.Value]); //.Select(x => -x).ToList();
-						//normals.MappingInformationType = MappingMode.ByPolygon;
-						//normals.ReferenceInformationType = ReferenceMode.Direct;
-						//mesh.Layers.Add(normals);
+						var normals = new LayerElementNormal();
+						normals.Normals = readXYZ(_root.Accessors[att.Value]);
+						mesh.Layers.Add(normals);
 						break;
 					case "TANGENT":
 					case "TEXCOORD_0":
 					case "TEXCOORD_1":
+					case "TEXCOORD_2":
 					case "COLOR_0":
 					case "JOINTS_0":
 					case "WEIGHTS_0":
+						this.notify($"Attribute in mesh {att.Key}", NotificationType.NotImplemented);
 						break;
 					default:
-						throw new Exception();
+						this.notify($"Attribute in mesh not identified {att.Key}", NotificationType.Warning);
+						break;
 				}
 			}
 
 			if (p.Indices.HasValue)
 			{
-				mesh.Polygons.AddRange(readIndices(_root.Accessors[p.Indices.Value], p.Mode));
+				mesh.Polygons.AddRange(readIndices(this._root.Accessors[p.Indices.Value], p.Mode));
 
 				//Add missing layers
-				
+
 				//TODO: Fix the gltf normal reading
 				//var normals = new LayerElementNormal(mesh);
 				//normals.CalculateFlatNormals();
@@ -207,7 +218,7 @@ namespace MeshIO.GLTF
 			if (p.Material.HasValue)
 			{
 				material = readMaterial(p.Material.Value);
-				mesh.Layers.Add(new LayerElementMaterial(mesh));
+				mesh.Layers.Add(new LayerElementMaterial());
 			}
 			else
 			{
@@ -252,7 +263,7 @@ namespace MeshIO.GLTF
 			if (accessor.Type != GltfAccessor.TypeEnum.VEC3)
 				throw new Exception();
 
-			return readAccessor<XYZ>(getBufferStream(accessor), accessor.ComponentType, accessor.Count, 3);
+			return readAccessor<XYZ, double>(getBufferStream(accessor), accessor.ComponentType, accessor.Count, 3);
 		}
 
 		private IEnumerable<Polygon> readIndices(GltfAccessor accessor, GltfMeshPrimitive.ModeEnum mode)
@@ -265,7 +276,8 @@ namespace MeshIO.GLTF
 			switch (mode)
 			{
 				case GltfMeshPrimitive.ModeEnum.TRIANGLES:
-					return readAccessor<Triangle>(stream, accessor.ComponentType, accessor.Count / 3, 3);
+					//return this.readTriangles(stream, accessor.ComponentType, accessor.Count / 3, 3);
+					return readAccessor<Triangle, int>(stream, accessor.ComponentType, accessor.Count / 3, 3);
 				case GltfMeshPrimitive.ModeEnum.POINTS:
 				case GltfMeshPrimitive.ModeEnum.LINES:  //Works with the 3d lines, like polylines and lines
 				case GltfMeshPrimitive.ModeEnum.LINE_LOOP:
@@ -278,38 +290,45 @@ namespace MeshIO.GLTF
 			}
 		}
 
-		protected List<T> readAccessor<T>(StreamIO stream, GltfAccessor.ComponentTypeEnum componentType, int count, int nargs)
+		protected IEnumerable<Polygon> readTriangles(StreamIO stream, GltfAccessor.ComponentTypeEnum componentType, int count, int nargs)
+		{
+			throw new NotImplementedException();
+		}
+
+		protected List<T> readAccessor<T, R>(StreamIO stream, GltfAccessor.ComponentTypeEnum componentType, int count, int nargs)
 		{
 			List<T> vecs = new List<T>();
 
 			for (int i = 0; i < count; i++)
 			{
-				List<object> args = new List<object>();
+				List<R> args = new List<R>();
 
 				for (int j = 0; j < nargs; j++)
 				{
-
+					object value = null;
 					switch (componentType)
 					{
 						case GltfAccessor.ComponentTypeEnum.BYTE:
 						case GltfAccessor.ComponentTypeEnum.UNSIGNED_BYTE:
-							args.Add(stream.ReadByte());
+							value = (stream.ReadByte());
 							break;
 						case GltfAccessor.ComponentTypeEnum.SHORT:
-							args.Add(stream.ReadShort());
+							value = (stream.ReadShort());
 							break;
 						case GltfAccessor.ComponentTypeEnum.UNSIGNED_SHORT:
-							args.Add(stream.ReadUShort());
+							value = (stream.ReadUShort());
 							break;
 						case GltfAccessor.ComponentTypeEnum.UNSIGNED_INT:
-							args.Add(stream.ReadUInt());
+							value = (stream.ReadUInt());
 							break;
 						case GltfAccessor.ComponentTypeEnum.FLOAT:
-							args.Add(stream.ReadSingle());
+							value = stream.ReadSingle();
 							break;
 						default:
 							throw new Exception();
 					}
+
+					args.Add((R)Convert.ChangeType(value, typeof(R)));
 				}
 
 				vecs.Add((T)Activator.CreateInstance(typeof(T), args.ToArray()));
@@ -327,6 +346,11 @@ namespace MeshIO.GLTF
 			stream.Position = bufferView.ByteOffset + accessor.ByteOffset;
 
 			return stream;
+		}
+
+		protected void notify(string message, NotificationType notificationType = NotificationType.Information, Exception ex = null)
+		{
+			this.OnNotification?.Invoke(this, new NotificationEventArgs(message, notificationType, ex));
 		}
 	}
 }

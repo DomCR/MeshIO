@@ -264,7 +264,7 @@ namespace MeshIO.FBX.Converters
 			FbxNode node = new FbxNode("Geometry", mesh.Id, $"Geometry::{mesh.Name}", "Mesh");
 			node.Nodes.Add(new FbxNode("GeometryVersion", 124));
 
-			node.Nodes.Add(new FbxNode("Vertices", mesh.Vertices.SelectMany(x => x.GetComponents()).ToArray()));
+			node.Nodes.Add(new FbxNode("Vertices", mesh.Vertices.SelectMany(x => x.ToEnumerable()).ToArray()));
 			node.Nodes.Add(new FbxNode("PolygonVertexIndex", polygonsArray(mesh)));
 
 			buildMeshLayers(node, mesh.Layers);
@@ -419,7 +419,7 @@ namespace MeshIO.FBX.Converters
 			FbxNode node = new FbxNode("LayerElementBinormal", 0);
 			node.Nodes.Add(new FbxNode("Version", 101));
 			buildLayerElement(node, layer);
-			node.Nodes.Add(new FbxNode("BiNormals", layer.Normals.SelectMany(x => x.GetComponents()).ToArray()));
+			node.Nodes.Add(new FbxNode("BiNormals", layer.Normals.SelectMany(x => x.ToEnumerable()).ToArray()));
 			return node;
 		}
 
@@ -428,7 +428,7 @@ namespace MeshIO.FBX.Converters
 			FbxNode node = new FbxNode("LayerElementUV", 0);
 			node.Nodes.Add(new FbxNode("Version", 101));
 			buildLayerElement(node, layer);
-			node.Nodes.Add(new FbxNode("UV", layer.UV.SelectMany(x => x.GetComponents()).ToArray()));
+			node.Nodes.Add(new FbxNode("UV", layer.UV.SelectMany(x => x.ToEnumerable()).ToArray()));
 			node.Nodes.Add(new FbxNode("UVIndex", layer.Indices.ToArray()));
 			return node;
 		}
@@ -438,7 +438,7 @@ namespace MeshIO.FBX.Converters
 			FbxNode node = new FbxNode("LayerElementTangent", 0);
 			node.Nodes.Add(new FbxNode("Version", 102));
 			buildLayerElement(node, layer);
-			node.Nodes.Add(new FbxNode("Tangents", layer.Tangents.SelectMany(x => x.GetComponents()).ToArray()));
+			node.Nodes.Add(new FbxNode("Tangents", layer.Tangents.SelectMany(x => x.ToEnumerable()).ToArray()));
 			return node;
 		}
 
@@ -447,7 +447,7 @@ namespace MeshIO.FBX.Converters
 			FbxNode node = new FbxNode("LayerElementNormal", 0);
 			node.Nodes.Add(new FbxNode("Version", 102));
 			buildLayerElement(node, layer);
-			node.Nodes.Add(new FbxNode("Normals", layer.Normals.SelectMany(x => x.GetComponents()).ToArray()));
+			node.Nodes.Add(new FbxNode("Normals", layer.Normals.SelectMany(x => x.ToEnumerable()).ToArray()));
 			return node;
 		}
 
