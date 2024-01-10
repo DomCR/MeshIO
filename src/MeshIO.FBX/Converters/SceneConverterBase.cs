@@ -232,6 +232,8 @@ namespace MeshIO.FBX.Converters
 
 			properties.Nodes.Add(buildProperty("Lcl Translation", n.Transform.Translation / n.Transform.Scale));
 			properties.Nodes.Add(buildProperty("Lcl Scaling", n.Transform.Scale));
+			properties.Nodes.Add(buildProperty("DefaultAttributeIndex", (int)0));
+			properties.Nodes.Add(buildProperty("InheritType", "enum", "1"));
 
 			return node;
 		}
@@ -477,6 +479,19 @@ namespace MeshIO.FBX.Converters
 			}
 
 			return buildProperty(property.Name, property.Value);
+		}
+
+		private FbxNode buildProperty(string name, string typeName, string value)
+		{
+			FbxNode node = new FbxNode("P");
+			node.Properties.Add(name);
+
+			node.Properties.Add(typeName);
+			node.Properties.Add("");
+			node.Properties.Add("");
+			node.Properties.Add(value);
+
+			return node;
 		}
 
 		private FbxNode buildProperty(string name, object propValue)

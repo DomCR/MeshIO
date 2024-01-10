@@ -44,7 +44,7 @@ namespace MeshIO.FBX.Tests
 		[MemberData(nameof(AsciiFiles))]
 		public void ReadAsciiTest(string test)
 		{
-			readFile(test);
+			Scene scene = readFile(test);
 		}
 
 		[Theory]

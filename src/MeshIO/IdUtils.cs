@@ -19,9 +19,9 @@ namespace MeshIO
 		{
 			lock (_syncLock)
 			{
-				byte[] buffer = new byte[8];
+				byte[] buffer = new byte[4];
 				_random.NextBytes(buffer);
-				return BitConverter.ToUInt64(buffer, 0);
+				return (ulong)Math.Abs(BitConverter.ToInt32(buffer, 0));
 			}
 		}
 	}

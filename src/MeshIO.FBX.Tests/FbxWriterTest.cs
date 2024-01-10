@@ -1,4 +1,6 @@
-﻿using MeshIO.Tests.Shared;
+﻿using CSMath;
+using MeshIO.Entities.Primitives;
+using MeshIO.Tests.Shared;
 using System.IO;
 using Xunit;
 using Xunit.Abstractions;
@@ -40,7 +42,11 @@ namespace MeshIO.FBX.Tests
 			string path = Path.Combine(FolderPath.OutFilesFbx, $"box_{version}_ascii.fbx");
 
 			Scene scene = new Scene();
-			scene.RootNode.Nodes.Add(TestCaseFactory.CreateBox());
+
+			Node box = new Node();
+			box.Nodes.Add(new Box("my_box").CreateMesh());
+
+			scene.RootNode.Nodes.Add(box);
 
 			using (FbxWriter writer = new FbxWriter(path, scene, version))
 			{
