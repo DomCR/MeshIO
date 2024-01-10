@@ -57,7 +57,11 @@ namespace MeshIO
 		{
 			get
 			{
-				return Quaternion.CreateFromYawPitchRoll(MathUtils.ToRadian(this._rotation));
+				XYZ rot = new XYZ();
+				rot[0] = MathUtils.DegToRad(this._rotation.X);
+				rot[1] = MathUtils.DegToRad(this._rotation.Y);
+				rot[2] = MathUtils.DegToRad(this._rotation.Z);
+				return Quaternion.CreateFromYawPitchRoll(rot);
 			}
 		}
 

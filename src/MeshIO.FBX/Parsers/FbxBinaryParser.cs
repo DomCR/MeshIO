@@ -209,7 +209,7 @@ namespace MeshIO.FBX
 			var encoding = _stream.ReadInt32();
 			var compressedLen = _stream.ReadInt32();
 			var ret = Array.CreateInstance(arrayType, len);
-			var s = _stream;
+			var stream = _stream;
 			var endPos = _stream.BaseStream.Position + compressedLen;
 			if (encoding != 0)
 			{
@@ -235,12 +235,12 @@ namespace MeshIO.FBX
 					_stream.BaseStream.Position += 2;
 				}
 				var codec = new DeflateWithChecksum(_stream.BaseStream, CompressionMode.Decompress);
-				s = new BinaryReader(codec);
+				stream = new BinaryReader(codec);
 			}
 			try
 			{
 				for (int i = 0; i < len; i++)
-					ret.SetValue(readPrimitive(s), i);
+					ret.SetValue(readPrimitive(stream), i);
 			}
 			catch (InvalidDataException)
 			{
@@ -254,12 +254,20 @@ namespace MeshIO.FBX
 					_stream.BaseStream.Position = endPos - sizeof(int);
 					var checksumBytes = new byte[sizeof(int)];
 					_stream.BaseStream.Read(checksumBytes, 0, checksumBytes.Length);
+
 					int checksum = 0;
 					for (int i = 0; i < checksumBytes.Length; i++)
+					{
 						checksum = (checksum << 8) + checksumBytes[i];
-					if (checksum != ((DeflateWithChecksum)s.BaseStream).Checksum)
+					}
+
+#if !NET
+					if (checksum != ((DeflateWithChecksum)stream.BaseStream).Checksum)
+					{
 						throw new FbxException(_stream.BaseStream.Position,
 							"Compressed data has invalid checksum");
+					}
+#endif
 				}
 				else
 				{
