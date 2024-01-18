@@ -13,6 +13,11 @@ namespace MeshIO
 		public string Name { get; }
 
 		/// <summary>
+		/// Property flags
+		/// </summary>
+		public PropertyFlags Flags { get; set; }
+
+		/// <summary>
 		/// Property value
 		/// </summary>
 		public object Value { get; set; }
