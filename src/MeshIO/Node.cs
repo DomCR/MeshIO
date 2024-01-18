@@ -1,4 +1,6 @@
-﻿using System;
+﻿using MeshIO.Entities;
+using MeshIO.Shaders;
+using System;
 using System.Collections.Generic;
 
 namespace MeshIO
@@ -6,13 +8,7 @@ namespace MeshIO
 	public class Node : SceneElement
 	{
 		[Obsolete]
-		public bool? MultiLayer { get; set; }
-		[Obsolete]
-		public bool? MultiTake { get; set; }
-		[Obsolete]
 		public bool Shading { get; set; } = true;
-		[Obsolete]
-		public string Culling { get; set; } = "CullingOff";
 
 		/// <summary>
 		/// The node and all the components are visible or not
@@ -32,7 +28,14 @@ namespace MeshIO
 		/// <summary>
 		/// Get all linked elements to this node
 		/// </summary>
-		public List<Element3D> Nodes { get; } = new List<Element3D>();
+		[Obsolete("Replace for the different collections, ")]
+		public List<Element3D> Children { get; } = new();
+
+		public List<Node> Nodes { get; } = new();
+
+		public List<Material> Materials { get; } = new();
+
+		public List<Entity> Entities { get; } = new();
 
 		public Node() : base() { }
 

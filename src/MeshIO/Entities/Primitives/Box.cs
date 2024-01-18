@@ -33,7 +33,7 @@ namespace MeshIO.Entities.Primitives
 		/// The current implementation returns a mesh with no shared vertices and the following layers:<br/>
 		/// <see cref="LayerElementNormal"/><br/>
 		/// <see cref="LayerElementUV"/><br/>
-		/// configured with <see cref="MappingMode.ByControlPoint"/> and <see cref=" ReferenceMode.Direct"/>
+		/// configured with <see cref="MappingMode.ByVertex"/> and <see cref=" ReferenceMode.Direct"/>
 		/// </remarks>
 		public override Mesh CreateMesh()
 		{

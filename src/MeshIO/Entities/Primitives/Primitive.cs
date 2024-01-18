@@ -43,11 +43,11 @@ namespace MeshIO.Entities.Primitives
 			mesh.Vertices.AddRange(vertices);
 			mesh.Polygons.AddRange(polygons);
 
-			LayerElementNormal layerNormals = new LayerElementNormal(MappingMode.ByControlPoint, ReferenceMode.Direct);
+			LayerElementNormal layerNormals = new LayerElementNormal(MappingMode.ByVertex, ReferenceMode.Direct);
 			layerNormals.AddRange(normals);
 			mesh.Layers.Add(layerNormals);
 
-			LayerElementUV layerUvs = new LayerElementUV(MappingMode.ByControlPoint, ReferenceMode.Direct);
+			LayerElementUV layerUvs = new LayerElementUV(MappingMode.ByVertex, ReferenceMode.Direct);
 			layerUvs.AddRange(uvs);
 			mesh.Layers.Add(layerUvs);
 

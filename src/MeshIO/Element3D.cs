@@ -1,4 +1,6 @@
-﻿namespace MeshIO
+﻿using System;
+
+namespace MeshIO
 {
 	/// <summary>
 	/// Base class for all the elements contained in the 3D environment
@@ -30,6 +32,20 @@
 			this.Name = name;
 			this.Id = IdUtils.CreateId();
 			this.Properties = new PropertyCollection(this);
+		}
+
+		/// <summary>
+		/// Gets the Id of the object, if is null it sets a value
+		/// </summary>
+		/// <returns></returns>
+		public long GetIdOrDefault()
+		{
+			if (!Id.HasValue)
+			{
+				this.Id = IdUtils.CreateId();
+			}
+
+			return Math.Abs((long)Id.Value);
 		}
 
 		/// <inheritdoc/>
