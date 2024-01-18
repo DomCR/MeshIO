@@ -161,7 +161,7 @@ namespace MeshIO.FBX.Converters
 		{
 			_objects = new FbxNode("Objects");
 
-			foreach (Element3D item in this._scene.RootNode.Nodes)
+			foreach (Element3D item in this._scene.RootNode.Children)
 			{
 				FbxNode c = buildElementNode(item);
 
@@ -212,15 +212,9 @@ namespace MeshIO.FBX.Converters
 			FbxNode node = new FbxNode("Model", n.Id, $"Model::{n.Name}", "Null");
 			node.Nodes.Add(new FbxNode("Version", 232));
 
-			if (n.MultiLayer.HasValue)
-				node.Nodes.Add(new FbxNode("MultiLayer", n.MultiLayer.Value ? 'T' : 'F'));
-			if (n.MultiTake.HasValue)
-				node.Nodes.Add(new FbxNode("MultiTake", n.MultiTake.Value ? 'T' : 'F'));
-
 			node.Nodes.Add(new FbxNode("Shading", n.Shading ? 'T' : 'F'));
-			node.Nodes.Add(new FbxNode("Culling", n.Culling));
 
-			foreach (Element3D item in n.Nodes)
+			foreach (Element3D item in n.Children)
 			{
 				buildElementNode(item);
 
@@ -472,7 +466,7 @@ namespace MeshIO.FBX.Converters
 		{
 			switch (property)
 			{
-				case FbxProperty:
+				case FbxPropertyOld:
 				case Property:
 				default:
 					break;

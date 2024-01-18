@@ -137,7 +137,7 @@ namespace MeshIO.FBX.Converters
 			{
 				if (this.MapObjects.ObjectMap.TryGetValue(id, out Element3D sub))
 				{
-					node.Nodes.Add(sub);
+					node.Children.Add(sub);
 
 					if (sub is Node n)
 					{
