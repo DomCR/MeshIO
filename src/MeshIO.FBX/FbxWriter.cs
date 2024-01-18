@@ -110,6 +110,14 @@ namespace MeshIO.FBX
 			}
 		}
 
+		public void Write(FbxWriterOptions options)
+		{
+			using (var writer = FbxFileWriterBase.Create(this.Scene, options, this._stream))
+			{
+				writer.Write();
+			}
+		}
+
 		/// <inheritdoc/>
 		public override void Dispose()
 		{

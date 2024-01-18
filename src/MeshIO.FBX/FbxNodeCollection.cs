@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -7,6 +8,7 @@ namespace MeshIO.FBX
 	/// <summary>
 	/// Base class for nodes and documents
 	/// </summary>
+	[Obsolete("This class will be removed")]
 	public abstract class FbxNodeCollection : IEnumerable<FbxNode>
 	{
 		/// <summary>

@@ -5,11 +5,14 @@ namespace MeshIO.FBX
 {
 	public class FbxWriterOptions
 	{
+		public bool IsBinaryFormat { get; set; } = false;
+
+		public FbxVersion Version { get; set; } = FbxVersion.v7400;
+
 		public GlobalSettings GlobalSettings { get; set; }
 
-		public FbxWriterOptions(FbxVersion version)
+		public FbxWriterOptions()
 		{
-
 		}
 	}
 

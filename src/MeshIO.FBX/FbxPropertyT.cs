@@ -1,7 +1,7 @@
 ﻿namespace MeshIO.FBX
 {
 	//P : ["PropName", "PropType", "Label(?)", "Flags", __values__, …]
-	public class FbxProperty<T> : FbxProperty
+	public class FbxProperty<T> : FbxPropertyOld
 	{
 		public new T Value { get; set; }
 
