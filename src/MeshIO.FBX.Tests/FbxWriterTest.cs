@@ -1,4 +1,5 @@
 ﻿using CSMath;
+using MeshIO.Entities.Geometries;
 using MeshIO.Entities.Primitives;
 using MeshIO.Tests.Shared;
 using System.IO;
@@ -43,8 +44,9 @@ namespace MeshIO.FBX.Tests
 
 			Scene scene = new Scene();
 
-			Node box = new Node();
-			box.Nodes.Add(new Box("my_box").CreateMesh());
+			Node box = new Node("my_node");
+			Mesh mesh = new Box("my_box").CreateMesh();
+			box.Entities.Add(mesh);
 
 			scene.RootNode.Nodes.Add(box);
 

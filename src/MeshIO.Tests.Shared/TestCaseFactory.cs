@@ -22,7 +22,6 @@ namespace MeshIO.Tests.Shared
 		public static Scene CreateSceneSimpleBox()
 		{
 			Scene scene = new Scene();
-			scene.RootNode.Nodes.Add(new Mesh("Box"));
 
 			return scene;
 		}
