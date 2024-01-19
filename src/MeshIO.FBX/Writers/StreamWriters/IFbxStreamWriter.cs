@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace MeshIO.FBX.Writers
+namespace MeshIO.FBX.Writers.StreamWriters
 {
 	internal interface IFbxStreamWriter : IDisposable
 	{

@@ -4,7 +4,7 @@ using System.IO;
 using System.Text;
 using System.Linq;
 
-namespace MeshIO.FBX.Writers.StreamWriter
+namespace MeshIO.FBX.Writers.StreamWriters
 {
 	internal sealed class FbxAsciiStreamWriter : FbxStreamWriterBase
 	{

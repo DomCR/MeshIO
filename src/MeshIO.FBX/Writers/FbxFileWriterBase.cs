@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using MeshIO.FBX.Writers.Connections;
 using MeshIO.FBX.Writers.Objects;
-using MeshIO.FBX.Writers.StreamWriter;
+using MeshIO.FBX.Writers.StreamWriters;
 
 namespace MeshIO.FBX.Writers
 {

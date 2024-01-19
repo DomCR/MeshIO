@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace MeshIO.FBX.Writers.StreamWriter
+namespace MeshIO.FBX.Writers.StreamWriters
 {
 	internal abstract class FbxStreamWriterBase : IFbxStreamWriter
 	{
