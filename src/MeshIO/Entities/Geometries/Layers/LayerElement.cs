@@ -14,17 +14,21 @@ namespace MeshIO.Entities.Geometries.Layers
 
 		public ReferenceMode ReferenceMode { get; set; }
 
-		public List<int> Indices { get; } = new List<int>();
+		public List<int> Indexes { get; } = new List<int>();
 
-		public Geometry Owner { get; internal set; }
+		public Geometry Owner { get; set; }
 
-		public LayerElement()
+		public LayerElement() : this(MappingMode.AllSame, ReferenceMode.IndexToDirect)
 		{
-			this.MappingMode = MappingMode.AllSame;
-			this.ReferenceMode = ReferenceMode.IndexToDirect;
 		}
 
-		[Obsolete("delete",error: true)]
+		public LayerElement(MappingMode mappingMode, ReferenceMode referenceMode)
+		{
+			this.MappingMode = mappingMode;
+			this.ReferenceMode = referenceMode;
+		}
+
+		[Obsolete]
 		public LayerElement(Geometry owner) : this()
 		{
 			this.Owner = owner;

@@ -29,7 +29,7 @@ namespace MeshIO.FBX.Converters.Mappers
 
 		public FbxDefinitionsMapper DefinitionMap { get; set; } = new FbxDefinitionsMapper();
 
-		public Dictionary<ulong, Element3D> ObjectMap { get; } = new Dictionary<ulong, Element3D>();
+		public Dictionary<ulong, Element3D> ObjectMap { get; } = new();
 
 		public override void Map(FbxNode node)
 		{
@@ -107,16 +107,16 @@ namespace MeshIO.FBX.Converters.Mappers
 			{
 				switch (p.Name)
 				{
-					case FbxProperty.LclRotation:
+					case FbxPropertyOld.LclRotation:
 						model.Transform.EulerRotation = (XYZ)p.Value;
 						continue;
-					case FbxProperty.LclScaling:
+					case FbxPropertyOld.LclScaling:
 						model.Transform.Scale = (XYZ)p.Value;
 						continue;
-					case FbxProperty.LclTranslation:
+					case FbxPropertyOld.LclTranslation:
 						model.Transform.Translation = (XYZ)p.Value;
 						continue;
-					case FbxProperty.Show:
+					case FbxPropertyOld.Show:
 						model.IsVisible = (bool)p.Value;
 						continue;
 				}
@@ -143,7 +143,7 @@ namespace MeshIO.FBX.Converters.Mappers
 				switch (p.Name)
 				{
 					//TODO: finish material read
-					case FbxProperty.AmbientColor:
+					case FbxPropertyOld.AmbientColor:
 						material.AmbientColor = (Color)p.Value;
 						continue;
 				}
@@ -174,13 +174,13 @@ namespace MeshIO.FBX.Converters.Mappers
 			{
 				switch (p.Name)
 				{
-					case FbxProperty.PrimaryVisibility:
+					case FbxPropertyOld.PrimaryVisibility:
 						geometry.IsVisible = (bool)p.Value;
 						continue;
-					case FbxProperty.CastShadows:
+					case FbxPropertyOld.CastShadows:
 						geometry.CastShadows = (bool)p.Value;
 						continue;
-					case FbxProperty.ReceiveShadows:
+					case FbxPropertyOld.ReceiveShadows:
 						geometry.ReceiveShadows = (bool)p.Value;
 						continue;
 				}
@@ -350,7 +350,7 @@ namespace MeshIO.FBX.Converters.Mappers
 
 			if (node.TryGetNode("UVIndex", out FbxNode indices))
 			{
-				layer.Indices.AddRange(this.toArr<int>(indices.Value as IEnumerable));
+				layer.Indexes.AddRange(this.toArr<int>(indices.Value as IEnumerable));
 			}
 
 			return layer;
@@ -378,7 +378,7 @@ namespace MeshIO.FBX.Converters.Mappers
 
 			if (node.TryGetNode("Materials", out FbxNode materials))
 			{
-				layer.Indices.AddRange(this.toArr<int>(materials.Value as IEnumerable));
+				layer.Indexes.AddRange(this.toArr<int>(materials.Value as IEnumerable));
 			}
 
 			return layer;

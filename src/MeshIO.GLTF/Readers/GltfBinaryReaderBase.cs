@@ -64,7 +64,7 @@ namespace MeshIO.GLTF
 				Node n = readNode(nodeIndex);
 
 				if (n != null)
-					scene.RootNode.Nodes.Add(n);
+					scene.RootNode.Children.Add(n);
 			}
 
 			return scene;
@@ -118,12 +118,12 @@ namespace MeshIO.GLTF
 
 			if (gltfNode.Mesh.HasValue)
 			{
-				node.Nodes.AddRange(readPrimitivesInMesh(gltfNode.Mesh.Value, node));
+				node.Children.AddRange(readPrimitivesInMesh(gltfNode.Mesh.Value, node));
 			}
 
 			if (gltfNode.Camera.HasValue)
 			{
-				node.Nodes.Add(readCamera(gltfNode.Camera.Value));
+				node.Children.Add(readCamera(gltfNode.Camera.Value));
 			}
 
 			gltfNode.Children?.ToList().ForEach((i) =>
@@ -131,7 +131,7 @@ namespace MeshIO.GLTF
 				Node n = readNode(i);
 
 				if (n != null)
-					node.Nodes.Add(n);
+					node.Children.Add(n);
 			});
 
 			return node;
@@ -166,7 +166,7 @@ namespace MeshIO.GLTF
 				mesh.Name = gltfMesh.Name;
 				meshes.Add(mesh);
 
-				parent.Nodes.Add(material);    //TODO: fix the material reference
+				parent.Children.Add(material);    //TODO: fix the material reference
 			}
 
 			return meshes;

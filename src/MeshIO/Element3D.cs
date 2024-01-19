@@ -1,4 +1,6 @@
-﻿namespace MeshIO
+﻿using System;
+
+namespace MeshIO
 {
 	/// <summary>
 	/// Base class for all the elements contained in the 3D environment
@@ -8,9 +10,6 @@
 		/// <summary>
 		/// Unique id to identify this element
 		/// </summary>
-		/// <remarks>
-		/// If the Id doesn't have a value it means that is not attach to any scene
-		/// </remarks>
 		public ulong? Id { get; internal set; } = null;
 
 		/// <summary>
@@ -31,7 +30,22 @@
 		public Element3D(string name)
 		{
 			this.Name = name;
+			this.Id = IdUtils.CreateId();
 			this.Properties = new PropertyCollection(this);
+		}
+
+		/// <summary>
+		/// Gets the Id of the object, if is null it sets a value
+		/// </summary>
+		/// <returns></returns>
+		public long GetIdOrDefault()
+		{
+			if (!Id.HasValue)
+			{
+				this.Id = IdUtils.CreateId();
+			}
+
+			return Math.Abs((long)Id.Value);
 		}
 
 		/// <inheritdoc/>

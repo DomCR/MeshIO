@@ -6,6 +6,8 @@ namespace MeshIO.Tests.Shared
 	{
 		public static Mesh CreateBox()
 		{
+			//TODO: complete test factory
+
 			Mesh mesh = new Mesh("Box");
 			mesh.Vertices.Add(new CSMath.XYZ(0, 0, 0));
 			mesh.Vertices.Add(new CSMath.XYZ(10, 0, 0));
@@ -20,7 +22,6 @@ namespace MeshIO.Tests.Shared
 		public static Scene CreateSceneSimpleBox()
 		{
 			Scene scene = new Scene();
-			scene.RootNode.Nodes.Add(new Mesh("Box"));
 
 			return scene;
 		}

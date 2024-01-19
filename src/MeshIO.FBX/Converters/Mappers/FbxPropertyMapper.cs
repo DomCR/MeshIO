@@ -13,7 +13,6 @@ namespace MeshIO.FBX.Converters.Mappers
 
 		public void MapNode()
 		{
-
 		}
 
 		public static List<Property> MapProperties(FbxNode node, NotificationEventHandler notify = null)

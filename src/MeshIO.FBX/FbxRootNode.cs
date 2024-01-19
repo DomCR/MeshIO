@@ -1,10 +1,12 @@
 ﻿using MeshIO.FBX.Converters;
+using System;
 
 namespace MeshIO.FBX
 {
 	/// <summary>
 	/// A top-level FBX node
 	/// </summary>
+	[Obsolete("This class will be removed")]
 	public class FbxRootNode : FbxNodeCollection
 	{
 		/// <summary>

@@ -97,7 +97,7 @@ namespace MeshIO.FBX.Converters
 
 			node.Nodes.Add(new FbxNode("Count", 1));
 
-			FbxNode doc = new FbxNode("Document", Utils.CreateId(), "", "Scene");
+			FbxNode doc = new FbxNode("Document", IdUtils.CreateId(), "", "Scene");
 
 			FbxNode properties = new FbxNode("Properties70");
 			properties.Nodes.Add(new FbxNode("P", "SourceObject", "object", "", ""));
@@ -161,7 +161,7 @@ namespace MeshIO.FBX.Converters
 		{
 			_objects = new FbxNode("Objects");
 
-			foreach (Element3D item in this._scene.RootNode.Nodes)
+			foreach (Element3D item in this._scene.RootNode.Children)
 			{
 				FbxNode c = buildElementNode(item);
 
@@ -212,15 +212,9 @@ namespace MeshIO.FBX.Converters
 			FbxNode node = new FbxNode("Model", n.Id, $"Model::{n.Name}", "Null");
 			node.Nodes.Add(new FbxNode("Version", 232));
 
-			if (n.MultiLayer.HasValue)
-				node.Nodes.Add(new FbxNode("MultiLayer", n.MultiLayer.Value ? 'T' : 'F'));
-			if (n.MultiTake.HasValue)
-				node.Nodes.Add(new FbxNode("MultiTake", n.MultiTake.Value ? 'T' : 'F'));
-
 			node.Nodes.Add(new FbxNode("Shading", n.Shading ? 'T' : 'F'));
-			node.Nodes.Add(new FbxNode("Culling", n.Culling));
 
-			foreach (Element3D item in n.Nodes)
+			foreach (Element3D item in n.Children)
 			{
 				buildElementNode(item);
 
@@ -232,6 +226,8 @@ namespace MeshIO.FBX.Converters
 
 			properties.Nodes.Add(buildProperty("Lcl Translation", n.Transform.Translation / n.Transform.Scale));
 			properties.Nodes.Add(buildProperty("Lcl Scaling", n.Transform.Scale));
+			properties.Nodes.Add(buildProperty("DefaultAttributeIndex", (int)0));
+			properties.Nodes.Add(buildProperty("InheritType", "enum", "1"));
 
 			return node;
 		}
@@ -401,7 +397,7 @@ namespace MeshIO.FBX.Converters
 			FbxNode node = new FbxNode("LayerElementMaterial", 0);
 			node.Nodes.Add(new FbxNode("Version", 101));
 			buildLayerElement(node, layer);
-			node.Nodes.Add(new FbxNode("Materials", layer.Indices.ToArray()));
+			node.Nodes.Add(new FbxNode("Materials", layer.Indexes.ToArray()));
 			return node;
 		}
 
@@ -429,7 +425,7 @@ namespace MeshIO.FBX.Converters
 			node.Nodes.Add(new FbxNode("Version", 101));
 			buildLayerElement(node, layer);
 			node.Nodes.Add(new FbxNode("UV", layer.UV.SelectMany(x => x.ToEnumerable()).ToArray()));
-			node.Nodes.Add(new FbxNode("UVIndex", layer.Indices.ToArray()));
+			node.Nodes.Add(new FbxNode("UVIndex", layer.Indexes.ToArray()));
 			return node;
 		}
 
@@ -470,13 +466,26 @@ namespace MeshIO.FBX.Converters
 		{
 			switch (property)
 			{
-				case FbxProperty:
+				case FbxPropertyOld:
 				case Property:
 				default:
 					break;
 			}
 
 			return buildProperty(property.Name, property.Value);
+		}
+
+		private FbxNode buildProperty(string name, string typeName, string value)
+		{
+			FbxNode node = new FbxNode("P");
+			node.Properties.Add(name);
+
+			node.Properties.Add(typeName);
+			node.Properties.Add("");
+			node.Properties.Add("");
+			node.Properties.Add(value);
+
+			return node;
 		}
 
 		private FbxNode buildProperty(string name, object propValue)

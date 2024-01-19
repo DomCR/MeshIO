@@ -5,10 +5,12 @@
 	/// </summary>
 	public enum MappingMode
 	{
+		NoMappingInformation,
+
 		/// <summary>
-		/// Each element is mapped to the control point / vertex of the geometry
+		/// Each element is mapped to the a vertex of the geometry
 		/// </summary>
-		ByControlPoint,
+		ByVertex,
 
 		/// <summary>
 		/// Elements are mapped to each polygon vertex

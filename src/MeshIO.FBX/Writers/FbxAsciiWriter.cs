@@ -41,7 +41,6 @@ namespace MeshIO.FBX
 			if (stream == null)
 				throw new ArgumentNullException(nameof(stream));
 
-
 			this.Root = root;
 			this._stream = stream;
 		}
