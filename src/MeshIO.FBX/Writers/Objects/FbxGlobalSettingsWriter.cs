@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using MeshIO.FBX.Writers.StreamWriters;
+using System.Collections.Generic;
 
 namespace MeshIO.FBX.Writers.Objects
 {

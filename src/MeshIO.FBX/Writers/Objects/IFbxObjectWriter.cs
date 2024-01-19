@@ -1,4 +1,6 @@
-﻿namespace MeshIO.FBX.Writers.Objects
+﻿using MeshIO.FBX.Writers.StreamWriters;
+
+namespace MeshIO.FBX.Writers.Objects
 {
 	internal interface IFbxObjectWriter
 	{

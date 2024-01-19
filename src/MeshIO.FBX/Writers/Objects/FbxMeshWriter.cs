@@ -1,8 +1,8 @@
 ﻿using CSMath;
-using MeshIO.Entities;
 using MeshIO.Entities.Geometries;
 using MeshIO.Entities.Geometries.Layers;
 using MeshIO.FBX.Extensions;
+using MeshIO.FBX.Writers.StreamWriters;
 using System.Collections.Generic;
 using System.Linq;
 
