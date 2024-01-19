@@ -8,16 +8,6 @@ using System.Linq;
 
 namespace MeshIO.FBX.Writers.Objects
 {
-	internal abstract class FbxEntityWriter<T> : FbxObjectWriterBase<T>
-		where T : Entity
-	{
-		public override string FbxObjectName { get; } = FbxFileToken.Geometry;
-
-		protected FbxEntityWriter(T element) : base(element)
-		{
-		}
-	}
-
 	internal class FbxMeshWriter : FbxEntityWriter<Mesh>
 	{
 		public override string FbxTypeName { get; } = FbxFileToken.Mesh;
@@ -51,8 +41,6 @@ namespace MeshIO.FBX.Writers.Objects
 		{
 			List<string> layers = new List<string>();
 
-			this.writeMaterial(builder, writer);
-
 			foreach (LayerElement layer in this._element.Layers)
 			{
 				this.writeLayer(layer, builder, writer);
@@ -82,16 +70,6 @@ namespace MeshIO.FBX.Writers.Objects
 			writer.WriteEmptyLine();
 		}
 
-		private void writeMaterial(FbxFileWriterBase builder, IFbxStreamWriter writer)
-		{
-			return;
-
-			if (!this._element.ParentNodes.Any())
-			{
-				return;
-			}
-		}
-
 		private void writeLayer<T>(T layer, FbxFileWriterBase builder, IFbxStreamWriter writer)
 			where T : LayerElement
 		{
@@ -103,17 +81,38 @@ namespace MeshIO.FBX.Writers.Objects
 			writer.WritePairNodeValue("MappingInformationType", layer.MappingMode.GetFbxName());
 			writer.WritePairNodeValue("ReferenceInformationType", layer.ReferenceMode.GetFbxName());
 
+			string indexesName = string.Empty;
 			switch (layer)
 			{
+				case LayerElementBinormal bnormals:
+					writer.WritePairNodeValue("Binormals", bnormals.Normals.SelectMany(x => x.ToEnumerable()));
+					writer.WritePairNodeValue("BinormalsW", bnormals.Weights);
+					indexesName = "BinormalsIndex";
+					break;
 				case LayerElementNormal normals:
-					writer.WritePairNodeValue("Normals", normals.Normals.SelectMany(x => x.ToEnumerable()).ToArray());
-					writer.WritePairNodeValue("NormalsW", normals.Weights.ToArray());
+					writer.WritePairNodeValue("Normals", normals.Normals.SelectMany(x => x.ToEnumerable()));
+					writer.WritePairNodeValue("NormalsW", normals.Weights);
+					indexesName = "NormalsIndex";
+					break;
+				case LayerElementMaterial material:
+					writer.WritePairNodeValue("Materials", material.Indexes);
+					break;
+				case LayerElementTangent tangents:
+					writer.WritePairNodeValue("Tangents", tangents.Tangents.SelectMany(x => x.ToEnumerable()));
+					writer.WritePairNodeValue("TangentsW", tangents.Weights);
+					indexesName = "TangentsIndex";
 					break;
 				case LayerElementUV uv:
-					writer.WritePairNodeValue("UV", uv.UV.SelectMany(x => x.ToEnumerable()).ToArray());
+					writer.WritePairNodeValue("UV", uv.UV.SelectMany(x => x.ToEnumerable()));
+					indexesName = "UVIndex";
 					break;
 				default:
 					break;
+			}
+
+			if (layer.ReferenceMode != ReferenceMode.Direct && layer.Indexes.Any() && layer is not LayerElementMaterial)
+			{
+				writer.WritePairNodeValue(indexesName, layer.Indexes);
 			}
 
 			writer.WriteCloseBracket();

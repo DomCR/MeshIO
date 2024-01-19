@@ -14,7 +14,7 @@ namespace MeshIO.Entities.Geometries.Layers
 
 		public ReferenceMode ReferenceMode { get; set; }
 
-		public List<int> Indices { get; } = new List<int>();
+		public List<int> Indexes { get; } = new List<int>();
 
 		public Geometry Owner { get; set; }
 

@@ -350,7 +350,7 @@ namespace MeshIO.FBX.Converters.Mappers
 
 			if (node.TryGetNode("UVIndex", out FbxNode indices))
 			{
-				layer.Indices.AddRange(this.toArr<int>(indices.Value as IEnumerable));
+				layer.Indexes.AddRange(this.toArr<int>(indices.Value as IEnumerable));
 			}
 
 			return layer;
@@ -378,7 +378,7 @@ namespace MeshIO.FBX.Converters.Mappers
 
 			if (node.TryGetNode("Materials", out FbxNode materials))
 			{
-				layer.Indices.AddRange(this.toArr<int>(materials.Value as IEnumerable));
+				layer.Indexes.AddRange(this.toArr<int>(materials.Value as IEnumerable));
 			}
 
 			return layer;
