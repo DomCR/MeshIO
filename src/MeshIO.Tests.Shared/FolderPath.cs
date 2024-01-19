@@ -13,4 +13,23 @@ public static class FolderPath
 
 	public static readonly string InFilesGltf = Path.Combine(InFiles, "glb-gltf");
 	public static readonly string OutFilesGltf = Path.Combine(OutFiles, "glb-gltf");
+
+	static FolderPath()
+	{
+		string[] directories = new[]
+		{
+			OutFiles,
+			OutFilesFbx,
+			OutFilesStl,
+			OutFilesGltf,
+		};
+
+		foreach (string d in directories)
+		{
+			if (!Directory.Exists(d))
+			{
+				Directory.CreateDirectory(d);
+			}
+		}
+	}
 }

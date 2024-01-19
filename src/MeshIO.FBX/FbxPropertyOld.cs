@@ -27,8 +27,6 @@ namespace MeshIO.FBX
 
 		public string TypeLabel { get; set; }
 
-		public PropertyFlags Flags { get; set; }
-
 		public FbxPropertyOld(string name, Element3D owner) : base(name, owner) { }
 
 		public FbxPropertyOld(string name, Element3D owner, object value) : base(name, owner, value) { }
@@ -43,8 +41,14 @@ namespace MeshIO.FBX
 
 	public class FbxProperty : Property
 	{
+		/// <summary>
+		/// Fbx equivalent type name
+		/// </summary>
 		public string FbxType { get; }
 
+		/// <summary>
+		/// Fbx label
+		/// </summary>
 		public string Label { get; }
 
 		public FbxProperty(string name, object value) : base(name)
@@ -67,6 +71,12 @@ namespace MeshIO.FBX
 		{
 		}
 
+		/// <summary>
+		/// Create a <see cref="FbxProperty"/> based on a <see cref="Property"/>
+		/// </summary>
+		/// <param name="property"></param>
+		/// <returns></returns>
+		/// <exception cref="NotImplementedException"></exception>
 		public static FbxProperty CreateFrom(Property property)
 		{
 			throw new NotImplementedException();
