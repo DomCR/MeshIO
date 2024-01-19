@@ -11,9 +11,8 @@ the different 3D formats.
 
 ### MeshIO.FBX
 
-- Read/Write FBX binary files
+- Read FBX binary files
 - Read/Write FBX ASCII files
-- Parse FBX files in a node base structure
 - Process and add custom `FbxProperties`
 
 For more [information](https://github.com/DomCR/MeshIO/tree/master/src/MeshIO.FBX).
