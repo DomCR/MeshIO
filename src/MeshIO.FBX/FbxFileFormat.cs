@@ -1,5 +1,8 @@
-﻿namespace MeshIO.FBX
+﻿using System;
+
+namespace MeshIO.FBX
 {
+	[Obsolete]
 	public enum FbxFileFormat
 	{
 		Binary,
