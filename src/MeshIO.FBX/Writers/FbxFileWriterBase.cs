@@ -24,7 +24,7 @@ namespace MeshIO.FBX.Writers
 
 		private readonly Dictionary<ulong, IFbxObjectWriter> _objectWriters = new();
 
-		private readonly List<Connections.FbxConnection> _connections = new();
+		private readonly List<FbxConnection> _connections = new();
 
 		protected FbxFileWriterBase(Scene scene, FbxWriterOptions options, Stream stream)
 		{

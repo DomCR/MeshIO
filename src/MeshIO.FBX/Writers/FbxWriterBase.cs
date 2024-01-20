@@ -3,6 +3,7 @@ using System.IO;
 
 namespace MeshIO.FBX.Writers
 {
+	[Obsolete]
 	public class FbxWriterBase
 	{
 		public static IFbxWriter GetWriter(FbxRootNode root, Stream stream, FbxFileFormat fbxFileFormat)
