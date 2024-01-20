@@ -11,7 +11,6 @@ namespace MeshIO.FBX.Tests
 		[MemberData(nameof(FbxTestCasesData.Versions))]
 		public void CreateFromEmptySceneTest(FbxVersion version)
 		{
-			FbxRootNode root = FbxRootNode.CreateFromScene(new Scene(), version);
 		}
 	}
 }

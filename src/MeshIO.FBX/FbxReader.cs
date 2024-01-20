@@ -1,7 +1,6 @@
 ﻿using MeshIO.Core;
-using MeshIO.FBX.Converters;
 using MeshIO.FBX.Readers;
-using MeshIO.FBX.Writers;
+using MeshIO.FBX.Readers.Parsers;
 using System;
 using System.IO;
 
@@ -9,6 +8,8 @@ namespace MeshIO.FBX
 {
 	public class FbxReader : ReaderBase
 	{
+		public FbxReaderOptions Options { get; } = new FbxReaderOptions();
+
 		private Stream _stream;
 
 		/// <summary>
@@ -46,12 +47,16 @@ namespace MeshIO.FBX
 		/// </summary>
 		public Scene Read()
 		{
-			using(FbxFileReaderBase reader = FbxFileReaderBase.Create(this._stream))
+			FbxRootNode root;
+			using (IFbxParser parser = getParser(this._stream, this.Options))
 			{
-				reader.Read();
+				root = parser.Parse();
 			}
-		
-			throw new NotImplementedException();
+
+			var reader = FbxFileReaderBase.Create(root, this.Options);
+			reader.OnNotification += this.onNotificationEvent;
+
+			return reader.Read();
 		}
 
 		/// <inheritdoc/>
@@ -84,6 +89,21 @@ namespace MeshIO.FBX
 				reader.OnNotification += notificationHandler;
 				return reader.Read();
 			}
+		}
+
+		private static IFbxParser getParser(Stream stream, FbxReaderOptions options)
+		{
+			IFbxParser parser = null;
+			if (FbxBinary.ReadHeader(stream))
+			{
+				parser = new FbxBinaryParser(stream, options.ErrorLevel);
+			}
+			else
+			{
+				parser = new FbxAsciiParser(stream, options.ErrorLevel);
+			}
+
+			return parser;
 		}
 	}
 }

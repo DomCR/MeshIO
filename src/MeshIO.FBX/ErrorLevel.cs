@@ -1,11 +1,8 @@
-﻿using System;
-
-namespace MeshIO.FBX
+﻿namespace MeshIO.FBX
 {
 	/// <summary>
 	/// Indicates when a reader should throw errors
 	/// </summary>
-	[Obsolete]
 	public enum ErrorLevel
 	{
 		/// <summary>

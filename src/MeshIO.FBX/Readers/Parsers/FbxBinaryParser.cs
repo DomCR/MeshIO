@@ -4,7 +4,7 @@ using System.IO;
 using System.IO.Compression;
 using MeshIO.FBX.Exceptions;
 
-namespace MeshIO.FBX
+namespace MeshIO.FBX.Readers.Parsers
 {
 	/// <summary>
 	/// Reads FBX nodes from a binary stream
@@ -32,8 +32,8 @@ namespace MeshIO.FBX
 			if (!stream.CanSeek)
 				throw new ArgumentException("The stream must support seeking. Try reading the data into a buffer first");
 
-			this._stream = new BinaryReader(stream, Encoding.ASCII);
-			this._errorLevel = errorLevel;
+			_stream = new BinaryReader(stream, Encoding.ASCII);
+			_errorLevel = errorLevel;
 		}
 
 		/// <summary>
@@ -144,7 +144,7 @@ namespace MeshIO.FBX
 		/// <inheritdoc/>
 		public override void Dispose()
 		{
-			this._stream.Dispose();
+			_stream.Dispose();
 		}
 
 		// Reads a single property
@@ -219,14 +219,14 @@ namespace MeshIO.FBX
 						throw new FbxException(_stream.BaseStream.Position - 1,
 							"Invalid compression encoding (must be 0 or 1)");
 					var cmf = _stream.ReadByte();
-					if ((cmf & 0xF) != 8 || (cmf >> 4) > 7)
+					if ((cmf & 0xF) != 8 || cmf >> 4 > 7)
 						throw new FbxException(_stream.BaseStream.Position - 1,
 							"Invalid compression format " + cmf);
 					var flg = _stream.ReadByte();
 					if (_errorLevel >= ErrorLevel.Strict && ((cmf << 8) + flg) % 31 != 0)
 						throw new FbxException(_stream.BaseStream.Position - 1,
 							"Invalid compression FCHECK");
-					if ((flg & (1 << 5)) != 0)
+					if ((flg & 1 << 5) != 0)
 						throw new FbxException(_stream.BaseStream.Position - 1,
 							"Invalid compression flags; dictionary not supported");
 				}
