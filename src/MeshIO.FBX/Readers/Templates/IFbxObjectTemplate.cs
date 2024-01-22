@@ -4,6 +4,6 @@
 	{
 		string TemplateId { get; }
 
-		void Build(FbxPropertyTemplate properties);
+		void Build(FbxFileBuilderBase builder, FbxPropertyTemplate properties);
 	}
 }

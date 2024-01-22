@@ -1,6 +1,4 @@
-﻿using CSMath;
-using MeshIO.Core;
-using MeshIO.Entities.Geometries;
+﻿using MeshIO.Core;
 using MeshIO.FBX.Connections;
 using MeshIO.FBX.Readers.Templates;
 using System;
@@ -8,7 +6,7 @@ using System.Collections.Generic;
 
 namespace MeshIO.FBX.Readers
 {
-	internal abstract class FbxFileReaderBase
+	internal abstract class FbxFileBuilderBase
 	{
 		public event NotificationEventHandler OnNotification;
 
@@ -20,13 +18,15 @@ namespace MeshIO.FBX.Readers
 
 		protected readonly Scene _scene;
 
+		protected readonly IFbxObjectTemplate _rootTemplate;
+
 		protected readonly Dictionary<string, FbxPropertyTemplate> _propertyTemplates = new();
 
 		protected readonly Dictionary<string, IFbxObjectTemplate> _objectTemplates = new();
 
 		protected readonly Dictionary<string, List<FbxConnection>> _connections = new();
 
-		protected FbxFileReaderBase(FbxRootNode root, FbxReaderOptions options)
+		protected FbxFileBuilderBase(FbxRootNode root, FbxReaderOptions options)
 		{
 			this.Root = root;
 			this.Options = options;
@@ -34,7 +34,7 @@ namespace MeshIO.FBX.Readers
 			this._scene.RootNode.Id = 0;
 		}
 
-		public static FbxFileReaderBase Create(FbxRootNode root, FbxReaderOptions options)
+		public static FbxFileBuilderBase Create(FbxRootNode root, FbxReaderOptions options)
 		{
 			switch (root.Version)
 			{
@@ -63,7 +63,6 @@ namespace MeshIO.FBX.Readers
 					throw new NotSupportedException($"Unknown Fbx version {root.Version} for writer");
 
 			}
-
 		}
 
 		public Scene Read()
@@ -142,7 +141,7 @@ namespace MeshIO.FBX.Readers
 
 		protected void buildScene()
 		{
-
+			//this._rootTemplate.Build(this, null);
 		}
 
 		protected void readHeader(FbxNode node)
@@ -161,7 +160,9 @@ namespace MeshIO.FBX.Readers
 
 		protected void readGlobalSettings(FbxNode node)
 		{
-			this.notify("GlobalSettings section not implemented", NotificationType.NotImplemented);
+			Dictionary<string, FbxProperty> properties = this.ReadProperties(node[FbxFileToken.GetPropertiesName(this.Version)]);
+			FbxPropertyTemplate globalSettings = new FbxPropertyTemplate(FbxFileToken.GlobalSettings, string.Empty, properties);
+			this._propertyTemplates.Add(FbxFileToken.GlobalSettings, globalSettings);
 		}
 
 		protected void readDocuments(FbxNode node)
@@ -184,7 +185,6 @@ namespace MeshIO.FBX.Readers
 
 		protected void readDocument(FbxNode node)
 		{
-			this.notify("Document not implemented", NotificationType.NotImplemented);
 		}
 
 		protected void readReferences(FbxNode node)

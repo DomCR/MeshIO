@@ -6,27 +6,27 @@ namespace MeshIO.FBX.Readers.Templates
 	internal abstract class FbxObjectTemplate<T> : IFbxObjectTemplate
 		where T : Element3D
 	{
-		public string TemplateId { get; }
-
 		public abstract string FbxObjectName { get; }
+
+		public string TemplateId { get; }
 
 		public string Prefix { get { return $"{this.FbxObjectName}::"; } }
 
 		public FbxNode FbxNode { get; }
 
-		protected T _element;
+		public T Element { get; }
 
-		protected FbxObjectTemplate(FbxNode node)
+		protected FbxObjectTemplate(FbxNode node, T element)
 		{
 			this.FbxNode = node;
-
+			this.Element = element;
 			this.TemplateId = node.GetProperty<object>(0).ToString();
 		}
 
-		public virtual void Build(FbxPropertyTemplate properties)
+		public virtual void Build(FbxFileBuilderBase builder, FbxPropertyTemplate properties)
 		{
-			this._element.Id = this.FbxNode.GetProperty<ulong>(0);
-			this._element.Name = this.removePrefix(this.FbxNode.GetProperty<string>(1));
+			this.Element.Id = this.FbxNode.GetProperty<ulong>(0);
+			this.Element.Name = this.removePrefix(this.FbxNode.GetProperty<string>(1));
 
 			throw new System.NotImplementedException();
 		}
@@ -51,28 +51,14 @@ namespace MeshIO.FBX.Readers.Templates
 	{
 		public override string FbxObjectName { get { return FbxFileToken.Geometry; } }
 
-		protected FbxGeometryTemplate(FbxNode node) : base(node)
+		protected FbxGeometryTemplate(FbxNode node, T geometry) : base(node, geometry)
 		{
-		}
-
-		[Obsolete]
-		public static IFbxObjectTemplate Create(FbxNode node)
-		{
-			string type = node.GetProperty<string>(2);
-
-			switch (type)
-			{
-				case FbxFileToken.Mesh:
-					return new FbxMeshTemplate(node);
-				default:
-					return null;
-			}
 		}
 	}
 
 	internal class FbxMeshTemplate : FbxGeometryTemplate<Mesh>
 	{
-		public FbxMeshTemplate(FbxNode node) : base(node)
+		public FbxMeshTemplate(FbxNode node) : base(node, new Mesh())
 		{
 		}
 	}

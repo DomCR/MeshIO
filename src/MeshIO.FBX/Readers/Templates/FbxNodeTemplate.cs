@@ -4,9 +4,8 @@
 	{
 		public override string FbxObjectName { get { return FbxFileToken.Model; } }
 
-		public FbxNodeTemplate(FbxNode node) : base(node)
+		public FbxNodeTemplate(FbxNode node) : base(node, new Node())
 		{
-			this._element = new Node();
 		}
 	}
 }

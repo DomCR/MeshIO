@@ -53,7 +53,7 @@ namespace MeshIO.FBX
 				root = parser.Parse();
 			}
 
-			var reader = FbxFileReaderBase.Create(root, this.Options);
+			var reader = FbxFileBuilderBase.Create(root, this.Options);
 			reader.OnNotification += this.onNotificationEvent;
 
 			return reader.Read();
