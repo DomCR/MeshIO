@@ -22,6 +22,4 @@
     </None>
   </ItemGroup>
 
-  <Import Project="..\CSUtilities\CSUtilities\CSUtilities.projitems" Label="Shared" />
-
 </Project>

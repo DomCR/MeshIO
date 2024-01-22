@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using MeshIO.FBX.Writers.Connections;
+using MeshIO.FBX.Connections;
 using MeshIO.FBX.Writers.Objects;
 using MeshIO.FBX.Writers.StreamWriters;
 
 namespace MeshIO.FBX.Writers
 {
-	internal abstract class FbxFileWriterBase : IDisposable
+    internal abstract class FbxFileWriterBase : IDisposable
 	{
 		public FbxWriterOptions Options { get; }
 

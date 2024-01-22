@@ -80,9 +80,9 @@ namespace MeshIO.FBX
 			}
 		}
 
-		public T GetValueAs<T>()
+		public T GetProperty<T>(int index)
 		{
-			throw new NotImplementedException();
+			return (T)this.Properties.ElementAtOrDefault(index);
 		}
 
 		public override string ToString()

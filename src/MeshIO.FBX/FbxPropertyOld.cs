@@ -162,25 +162,60 @@ namespace MeshIO.FBX
 
 		public static string MapPropertyFlags(PropertyFlags flags)
 		{
-			System.Text.StringBuilder stringBuilder = new System.Text.StringBuilder();
+			System.Text.StringBuilder str = new System.Text.StringBuilder();
 
 			if ((flags & PropertyFlags.Animatable) != 0)
 			{
-				stringBuilder.Append('A');
+				str.Append('A');
 			}
 			if ((flags & PropertyFlags.Animated) != 0)
 			{
-				stringBuilder.Append('+');
+				str.Append('+');
 			}
 			if ((flags & PropertyFlags.UserDefined) != 0)
 			{
-				stringBuilder.Append('U');
+				str.Append('U');
 			}
 			if ((flags & PropertyFlags.Hidden) != 0)
 			{
-				stringBuilder.Append('H');
+				str.Append('H');
 			}
-			return stringBuilder.ToString();
+			return str.ToString();
+		}
+
+		public static PropertyFlags ParseFlags(string value)
+		{
+			PropertyFlags flags = PropertyFlags.None;
+
+			if (string.IsNullOrEmpty(value))
+			{
+				return PropertyFlags.None;
+			}
+
+			int i = 0;
+			for (; i < value.Length; i++)
+			{
+				char c = value[i];
+				switch (c)
+				{
+					case 'A':
+						flags |= PropertyFlags.Animatable;
+						break;
+					case '+':
+						flags |= PropertyFlags.Animated;
+						break;
+					case 'H':
+						flags |= PropertyFlags.Hidden;
+						break;
+					case 'U':
+						flags |= PropertyFlags.UserDefined;
+						break;
+					case 'L':
+					case 'N':
+						break;
+				}
+			}
+			return flags;
 		}
 	}
 }

@@ -37,6 +37,11 @@ namespace MeshIO
 
 		public Property(string name, object value) : this(name, null, value) { }
 
+		public Property(string name, PropertyFlags flags, object value) : this(name, null, value)
+		{
+			this.Flags = flags;
+		}
+
 		public Property(string name, Element3D owner, object value) : this(name, owner)
 		{
 			this.Value = value;
@@ -71,6 +76,8 @@ namespace MeshIO
 		public Property(string name) : base(name, null) { }
 
 		public Property(string name, T value) : base(name, null, value) { }
+
+		public Property(string name, PropertyFlags flags, T value) : base(name, flags, value) { }
 
 		public Property(string name, Element3D owner, T value) : base(name, owner, value) { }
 	}

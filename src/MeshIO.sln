@@ -139,12 +139,11 @@ Global
 		MeshIO.Tests.Shared\MeshIO.Tests.Shared.projitems*{264d4186-7537-4302-8be9-1a3b56e6709c}*SharedItemsImports = 5
 		MeshIO.Tests.Shared\MeshIO.Tests.Shared.projitems*{2a24034a-98c3-49c2-8175-48f03fe53081}*SharedItemsImports = 5
 		CSUtilities\CSMath\CSMath.projitems*{3f391f00-a310-4681-be94-15329d662a3d}*SharedItemsImports = 5
+		CSUtilities\CSUtilities\CSUtilities.projitems*{3f391f00-a310-4681-be94-15329d662a3d}*SharedItemsImports = 5
 		CSUtilities\CSMath\CSMath.projitems*{411b6122-5ef6-46db-a8f2-43e9c1841e4a}*SharedItemsImports = 13
 		MeshIO.Tests.Shared\MeshIO.Tests.Shared.projitems*{94c45d19-8231-437f-ab4d-02fa072a923c}*SharedItemsImports = 5
-		CSUtilities\CSUtilities\CSUtilities.projitems*{9ea2ba2c-39bf-451a-a2ef-1aa0b9e2ec7b}*SharedItemsImports = 5
 		MeshIO.Tests.Shared\MeshIO.Tests.Shared.projitems*{a6f2252f-c802-4317-bf05-073f31397aa1}*SharedItemsImports = 5
 		CSUtilities\CSUtilities\CSUtilities.projitems*{ad858f2b-04a1-41dd-bb3b-dde4804cd2e6}*SharedItemsImports = 13
-		CSUtilities\CSUtilities\CSUtilities.projitems*{d1ea3b08-85cc-4085-baa1-c47040e7e621}*SharedItemsImports = 5
 		MeshIO.Tests.Shared\MeshIO.Tests.Shared.projitems*{f82685a4-99c9-4b22-b9a9-c8897c9965c4}*SharedItemsImports = 13
 	EndGlobalSection
 EndGlobal

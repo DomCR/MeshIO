@@ -1,13 +1,18 @@
-﻿using MeshIO.Core;
+﻿using CSMath;
+using MeshIO.Core;
+using MeshIO.Entities.Geometries;
+using MeshIO.FBX.Connections;
+using MeshIO.FBX.Readers.Templates;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace MeshIO.FBX.Readers
 {
 	internal abstract class FbxFileReaderBase
 	{
 		public event NotificationEventHandler OnNotification;
+
+		public FbxVersion Version { get { return this.Root.Version; } }
 
 		public FbxRootNode Root { get; }
 
@@ -16,6 +21,10 @@ namespace MeshIO.FBX.Readers
 		protected readonly Scene _scene;
 
 		protected readonly Dictionary<string, FbxPropertyTemplate> _propertyTemplates = new();
+
+		protected readonly Dictionary<string, IFbxObjectTemplate> _objectTemplates = new();
+
+		protected readonly Dictionary<string, List<FbxConnection>> _connections = new();
 
 		protected FbxFileReaderBase(FbxRootNode root, FbxReaderOptions options)
 		{
@@ -90,6 +99,8 @@ namespace MeshIO.FBX.Readers
 				}
 			}
 
+			this.buildScene();
+
 			return this._scene;
 		}
 
@@ -103,14 +114,41 @@ namespace MeshIO.FBX.Readers
 
 			foreach (FbxNode propNode in node)
 			{
+				FbxProperty prop = this.readFbxProperty(propNode);
+				if (prop is null)
+					continue;
 
+				properties.Add(prop.Name, prop);
 			}
 
 			return properties;
 		}
 
+		protected FbxProperty readFbxProperty(FbxNode node)
+		{
+			string name = node.GetProperty<string>(0);
+			string type1 = node.GetProperty<string>(1);
+			string label = node.GetProperty<string>(2);
+			PropertyFlags flags = FbxProperty.ParseFlags(node.GetProperty<string>(3));
+			List<object> arr = new();
+
+			for (int i = 4; i < node.Properties.Count; i++)
+			{
+				arr.Add(node.Properties[i]);
+			}
+
+			return new FbxProperty(name, type1, label, flags, arr);
+		}
+
+		protected void buildScene()
+		{
+
+		}
+
 		protected void readHeader(FbxNode node)
 		{
+			this.notify("FBXHeaderExtension section not implemented", NotificationType.NotImplemented);
+
 			foreach (FbxNode n in node)
 			{
 				switch (n.Name)
@@ -121,8 +159,9 @@ namespace MeshIO.FBX.Readers
 			}
 		}
 
-		protected void readGlobalSettings(FbxNode n)
+		protected void readGlobalSettings(FbxNode node)
 		{
+			this.notify("GlobalSettings section not implemented", NotificationType.NotImplemented);
 		}
 
 		protected void readDocuments(FbxNode node)
@@ -145,10 +184,12 @@ namespace MeshIO.FBX.Readers
 
 		protected void readDocument(FbxNode node)
 		{
+			this.notify("Document not implemented", NotificationType.NotImplemented);
 		}
 
-		protected void readReferences(FbxNode n)
+		protected void readReferences(FbxNode node)
 		{
+			this.notify("References section not implemented", NotificationType.NotImplemented);
 		}
 
 		protected void readDefinitions(FbxNode node)
@@ -196,19 +237,76 @@ namespace MeshIO.FBX.Readers
 				return;
 			}
 
-			Dictionary<string, FbxProperty> properties = this.ReadProperties(tempalteNode[FbxFileToken.GetPropertiesName(this.Root.Version)]);
+			Dictionary<string, FbxProperty> properties = this.ReadProperties(tempalteNode[FbxFileToken.GetPropertiesName(this.Version)]);
 			FbxPropertyTemplate template = new FbxPropertyTemplate(objectType, name, properties);
 			this._propertyTemplates.Add(objectType, template);
 		}
 
-		protected void readObjects(FbxNode n)
+		protected void readObjects(FbxNode node)
 		{
-			throw new NotImplementedException();
+			foreach (FbxNode n in node)
+			{
+				IFbxObjectTemplate template = null;
+
+				switch (n.Name)
+				{
+					case FbxFileToken.Model:
+						template = new FbxNodeTemplate(n);
+						break;
+					case FbxFileToken.Geometry:
+						template = this.readGeometryNode(n);
+						break;
+				}
+
+				if (template == null)
+				{
+					this.notify($"[{node.Name}] unknown node: {n}", NotificationType.NotImplemented);
+					continue;
+				}
+
+				if (string.IsNullOrEmpty(template.TemplateId))
+				{
+					this.notify($"[{node.Name}] Id not found for node {n}", NotificationType.Warning);
+					continue;
+				}
+
+				this._objectTemplates.Add(template.TemplateId, template);
+			}
+		}
+
+		protected IFbxObjectTemplate readGeometryNode(FbxNode node)
+		{
+			string type = node.GetProperty<string>(2);
+
+			switch (type)
+			{
+				case FbxFileToken.Mesh:
+					return new FbxMeshTemplate(node);
+				default:
+					return null;
+			}
 		}
 
 		protected void readConnections(FbxNode node)
 		{
+			foreach (FbxNode n in node)
+			{
+				FbxConnection connection;
 
+				FbxConnectionType type = FbxConnection.Parse(n.GetProperty<string>(0));
+				string parent = n.GetProperty<object>(1).ToString();
+				string child = n.GetProperty<object>(2).ToString();
+
+				connection = new FbxConnection(type, parent, child);
+
+				if (!this._connections.TryGetValue(parent, out List<FbxConnection> children))
+				{
+					children = new List<FbxConnection>();
+					this._connections.Add(parent, children);
+				}
+
+				children.Add(connection);
+			}
 		}
 
 		protected void notify(string message, NotificationType notificationType = NotificationType.Information, Exception ex = null)

@@ -111,6 +111,5 @@ namespace MeshIO.FBX.Converters.Mappers
 
 			return property;
 		}
-
 	}
 }
