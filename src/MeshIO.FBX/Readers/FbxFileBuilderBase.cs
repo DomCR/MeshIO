@@ -30,8 +30,10 @@ namespace MeshIO.FBX.Readers
 		{
 			this.Root = root;
 			this.Options = options;
+
 			this._scene = new Scene();
 			this._scene.RootNode.Id = 0;
+			this._rootTemplate = new FbxRootNodeTemplate(this._scene.RootNode);
 		}
 
 		public static FbxFileBuilderBase Create(FbxRootNode root, FbxReaderOptions options)
@@ -93,7 +95,7 @@ namespace MeshIO.FBX.Readers
 						this.readConnections(n);
 						break;
 					default:
-						this.notify($"Unknown section: {n.Name}", NotificationType.Warning);
+						this.Notify($"Unknown section: {n.Name}", NotificationType.Warning);
 						break;
 				}
 			}
@@ -106,12 +108,12 @@ namespace MeshIO.FBX.Readers
 		public Dictionary<string, FbxProperty> ReadProperties(FbxNode node)
 		{
 			Dictionary<string, FbxProperty> properties = new Dictionary<string, FbxProperty>();
-			if (node == null)
+			if (!node.TryGetNode(FbxFileToken.GetPropertiesName(this.Version), out FbxNode propertiesNode))
 			{
-				return new();
+				return properties;
 			}
 
-			foreach (FbxNode propNode in node)
+			foreach (FbxNode propNode in propertiesNode)
 			{
 				FbxProperty prop = this.readFbxProperty(propNode);
 				if (prop is null)
@@ -121,6 +123,35 @@ namespace MeshIO.FBX.Readers
 			}
 
 			return properties;
+		}
+
+		public bool TryGetTemplate(string id, out IFbxObjectTemplate template)
+		{
+			return this._objectTemplates.TryGetValue(id, out template);
+		}
+
+		public FbxPropertyTemplate GetProperties(string objName)
+		{
+			if (this._propertyTemplates.TryGetValue(objName, out var properties))
+			{
+				return properties;
+			}
+			else
+			{
+				return new FbxPropertyTemplate();
+			}
+		}
+
+		public List<FbxConnection> GetChildren(string id)
+		{
+			if (this._connections.TryGetValue(id, out List<FbxConnection> children))
+			{
+				return children;
+			}
+			else
+			{
+				return new List<FbxConnection>();
+			}
 		}
 
 		protected FbxProperty readFbxProperty(FbxNode node)
@@ -141,12 +172,12 @@ namespace MeshIO.FBX.Readers
 
 		protected void buildScene()
 		{
-			//this._rootTemplate.Build(this, null);
+			this._rootTemplate.Build(this);
 		}
 
 		protected void readHeader(FbxNode node)
 		{
-			this.notify("FBXHeaderExtension section not implemented", NotificationType.NotImplemented);
+			this.Notify("FBXHeaderExtension section not implemented", NotificationType.NotImplemented);
 
 			foreach (FbxNode n in node)
 			{
@@ -160,7 +191,7 @@ namespace MeshIO.FBX.Readers
 
 		protected void readGlobalSettings(FbxNode node)
 		{
-			Dictionary<string, FbxProperty> properties = this.ReadProperties(node[FbxFileToken.GetPropertiesName(this.Version)]);
+			Dictionary<string, FbxProperty> properties = this.ReadProperties(node);
 			FbxPropertyTemplate globalSettings = new FbxPropertyTemplate(FbxFileToken.GlobalSettings, string.Empty, properties);
 			this._propertyTemplates.Add(FbxFileToken.GlobalSettings, globalSettings);
 		}
@@ -177,7 +208,7 @@ namespace MeshIO.FBX.Readers
 						this.readDocument(n);
 						break;
 					default:
-						this.notify($"{node.Name} | unknown node: {n.Name}", NotificationType.NotImplemented);
+						this.Notify($"{node.Name} | unknown node: {n.Name}", NotificationType.NotImplemented);
 						break;
 				}
 			}
@@ -185,11 +216,15 @@ namespace MeshIO.FBX.Readers
 
 		protected void readDocument(FbxNode node)
 		{
+
 		}
 
 		protected void readReferences(FbxNode node)
 		{
-			this.notify("References section not implemented", NotificationType.NotImplemented);
+			if (!node.IsEmpty)
+			{
+				this.Notify("References section not implemented", NotificationType.NotImplemented);
+			}
 		}
 
 		protected void readDefinitions(FbxNode node)
@@ -205,7 +240,7 @@ namespace MeshIO.FBX.Readers
 						this.readDefinition(n);
 						break;
 					default:
-						this.notify($"{node.Name} | unknown node: {n.Name}", NotificationType.NotImplemented);
+						this.Notify($"{node.Name} | unknown node: {n.Name}", NotificationType.NotImplemented);
 						break;
 				}
 			}
@@ -215,7 +250,7 @@ namespace MeshIO.FBX.Readers
 		{
 			if (!node.TryGetProperty<string>(0, out string objectType))
 			{
-				this.notify($"Undefined ObjectType", NotificationType.Warning);
+				this.Notify($"Undefined ObjectType", NotificationType.Warning);
 				return;
 			}
 
@@ -227,17 +262,17 @@ namespace MeshIO.FBX.Readers
 			string name = string.Empty;
 			if (!node.TryGetNode("PropertyTemplate", out FbxNode tempalteNode))
 			{
-				this.notify($"PropertyTemplate not found for {objectType}", NotificationType.Warning);
+				this.Notify($"PropertyTemplate not found for {objectType}", NotificationType.Warning);
 				return;
 			}
 
 			if (!tempalteNode.TryGetProperty<string>(0, out name))
 			{
-				this.notify($"PropertyTemplate name not found for {objectType}", NotificationType.Warning);
+				this.Notify($"PropertyTemplate name not found for {objectType}", NotificationType.Warning);
 				return;
 			}
 
-			Dictionary<string, FbxProperty> properties = this.ReadProperties(tempalteNode[FbxFileToken.GetPropertiesName(this.Version)]);
+			Dictionary<string, FbxProperty> properties = this.ReadProperties(tempalteNode);
 			FbxPropertyTemplate template = new FbxPropertyTemplate(objectType, name, properties);
 			this._propertyTemplates.Add(objectType, template);
 		}
@@ -260,13 +295,13 @@ namespace MeshIO.FBX.Readers
 
 				if (template == null)
 				{
-					this.notify($"[{node.Name}] unknown node: {n}", NotificationType.NotImplemented);
+					this.Notify($"[{node.Name}] unknown node: {n}", NotificationType.NotImplemented);
 					continue;
 				}
 
 				if (string.IsNullOrEmpty(template.TemplateId))
 				{
-					this.notify($"[{node.Name}] Id not found for node {n}", NotificationType.Warning);
+					this.Notify($"[{node.Name}] Id not found for node {n}", NotificationType.Warning);
 					continue;
 				}
 
@@ -294,8 +329,8 @@ namespace MeshIO.FBX.Readers
 				FbxConnection connection;
 
 				FbxConnectionType type = FbxConnection.Parse(n.GetProperty<string>(0));
-				string parent = n.GetProperty<object>(1).ToString();
-				string child = n.GetProperty<object>(2).ToString();
+				string child = n.GetProperty<object>(1).ToString();
+				string parent = n.GetProperty<object>(2).ToString();
 
 				connection = new FbxConnection(type, parent, child);
 
@@ -309,7 +344,7 @@ namespace MeshIO.FBX.Readers
 			}
 		}
 
-		protected void notify(string message, NotificationType notificationType = NotificationType.Information, Exception ex = null)
+		public void Notify(string message, NotificationType notificationType = NotificationType.Information, Exception ex = null)
 		{
 			this.OnNotification?.Invoke(this, new NotificationEventArgs(message, notificationType, ex));
 		}

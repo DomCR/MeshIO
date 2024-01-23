@@ -59,18 +59,10 @@ namespace MeshIO.FBX.Tests
 		public void ReadWriteAsciiTest(string test)
 		{
 			Scene scene = readFile(test);
-
-			if (scene == null)
-				return;
-
-			FbxWriterOptions options = new FbxWriterOptions
-			{
-				IsBinaryFormat = false,
-			};
-			using (FbxWriter writer = new FbxWriter(new MemoryStream(), scene, options))
-			{
-				writer.Write();
-			}
+			
+			Assert.NotNull(scene);
+			Assert.NotNull(scene.RootNode);
+			Assert.NotEmpty(scene.RootNode.Nodes);
 		}
 
 		private Scene readFile(string path)

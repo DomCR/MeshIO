@@ -4,6 +4,8 @@
 	{
 		string TemplateId { get; }
 
-		void Build(FbxFileBuilderBase builder, FbxPropertyTemplate properties);
+		Element3D GetElement();
+
+		void Build(FbxFileBuilderBase builder);
 	}
 }

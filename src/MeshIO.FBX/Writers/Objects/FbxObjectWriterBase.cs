@@ -1,27 +1,9 @@
-﻿using MeshIO.Entities.Geometries;
-using MeshIO.FBX.Writers.StreamWriters;
+﻿using MeshIO.FBX.Writers.StreamWriters;
 using System;
 using System.Collections.Generic;
 
 namespace MeshIO.FBX.Writers.Objects
 {
-	internal static class FbxObjectWriterFactory
-	{
-		public static IFbxObjectWriter Create<T>(T element)
-			where T : Element3D
-		{
-			switch (element)
-			{
-				case Mesh mesh:
-					return new FbxMeshWriter(mesh);
-				case Node node:
-					return new FbxNodeWriter(node);
-				default:
-					throw new NotImplementedException($"IFbxObjectWriter for {element.GetType()}");
-			}
-		}
-	}
-
 	internal abstract class FbxObjectWriterBase<T> : IFbxObjectWriter
 		where T : Element3D
 	{

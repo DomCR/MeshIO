@@ -1,5 +1,5 @@
-﻿using MeshIO.Entities.Geometries;
-using System;
+﻿using System;
+using System.Collections.Generic;
 
 namespace MeshIO.FBX.Readers.Templates
 {
@@ -16,19 +16,41 @@ namespace MeshIO.FBX.Readers.Templates
 
 		public T Element { get; }
 
+		protected FbxObjectTemplate(T element)
+		{
+			this.Element = element;
+			this.TemplateId = element.Id.ToString();
+		}
+
 		protected FbxObjectTemplate(FbxNode node, T element)
 		{
 			this.FbxNode = node;
 			this.Element = element;
-			this.TemplateId = node.GetProperty<object>(0).ToString();
+			this.TemplateId = node?.GetProperty<object>(0).ToString();
 		}
 
-		public virtual void Build(FbxFileBuilderBase builder, FbxPropertyTemplate properties)
+		public Element3D GetElement()
 		{
-			this.Element.Id = this.FbxNode.GetProperty<ulong>(0);
+			return this.Element;
+		}
+
+		public virtual void Build(FbxFileBuilderBase builder)
+		{
+			FbxPropertyTemplate template = builder.GetProperties(this.FbxObjectName);
+
+			this.Element.Id = Convert.ToUInt64(this.FbxNode.GetProperty<long>(0));
 			this.Element.Name = this.removePrefix(this.FbxNode.GetProperty<string>(1));
 
-			throw new System.NotImplementedException();
+			Dictionary<string, FbxProperty> nodeProp = builder.ReadProperties(FbxNode);
+			foreach (var t in template.Properties)
+			{
+				if (nodeProp.ContainsKey(t.Key))
+				{
+					continue;
+				}
+
+				nodeProp.Add(t.Key, t.Value);
+			}
 		}
 
 		protected string removePrefix(string fullname)
@@ -44,22 +66,13 @@ namespace MeshIO.FBX.Readers.Templates
 
 			return fullname;
 		}
-	}
 
-	internal abstract class FbxGeometryTemplate<T> : FbxObjectTemplate<T>
-		where T : Geometry
-	{
-		public override string FbxObjectName { get { return FbxFileToken.Geometry; } }
-
-		protected FbxGeometryTemplate(FbxNode node, T geometry) : base(node, geometry)
+		protected virtual void addProperties(Dictionary<string, FbxProperty> properties)
 		{
-		}
-	}
-
-	internal class FbxMeshTemplate : FbxGeometryTemplate<Mesh>
-	{
-		public FbxMeshTemplate(FbxNode node) : base(node, new Mesh())
-		{
+			foreach (var prop in properties)
+			{
+				this.Element.Properties.Add(prop.Value.ToProperty());
+			}
 		}
 	}
 }

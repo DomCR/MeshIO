@@ -1,5 +1,6 @@
 ﻿using CSMath;
 using System;
+using System.Xml.Linq;
 
 namespace MeshIO.FBX
 {
@@ -80,6 +81,79 @@ namespace MeshIO.FBX
 		public static FbxProperty CreateFrom(Property property)
 		{
 			throw new NotImplementedException();
+		}
+
+		public Property ToProperty()
+		{
+			Property property = null;
+
+			object value = property.Value;
+			object[] arr = value as object[];
+
+			switch ((string)this.FbxType)
+			{
+				case "Color":
+				case "ColorRGB":
+					byte r = (byte)(Convert.ToDouble(arr[0]) * 255);
+					byte g = (byte)(Convert.ToDouble(arr[1]) * 255);
+					byte b = (byte)(Convert.ToDouble(arr[2]) * 255);
+					property = new Property<Color>(this.Name, Flags, new Color(r, g, b));
+					break;
+				case "ColorAndAlpha":
+					r = (byte)(Convert.ToDouble(arr[0]) * 255);
+					g = (byte)(Convert.ToDouble(arr[1]) * 255);
+					b = (byte)(Convert.ToDouble(arr[2]) * 255);
+					byte a = (byte)(Convert.ToDouble(arr[3]) * 255);
+					property = new Property<Color>(this	.Name, Flags, new Color(r, g, b, a));
+					break;
+				case "Visibility":
+				case "Bool":
+				case "bool":
+					property = new Property<bool>(this.Name, Flags, Convert.ToInt32(arr[4]) != 0);
+					break;
+				case "Vector":
+				case "Vector3":
+				case "Vector3D":
+				case "Lcl Translation":
+				case "Lcl Rotation":
+				case "Lcl Scaling":
+					double x = Convert.ToDouble(arr[0]);
+					double y = Convert.ToDouble(arr[1]);
+					double z = Convert.ToDouble(arr[2]);
+					property = new Property<XYZ>(this.Name, Flags, new XYZ(x, y, z));
+					break;
+				case "int":
+				case "Integer":
+				case "Enum":
+				case "enum":
+					property = new Property<int>(this.Name, Flags, Convert.ToInt32(value));
+					break;
+				case "KString":
+					property = new Property<string>(this.Name, Flags, (string)value);
+					break;
+				case "Float":
+					property = new Property<float>(this.Name, Flags, Convert.ToSingle(value));
+					break;
+				case "FieldOfView":
+				case "FieldOfViewX":
+				case "FieldOfViewY":
+				case "double":
+				case "Number":
+					property = new Property<double>(this.Name, Flags, Convert.ToDouble(value));
+					break;
+				case "KTime":
+					property = new Property<TimeSpan>(this.Name, Flags, new TimeSpan(Convert.ToInt64(value)));
+					break;
+				case "Reference":
+				case "Compound":
+					property = new Property(this.Name, Flags, null);
+					break;
+				default:
+					System.Diagnostics.Debug.Fail($"{arr[1]}");
+					break;
+			}
+
+			return property;
 		}
 
 		public object GetFbxValue()
