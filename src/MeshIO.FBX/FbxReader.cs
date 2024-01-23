@@ -34,15 +34,6 @@ namespace MeshIO.FBX
 		}
 
 		/// <summary>
-		/// Get the fbx version of the file
-		/// </summary>
-		/// <returns></returns>
-		public FbxVersion GetVersion()
-		{
-			throw new NotImplementedException();
-		}
-
-		/// <summary>
 		/// Read the FBX file
 		/// </summary>
 		public Scene Read()

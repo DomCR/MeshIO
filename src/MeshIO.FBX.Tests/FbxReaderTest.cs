@@ -29,17 +29,6 @@ namespace MeshIO.FBX.Tests
 
 		public FbxReaderTest(ITestOutputHelper output) : base(output) { }
 
-		[Theory(Skip = "skipy skip")]
-		[MemberData(nameof(AsciiFiles))]
-		[MemberData(nameof(BinaryFiles))]
-		public void GetVersion(string path)
-		{
-			using (FbxReader reader = new FbxReader(path))
-			{
-				var version = reader.GetVersion();
-			}
-		}
-
 		[Theory]
 		[MemberData(nameof(AsciiFiles))]
 		public void ReadAsciiTest(string test)

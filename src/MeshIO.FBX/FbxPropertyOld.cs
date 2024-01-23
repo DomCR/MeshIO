@@ -1,6 +1,6 @@
 ﻿using CSMath;
 using System;
-using System.Xml.Linq;
+using System.Collections.Generic;
 
 namespace MeshIO.FBX
 {
@@ -87,8 +87,12 @@ namespace MeshIO.FBX
 		{
 			Property property = null;
 
-			object value = property.Value;
-			object[] arr = value as object[];
+			object value = this.Value;
+			List<object> arr = null;
+			if (value is IEnumerable<object> en)
+			{
+				arr = new List<object>(en);
+			}
 
 			switch ((string)this.FbxType)
 			{
@@ -104,12 +108,12 @@ namespace MeshIO.FBX
 					g = (byte)(Convert.ToDouble(arr[1]) * 255);
 					b = (byte)(Convert.ToDouble(arr[2]) * 255);
 					byte a = (byte)(Convert.ToDouble(arr[3]) * 255);
-					property = new Property<Color>(this	.Name, Flags, new Color(r, g, b, a));
+					property = new Property<Color>(this.Name, Flags, new Color(r, g, b, a));
 					break;
 				case "Visibility":
 				case "Bool":
 				case "bool":
-					property = new Property<bool>(this.Name, Flags, Convert.ToInt32(arr[4]) != 0);
+					property = new Property<bool>(this.Name, Flags, Convert.ToInt32(value) != 0);
 					break;
 				case "Vector":
 				case "Vector3":
@@ -146,10 +150,9 @@ namespace MeshIO.FBX
 					break;
 				case "Reference":
 				case "Compound":
-					property = new Property(this.Name, Flags, null);
-					break;
+				case "object":
 				default:
-					System.Diagnostics.Debug.Fail($"{arr[1]}");
+					property = new Property(this.Name, Flags, value);
 					break;
 			}
 

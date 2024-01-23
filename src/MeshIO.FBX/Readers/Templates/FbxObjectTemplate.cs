@@ -51,6 +51,8 @@ namespace MeshIO.FBX.Readers.Templates
 
 				nodeProp.Add(t.Key, t.Value);
 			}
+
+			this.addProperties(nodeProp);
 		}
 
 		protected string removePrefix(string fullname)

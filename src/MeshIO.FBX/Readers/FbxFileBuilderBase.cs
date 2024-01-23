@@ -160,14 +160,22 @@ namespace MeshIO.FBX.Readers
 			string type1 = node.GetProperty<string>(1);
 			string label = node.GetProperty<string>(2);
 			PropertyFlags flags = FbxProperty.ParseFlags(node.GetProperty<string>(3));
-			List<object> arr = new();
+			object value = null;
 
-			for (int i = 4; i < node.Properties.Count; i++)
+			if (node.Properties.Count == 5)
 			{
-				arr.Add(node.Properties[i]);
+				value = node.Properties[4];
+			}
+			else
+			{
+				value = new List<object>();
+				for (int i = 4; i < node.Properties.Count; i++)
+				{
+					(value as List<object>).Add(node.Properties[i]);
+				}
 			}
 
-			return new FbxProperty(name, type1, label, flags, arr);
+			return new FbxProperty(name, type1, label, flags, value);
 		}
 
 		protected void buildScene()

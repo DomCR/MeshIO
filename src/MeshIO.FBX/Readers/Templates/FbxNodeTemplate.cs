@@ -1,6 +1,9 @@
-﻿using MeshIO.Entities;
+﻿using CSMath;
+using CSUtilities.Extensions;
+using MeshIO.Entities;
 using MeshIO.FBX.Connections;
 using MeshIO.Shaders;
+using System.Collections.Generic;
 
 namespace MeshIO.FBX.Readers.Templates
 {
@@ -21,6 +24,16 @@ namespace MeshIO.FBX.Readers.Templates
 			base.Build(builder);
 
 			this.processChildren(builder);
+		}
+
+		protected override void addProperties(Dictionary<string, FbxProperty> properties)
+		{
+			if(properties.Remove("Lcl Translation", out FbxProperty value))
+			{
+				this.Element.Transform.Translation = (XYZ)value.ToProperty().Value;
+			}
+
+			base.addProperties(properties);
 		}
 
 		protected void processChildren(FbxFileBuilderBase builder)
