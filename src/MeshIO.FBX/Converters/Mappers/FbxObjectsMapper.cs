@@ -291,7 +291,7 @@ namespace MeshIO.FBX.Converters.Mappers
 				layer.Normals = this.arrToXYZ(this.arrToDoubleArray(normals.Value as IEnumerable));
 			}
 
-			if (node.TryGetNode("Normals", out FbxNode normalsw))
+			if (node.TryGetNode("NormalsW", out FbxNode normalsw))
 			{
 				layer.Weights.AddRange(this.arrToDoubleArray(normalsw.Value as IEnumerable));
 			}

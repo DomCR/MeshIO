@@ -18,6 +18,31 @@ namespace MeshIO.FBX.Extensions
 			}
 		}
 
+		public static bool TryParseMappingMode(string value, out MappingMode mappingMode)
+		{
+			switch (value)
+			{
+				case "ByVertice":
+					mappingMode = MappingMode.ByVertex;
+					return true;
+				case "ByPolygonVertex":
+					mappingMode = MappingMode.ByPolygonVertex;
+					return true;
+				case "ByPolygon":
+					mappingMode = MappingMode.ByPolygon;
+					return true;
+				case "ByEdge":
+					mappingMode = MappingMode.ByEdge;
+					return true;
+				case "AllSame":
+					mappingMode = MappingMode.AllSame;
+					return true;
+				default:
+					mappingMode = default;
+					return false;
+			}
+		}
+
 		public static string GetFbxName(this MappingMode mappingMode)
 		{
 			switch (mappingMode)
@@ -34,6 +59,25 @@ namespace MeshIO.FBX.Extensions
 					return "AllSame";
 				default:
 					throw new ArgumentException($"Unknown MappingMode : {mappingMode}", nameof(mappingMode));
+			}
+		}
+
+		public static bool TryParseReferenceMode(string value, out ReferenceMode referenceMode)
+		{
+			switch (value)
+			{
+				case "Direct":
+					referenceMode = ReferenceMode.Direct;
+					return true;
+				case "Index":
+					referenceMode = ReferenceMode.Index;
+					return true;
+				case "IndexToDirect":
+					referenceMode = ReferenceMode.IndexToDirect;
+					return true;
+				default:
+					referenceMode = default;
+					return false;
 			}
 		}
 

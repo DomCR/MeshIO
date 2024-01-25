@@ -1,5 +1,4 @@
 ﻿using MeshIO.Tests.Shared;
-using System;
 using System.IO;
 using Xunit;
 using Xunit.Abstractions;
@@ -33,7 +32,7 @@ namespace MeshIO.FBX.Tests
 		[MemberData(nameof(AsciiFiles))]
 		public void ReadAsciiTest(string test)
 		{
-			Scene scene = readFile(test);
+			readFile(test);
 		}
 
 		[Theory]
@@ -43,24 +42,19 @@ namespace MeshIO.FBX.Tests
 			readFile(test);
 		}
 
-		[Theory]
-		[MemberData(nameof(AsciiFiles))]
-		public void ReadWriteAsciiTest(string test)
+		private void readFile(string path)
 		{
-			Scene scene = readFile(test);
-			
-			Assert.NotNull(scene);
-			Assert.NotNull(scene.RootNode);
-			Assert.NotEmpty(scene.RootNode.Nodes);
-		}
+			Scene scene;
 
-		private Scene readFile(string path)
-		{
 			using (FbxReader reader = new FbxReader(path))
 			{
 				reader.OnNotification += onNotification;
-				return reader.Read();
+				scene = reader.Read();
 			}
+
+			Assert.NotNull(scene);
+			Assert.NotNull(scene.RootNode);
+			Assert.NotEmpty(scene.RootNode.Nodes);
 		}
 	}
 }

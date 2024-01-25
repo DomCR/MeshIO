@@ -40,8 +40,24 @@ namespace MeshIO.FBX
 		}
 	}
 
+	public class FbxProperty<T> : FbxProperty
+	{
+		public FbxProperty(string name, T value) : base(name, value) { }
+	}
+
 	public class FbxProperty : Property
 	{
+		public static class Geometry
+		{
+			public const string Color = "Color";
+			public const string BBoxMin = "BBoxMin";
+			public const string BBoxMax = "BBoxMax";
+			public const string PrimaryVisibility = "Primary Visibility";
+			public const string CastsShadows = "Casts Shadows";
+
+			public static FbxProperty<bool> CreatePrimaryVisibility() => new FbxProperty<bool>(PrimaryVisibility, true);
+		}
+
 		/// <summary>
 		/// Fbx equivalent type name
 		/// </summary>
@@ -94,7 +110,7 @@ namespace MeshIO.FBX
 				arr = new List<object>(en);
 			}
 
-			switch ((string)this.FbxType)
+			switch (FbxType)
 			{
 				case "Color":
 				case "ColorRGB":

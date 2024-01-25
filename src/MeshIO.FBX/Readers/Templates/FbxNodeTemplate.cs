@@ -1,5 +1,7 @@
-﻿using CSMath;
+﻿#if NETFRAMEWORK
 using CSUtilities.Extensions;
+#endif
+using CSMath;
 using MeshIO.Entities;
 using MeshIO.FBX.Connections;
 using MeshIO.Shaders;
@@ -28,9 +30,19 @@ namespace MeshIO.FBX.Readers.Templates
 
 		protected override void addProperties(Dictionary<string, FbxProperty> properties)
 		{
-			if(properties.Remove("Lcl Translation", out FbxProperty value))
+			if (properties.Remove("Lcl Translation", out FbxProperty translation))
 			{
-				this.Element.Transform.Translation = (XYZ)value.ToProperty().Value;
+				this.Element.Transform.Translation = (XYZ)translation.ToProperty().Value;
+			}
+
+			if (properties.Remove("Lcl Rotation", out FbxProperty rotation))
+			{
+				this.Element.Transform.Translation = (XYZ)rotation.ToProperty().Value;
+			}
+
+			if (properties.Remove("Lcl Scaling", out FbxProperty scaling))
+			{
+				this.Element.Transform.Translation = (XYZ)scaling.ToProperty().Value;
 			}
 
 			base.addProperties(properties);
