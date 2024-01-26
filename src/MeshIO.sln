@@ -42,34 +42,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MeshIO.STL.Tests", "MeshIO.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MeshIO.Tests", "MeshIO.Tests\MeshIO.Tests.csproj", "{94C45D19-8231-437F-AB4D-02FA072A923C}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "inFiles", "inFiles", "{B073A785-90A3-44C0-9807-FA0C223E4BDA}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "fbx", "fbx", "{076BCEF4-7488-4832-BF4F-1328BD6EC753}"
-	ProjectSection(SolutionItems) = preProject
-		Tests\inFiles\fbx\sample_FBX200611_ascii.fbx = Tests\inFiles\fbx\sample_FBX200611_ascii.fbx
-		Tests\inFiles\fbx\sample_FBX200611_binary.fbx = Tests\inFiles\fbx\sample_FBX200611_binary.fbx
-		Tests\inFiles\fbx\sample_FBX200900_ascii.fbx = Tests\inFiles\fbx\sample_FBX200900_ascii.fbx
-		Tests\inFiles\fbx\sample_FBX200900_binary.fbx = Tests\inFiles\fbx\sample_FBX200900_binary.fbx
-		Tests\inFiles\fbx\sample_FBX201000_ascii.fbx = Tests\inFiles\fbx\sample_FBX201000_ascii.fbx
-		Tests\inFiles\fbx\sample_FBX201000_binary.fbx = Tests\inFiles\fbx\sample_FBX201000_binary.fbx
-		Tests\inFiles\fbx\sample_FBX201100_ascii.fbx = Tests\inFiles\fbx\sample_FBX201100_ascii.fbx
-		Tests\inFiles\fbx\sample_FBX201100_binary.fbx = Tests\inFiles\fbx\sample_FBX201100_binary.fbx
-		Tests\inFiles\fbx\sample_FBX201200_ascii.fbx = Tests\inFiles\fbx\sample_FBX201200_ascii.fbx
-		Tests\inFiles\fbx\sample_FBX201200_binary.fbx = Tests\inFiles\fbx\sample_FBX201200_binary.fbx
-		Tests\inFiles\fbx\sample_FBX201300_ascii.fbx = Tests\inFiles\fbx\sample_FBX201300_ascii.fbx
-		Tests\inFiles\fbx\sample_FBX201300_binary.fbx = Tests\inFiles\fbx\sample_FBX201300_binary.fbx
-		Tests\inFiles\fbx\sample_FBX201400_ascii.fbx = Tests\inFiles\fbx\sample_FBX201400_ascii.fbx
-		Tests\inFiles\fbx\sample_FBX201400_binary.fbx = Tests\inFiles\fbx\sample_FBX201400_binary.fbx
-		Tests\inFiles\fbx\sample_FBX201600_ascii.fbx = Tests\inFiles\fbx\sample_FBX201600_ascii.fbx
-		Tests\inFiles\fbx\sample_FBX201600_binary.fbx = Tests\inFiles\fbx\sample_FBX201600_binary.fbx
-		Tests\inFiles\fbx\sample_FBX201800_ascii.fbx = Tests\inFiles\fbx\sample_FBX201800_ascii.fbx
-		Tests\inFiles\fbx\sample_FBX201800_binary.fbx = Tests\inFiles\fbx\sample_FBX201800_binary.fbx
-		Tests\inFiles\fbx\sample_FBX201900_ascii.fbx = Tests\inFiles\fbx\sample_FBX201900_ascii.fbx
-		Tests\inFiles\fbx\sample_FBX201900_binary.fbx = Tests\inFiles\fbx\sample_FBX201900_binary.fbx
-		Tests\inFiles\fbx\sample_FBX202000_ascii.fbx = Tests\inFiles\fbx\sample_FBX202000_ascii.fbx
-		Tests\inFiles\fbx\sample_FBX202000_binary.fbx = Tests\inFiles\fbx\sample_FBX202000_binary.fbx
-	EndProjectSection
-EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "MeshIO.Tests.Shared", "MeshIO.Tests.Shared\MeshIO.Tests.Shared.shproj", "{F82685A4-99C9-4B22-B9A9-C8897C9965C4}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MeshIO.GLTF.Tests", "MeshIO.GLTF.Tests\MeshIO.GLTF.Tests.csproj", "{A6F2252F-C802-4317-BF05-073F31397AA1}"
@@ -127,8 +99,6 @@ Global
 		{264D4186-7537-4302-8BE9-1A3B56E6709C} = {4B0FFF9E-199B-4025-9CD2-0C8CE4ECB4C6}
 		{2A24034A-98C3-49C2-8175-48F03FE53081} = {4B0FFF9E-199B-4025-9CD2-0C8CE4ECB4C6}
 		{94C45D19-8231-437F-AB4D-02FA072A923C} = {4B0FFF9E-199B-4025-9CD2-0C8CE4ECB4C6}
-		{B073A785-90A3-44C0-9807-FA0C223E4BDA} = {4B0FFF9E-199B-4025-9CD2-0C8CE4ECB4C6}
-		{076BCEF4-7488-4832-BF4F-1328BD6EC753} = {B073A785-90A3-44C0-9807-FA0C223E4BDA}
 		{F82685A4-99C9-4B22-B9A9-C8897C9965C4} = {4B0FFF9E-199B-4025-9CD2-0C8CE4ECB4C6}
 		{A6F2252F-C802-4317-BF05-073F31397AA1} = {4B0FFF9E-199B-4025-9CD2-0C8CE4ECB4C6}
 	EndGlobalSection
