@@ -56,8 +56,12 @@ namespace MeshIO.FBX
 			this.stream.Write((int)this.Root.Version);
 			// TODO: Do we write a top level node or not? Maybe check the version?
 			this.nodePath.Clear();
+
 			foreach (var node in this.Root.Nodes)
+			{
 				this.WriteNode(this.Root, node);
+			}
+
 			this.WriteNode(this.Root, null);
 			this.stream.Write(GenerateFooterCode(this.Root));
 			this.WriteFooter(this.stream, (int)this.Root.Version);
@@ -285,7 +289,5 @@ namespace MeshIO.FBX
 				this.nodePath.Pop();
 			}
 		}
-
-
 	}
 }

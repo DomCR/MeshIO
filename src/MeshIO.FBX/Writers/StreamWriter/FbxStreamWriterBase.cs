@@ -11,13 +11,21 @@ namespace MeshIO.FBX.Writers.StreamWriter
 		{
 			if (options.IsBinaryFormat)
 			{
-				throw new NotImplementedException();
+				return new FbxBinaryStreamWriter(stream, options);
 			}
 			else
 			{
-				Encoding encoding = new UTF8Encoding(false);
-				return new FbxAsciiStreamWriter(stream, encoding);
+				return new FbxAsciiStreamWriter(stream, options);
 			}
+		}
+
+		protected FbxWriterOptions _options;
+		protected Encoding _encoding;
+
+		protected FbxStreamWriterBase(FbxWriterOptions options)
+		{
+			this._options = options;
+			this._encoding = new UTF8Encoding(false);
 		}
 
 		public virtual void WriteComment(string comment)
