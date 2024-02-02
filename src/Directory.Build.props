@@ -24,4 +24,8 @@
 		<IsPackable>false</IsPackable>
 	</PropertyGroup>
 
+	<Target Name="CopyPackage" AfterTargets="Pack" Condition="Exists('$(SolutionDir)..\.packages') And !$(MSBuildProjectName.EndsWith('Tests'))">
+		<Copy SourceFiles="$(SolutionDir)$(MSBuildProjectName)\bin\Release\$(PackageId).$(PackageVersion).nupkg" DestinationFolder="$(SolutionDir)..\.packages" />
+	</Target>
+
 </Project>
