@@ -1,25 +1,27 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFrameworks>net6.0;net5.0;net48;netstandard2.1</TargetFrameworks>
-    <PackageId>MeshIO.GLTF</PackageId>
-    <PackageTags>C# 3D glb gltf</PackageTags>
-    <Description>MeshIO module for glb-gltf format.</Description>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFrameworks>net6.0;net5.0;net48;netstandard2.1</TargetFrameworks>
+		<PackageId>MeshIO.GLTF</PackageId>
+		<PackageTags>C# 3D glb gltf</PackageTags>
+		<Description>MeshIO module for glb-gltf format.</Description>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\MeshIO\MeshIO.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\MeshIO\MeshIO.csproj" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <None Include=".\README.md">
-      <Pack>True</Pack>
-      <PackagePath>\</PackagePath>
-    </None>
-  </ItemGroup>
+	<ItemGroup>
+		<None Include=".\README.md">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+	</ItemGroup>
+
+	<Import Project="..\CSUtilities\CSUtilities\CSUtilities.projitems" Label="Shared" />
 
 </Project>

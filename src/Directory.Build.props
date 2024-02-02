@@ -10,18 +10,22 @@
 		<RepositoryType>git</RepositoryType>
 		<RepositoryUrl>https://github.com/DomCR/MeshIO</RepositoryUrl>
 		<PackageProjectUrl>https://github.com/DomCR/MeshIO</PackageProjectUrl>
-		<Copyright>Copyright (c) 2023 Albert Domenech</Copyright>
+		<Copyright>Copyright (c) 2024 Albert Domenech</Copyright>
 		<GeneratePackageOnBuild Condition="'$(Configuration)' == 'Release'">True</GeneratePackageOnBuild>
 	</PropertyGroup>
 
 	<PropertyGroup>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<Version>2.0.0-alpha</Version>
+		<Version>2.0.1-alpha</Version>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="$(MSBuildProjectName.EndsWith('Tests'))">
 		<IsPackable>false</IsPackable>
 	</PropertyGroup>
+
+	<Target Name="CopyPackage" AfterTargets="Pack" Condition="Exists('$(SolutionDir)..\.packages') And !$(MSBuildProjectName.EndsWith('Tests'))">
+		<Copy SourceFiles="$(SolutionDir)$(MSBuildProjectName)\bin\Release\$(PackageId).$(PackageVersion).nupkg" DestinationFolder="$(SolutionDir)..\.packages" />
+	</Target>
 
 </Project>
