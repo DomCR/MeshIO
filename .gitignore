@@ -350,6 +350,7 @@ MigrationBackup/
 .ionide/
 
 # Custom folders
+/.packages
 /samples/out
 /file_samples
 /Utils
