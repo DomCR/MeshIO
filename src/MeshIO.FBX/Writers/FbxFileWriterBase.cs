@@ -76,6 +76,13 @@ namespace MeshIO.FBX.Writers
 			if (this.Options.IsBinaryFormat)
 			{
 				//Seems to need some extra fields
+				Random random = new Random();
+				var fileId = new byte[16];
+				random.NextBytes(fileId);
+
+				_writer.WritePairNodeValue("FileId", fileId);
+				_writer.WritePairNodeValue("CreationTime", "1970-01-01 10:00:00:000");
+				_writer.WritePairNodeValue("Creator", "MeshIO.FBX");
 			}
 
 			this.writeGlobalSettings();
@@ -266,7 +273,9 @@ namespace MeshIO.FBX.Writers
 			this.WriteProperties(Scene.Properties);
 
 			_writer.WritePairNodeValue(FbxFileToken.RootNode, 0L);
+
 			_writer.WriteCloseBracket();
+			_writer.WriteEmptyLine();
 
 			foreach (Scene s in Scene.SubScenes)
 			{
@@ -279,11 +288,10 @@ namespace MeshIO.FBX.Writers
 				this.WriteProperties(s.Properties);
 
 				_writer.WriteCloseBracket();
-
 			}
 
 			_writer.WriteCloseBracket();
-
+			_writer.WriteEmptyLine();
 		}
 
 		private void writeReferences()
@@ -330,6 +338,8 @@ namespace MeshIO.FBX.Writers
 				this.WriteProperties(template.Properties.Values);
 
 				_writer.WriteCloseBracket();
+				_writer.WriteEmptyLine();
+
 				_writer.WriteCloseBracket();
 				_writer.WriteEmptyLine();
 			}

@@ -99,6 +99,11 @@ namespace MeshIO.FBX.Tests
 				writer.OnNotification += this.onNotification;
 				writer.Write(options);
 			}
+
+			using (FbxReader reader = new FbxReader(path))
+			{
+				var s = reader.Read();
+			}
 		}
 	}
 }

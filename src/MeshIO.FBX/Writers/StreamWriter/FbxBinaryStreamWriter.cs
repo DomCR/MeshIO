@@ -8,7 +8,7 @@ namespace MeshIO.FBX.Writers.StreamWriter
 {
 	internal sealed class FbxBinaryStreamWriter : FbxStreamWriterBase
 	{
-		public FbxBinaryStreamWriter(FbxWriterOptions options) : base(options)
+		public FbxBinaryStreamWriter(Stream stream, FbxWriterOptions options) : base(options)
 		{
 		}
 
