@@ -16,9 +16,9 @@ namespace MeshIO.FBX.Writers.StreamWriter
 
 		private System.IO.StreamWriter _streamWriter;
 
-		public FbxAsciiStreamWriter(Stream stream, Encoding encoding)
+		public FbxAsciiStreamWriter(Stream stream, FbxWriterOptions options) : base(options)
 		{
-			_streamWriter = new System.IO.StreamWriter(stream, encoding);
+			_streamWriter = new System.IO.StreamWriter(stream, this._encoding);
 		}
 
 		public override void Dispose()
