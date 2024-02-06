@@ -1,12 +1,12 @@
 ﻿using MeshIO.Core;
 using MeshIO.FBX.Connections;
-using MeshIO.FBX.Readers.Templates;
+using MeshIO.FBX.Templates;
 using System;
 using System.Collections.Generic;
 
 namespace MeshIO.FBX.Readers
 {
-	internal abstract class FbxFileBuilderBase
+    internal abstract class FbxFileBuilderBase
 	{
 		public event NotificationEventHandler OnNotification;
 
@@ -60,7 +60,7 @@ namespace MeshIO.FBX.Readers
 				case FbxVersion.v7500:
 				case FbxVersion.v7600:
 				case FbxVersion.v7700:
-					return new FbxFileReader7000(root, options);
+					return new FbxFileBuilder7000(root, options);
 				default:
 					throw new NotSupportedException($"Unknown Fbx version {root.Version} for writer");
 
@@ -307,13 +307,13 @@ namespace MeshIO.FBX.Readers
 					continue;
 				}
 
-				if (string.IsNullOrEmpty(template.TemplateId))
+				if (string.IsNullOrEmpty(template.Id))
 				{
 					this.Notify($"[{node.Name}] Id not found for node {n}", NotificationType.Warning);
 					continue;
 				}
 
-				this._objectTemplates.Add(template.TemplateId, template);
+				this._objectTemplates.Add(template.Id, template);
 			}
 		}
 

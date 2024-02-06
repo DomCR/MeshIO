@@ -1,11 +1,12 @@
-﻿using MeshIO.FBX.Writers.StreamWriters;
+﻿using MeshIO.FBX.Readers;
+using MeshIO.FBX.Writers;
 using System.Collections.Generic;
 
-namespace MeshIO.FBX.Writers.Objects
+namespace MeshIO.FBX.Templates
 {
-	internal class FbxGlobalSettingsWriter : IFbxObjectWriter
+	internal class FbxGlobalSettingsWriter : IFbxObjectTemplate
 	{
-		public ulong Id { get; }
+		public string Id { get; }
 
 		public string Name { get; }
 
@@ -17,14 +18,14 @@ namespace MeshIO.FBX.Writers.Objects
 
 		public FbxGlobalSettingsWriter()
 		{
-			FbxProperties.Add(new("UpAxis", (int)1));
-			FbxProperties.Add(new("UpAxisSign", (int)1));
-			FbxProperties.Add(new("FrontAxis", (int)2));
-			FbxProperties.Add(new("FrontAxisSign", (int)1));
-			FbxProperties.Add(new("CoordAxis", (int)0));
-			FbxProperties.Add(new("CoordAxisSign", (int)1));
-			FbxProperties.Add(new("OriginalUpAxis", (int)-1));
-			FbxProperties.Add(new("OriginalUpAxisSign", (int)1));
+			FbxProperties.Add(new("UpAxis", 1));
+			FbxProperties.Add(new("UpAxisSign", 1));
+			FbxProperties.Add(new("FrontAxis", 2));
+			FbxProperties.Add(new("FrontAxisSign", 1));
+			FbxProperties.Add(new("CoordAxis", 0));
+			FbxProperties.Add(new("CoordAxisSign", 1));
+			FbxProperties.Add(new("OriginalUpAxis", -1));
+			FbxProperties.Add(new("OriginalUpAxisSign", 1));
 			FbxProperties.Add(new("UnitScaleFactor", (double)1));
 			FbxProperties.Add(new("OriginalUnitScaleFactor", (double)1));
 			FbxProperties.Add(new("AmbientColor", new Color()));
@@ -36,7 +37,7 @@ namespace MeshIO.FBX.Writers.Objects
 			FbxProperties.Add(new("TimeSpanStop", "KTime", "Time", PropertyFlags.None, 153953860000));
 			FbxProperties.Add(new("CustomFrameRate", (double)-1));
 			FbxProperties.Add(new("TimeMarker", "Compound", string.Empty, PropertyFlags.None, string.Empty));
-			FbxProperties.Add(new("CurrentTimeMarker", (int)-1));
+			FbxProperties.Add(new("CurrentTimeMarker", -1));
 		}
 
 		public void ProcessChildren(FbxFileWriterBase fbxFileWriterBase)
@@ -44,12 +45,22 @@ namespace MeshIO.FBX.Writers.Objects
 			throw new System.InvalidOperationException();
 		}
 
-		public void Write(FbxFileWriterBase fbxFileWriterBase, IFbxStreamWriter writer)
+		public void ApplyTemplate(FbxPropertyTemplate template)
 		{
-			throw new System.InvalidOperationException();
+			throw new System.NotImplementedException();
 		}
 
-		public void ApplyTemplate(FbxPropertyTemplate template)
+		public Element3D GetElement()
+		{
+			throw new System.NotImplementedException();
+		}
+
+		public void Build(FbxFileBuilderBase builder)
+		{
+			throw new System.NotImplementedException();
+		}
+
+		public FbxNode ToFbxNode(FbxFileWriterBase writer)
 		{
 			throw new System.NotImplementedException();
 		}

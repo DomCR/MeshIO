@@ -26,6 +26,19 @@ namespace MeshIO.FBX
 		public FbxNode this[string name] { get { return this.Nodes.Find(n => n != null && n.Name == name); } }
 
 		/// <summary>
+		/// Add a note into the collection
+		/// </summary>
+		/// <param name="name"></param>
+		/// <param name="args"></param>
+		/// <returns>the added node</returns>
+		public FbxNode Add(string name, params object[] args)
+		{
+			FbxNode n = new FbxNode(name, args);
+			this.Nodes.Add(n);
+			return n;
+		}
+
+		/// <summary>
 		/// Gets a child node, using a '/' separated path
 		/// </summary>
 		/// <param name="path"></param>

@@ -1,4 +1,6 @@
-﻿namespace MeshIO.FBX.Readers.Templates
+﻿using MeshIO.FBX.Readers;
+
+namespace MeshIO.FBX.Templates
 {
 	internal class FbxRootNodeTemplate : FbxNodeTemplate
 	{
@@ -10,7 +12,7 @@
 		{
 			//TODO: Set properties from GlobalSettings
 
-			this.processChildren(builder);
+			processChildren(builder);
 		}
 	}
 }

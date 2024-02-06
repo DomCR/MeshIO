@@ -1,11 +1,13 @@
 ﻿using MeshIO.Core;
+using System;
 
 namespace MeshIO.FBX.Converters
 {
 	/// <summary>
 	/// Converts a <see cref="FbxRootNode"/> into a <see cref="Scene"/>
 	/// </summary>
-	public interface INodeConverter
+	[Obsolete]
+	internal interface INodeConverter
 	{
 		public event NotificationEventHandler OnNotification;
 

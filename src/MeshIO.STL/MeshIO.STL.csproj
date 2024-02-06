@@ -10,8 +10,6 @@
 		<ProjectReference Include="..\MeshIO\MeshIO.csproj" />
 	</ItemGroup>
 
-	<Import Project="..\CSUtilities\CSUtilities\CSUtilities.projitems" Label="Shared" />
-
 	<ItemGroup>
 		<None Include=".\README.md">
 			<Pack>True</Pack>

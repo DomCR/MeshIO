@@ -14,7 +14,7 @@ namespace MeshIO.FBX.Converters
 	/// <summary>
 	/// Base class to convert a node structure fbx <see cref="FbxRootNode"/> into a <see cref="Scene"/>
 	/// </summary>
-	public abstract class NodeConverterBase : ConverterBase, INodeConverter
+	internal abstract class NodeConverterBase : ConverterBase, INodeConverter
 	{
 		public const string TokenModel = "Model";
 

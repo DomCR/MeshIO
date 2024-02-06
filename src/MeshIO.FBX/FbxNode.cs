@@ -50,6 +50,10 @@ namespace MeshIO.FBX
 		/// </summary>
 		public FbxNode() : base() { }
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="name"></param>
 		public FbxNode(string name) : base()
 		{
 			Name = name;

@@ -5,43 +5,44 @@ using CSMath;
 using MeshIO.Entities.Geometries;
 using MeshIO.Entities.Geometries.Layers;
 using MeshIO.FBX.Extensions;
+using MeshIO.FBX.Readers;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace MeshIO.FBX.Readers.Templates
+namespace MeshIO.FBX.Templates
 {
 	internal abstract class FbxGeometryTemplate<T> : FbxObjectTemplate<T>
 		where T : Geometry
 	{
 		public override string FbxObjectName { get { return FbxFileToken.Geometry; } }
 
-		protected FbxGeometryTemplate(FbxNode node, T geometry) : base(node, geometry)
-		{
-		}
+		protected FbxGeometryTemplate(T geometry) : base(geometry) { }
+
+		protected FbxGeometryTemplate(FbxNode node, T geometry) : base(node, geometry) { }
 
 		public override void Build(FbxFileBuilderBase builder)
 		{
 			base.Build(builder);
 
-			this.readLayers();
+			readLayers();
 		}
 
 		protected override void addProperties(Dictionary<string, FbxProperty> properties)
 		{
 			if (properties.Remove("Primary Visibility", out FbxProperty isVisible))
 			{
-				this.Element.IsVisible = (bool)isVisible.ToProperty().Value;
+				_element.IsVisible = (bool)isVisible.ToProperty().Value;
 			}
 
 			if (properties.Remove("Casts Shadows", out FbxProperty castShadows))
 			{
-				this.Element.CastShadows = (bool)castShadows.ToProperty().Value;
+				_element.CastShadows = (bool)castShadows.ToProperty().Value;
 			}
 
 			if (properties.Remove("Receive Shadows", out FbxProperty receiveShadows))
 			{
-				this.Element.ReceiveShadows = (bool)receiveShadows.ToProperty().Value;
+				_element.ReceiveShadows = (bool)receiveShadows.ToProperty().Value;
 			}
 
 			base.addProperties(properties);
@@ -49,37 +50,37 @@ namespace MeshIO.FBX.Readers.Templates
 
 		protected void readLayers()
 		{
-			FbxNode node = this.FbxNode;
-			var geometry = this.Element;
+			FbxNode node = FbxNode;
+			var geometry = _element;
 
 			if (node.TryGetNode("LayerElementNormal", out FbxNode layerElementNormal))
 			{
-				geometry.Layers.Add(this.mapLayerElementNormal(layerElementNormal));
+				geometry.Layers.Add(mapLayerElementNormal(layerElementNormal));
 			}
 
 			if (node.TryGetNode("LayerElementBinormal", out FbxNode layerElementBinormal))
 			{
-				geometry.Layers.Add(this.mapLayerElementBinormal(layerElementBinormal));
+				geometry.Layers.Add(mapLayerElementBinormal(layerElementBinormal));
 			}
 
 			if (node.TryGetNode("LayerElementTangent", out FbxNode layerElementTangent))
 			{
-				geometry.Layers.Add(this.mapLayerElementTangent(layerElementTangent));
+				geometry.Layers.Add(mapLayerElementTangent(layerElementTangent));
 			}
 
 			if (node.TryGetNode("LayerElementMaterial", out FbxNode layerElementMaterial))
 			{
-				geometry.Layers.Add(this.BuildLayerElementMaterial(layerElementMaterial));
+				geometry.Layers.Add(BuildLayerElementMaterial(layerElementMaterial));
 			}
 
 			if (node.TryGetNode("LayerElementUV", out FbxNode layerElementUV))
 			{
-				geometry.Layers.Add(this.mapLayerElementUV(layerElementUV));
+				geometry.Layers.Add(mapLayerElementUV(layerElementUV));
 			}
 
 			if (node.TryGetNode("LayerElementSmoothing", out FbxNode layerElementSmoothing))
 			{
-				geometry.Layers.Add(this.mapLayerElementSmoothing(layerElementSmoothing));
+				geometry.Layers.Add(mapLayerElementSmoothing(layerElementSmoothing));
 			}
 		}
 
@@ -111,16 +112,16 @@ namespace MeshIO.FBX.Readers.Templates
 		{
 			LayerElementNormal layer = new LayerElementNormal();
 
-			this.mapCommonLayer(layer, node);
+			mapCommonLayer(layer, node);
 
 			if (node.TryGetNode("Normals", out FbxNode normals))
 			{
-				layer.Normals = this.arrToXYZ(this.arrToDoubleArray(normals.Value as IEnumerable));
+				layer.Normals = arrToXYZ(arrToDoubleArray(normals.Value as IEnumerable));
 			}
 
 			if (node.TryGetNode("NormalsW", out FbxNode normalsw))
 			{
-				layer.Weights.AddRange(this.arrToDoubleArray(normalsw.Value as IEnumerable));
+				layer.Weights.AddRange(arrToDoubleArray(normalsw.Value as IEnumerable));
 			}
 
 			return layer;
@@ -130,16 +131,16 @@ namespace MeshIO.FBX.Readers.Templates
 		{
 			LayerElementBinormal layer = new LayerElementBinormal();
 
-			this.mapCommonLayer(layer, node);
+			mapCommonLayer(layer, node);
 
 			if (node.TryGetNode("Binormals", out FbxNode normals))
 			{
-				layer.Normals = this.arrToXYZ(this.arrToDoubleArray(normals.Value as IEnumerable));
+				layer.Normals = arrToXYZ(arrToDoubleArray(normals.Value as IEnumerable));
 			}
 
 			if (node.TryGetNode("BinormalsW", out FbxNode normalsw))
 			{
-				layer.Weights.AddRange(this.arrToDoubleArray(normalsw.Value as IEnumerable));
+				layer.Weights.AddRange(arrToDoubleArray(normalsw.Value as IEnumerable));
 			}
 
 			return layer;
@@ -149,16 +150,16 @@ namespace MeshIO.FBX.Readers.Templates
 		{
 			LayerElementTangent layer = new LayerElementTangent();
 
-			this.mapCommonLayer(layer, node);
+			mapCommonLayer(layer, node);
 
 			if (node.TryGetNode("Tangents", out FbxNode normals))
 			{
-				layer.Tangents = this.arrToXYZ(this.arrToDoubleArray(normals.Value as IEnumerable));
+				layer.Tangents = arrToXYZ(arrToDoubleArray(normals.Value as IEnumerable));
 			}
 
 			if (node.TryGetNode("TangentsW", out FbxNode normalsw))
 			{
-				layer.Weights.AddRange(this.arrToDoubleArray(normalsw.Value as IEnumerable));
+				layer.Weights.AddRange(arrToDoubleArray(normalsw.Value as IEnumerable));
 			}
 
 			return layer;
@@ -168,16 +169,16 @@ namespace MeshIO.FBX.Readers.Templates
 		{
 			LayerElementUV layer = new LayerElementUV();
 
-			this.mapCommonLayer(layer, node);
+			mapCommonLayer(layer, node);
 
 			if (node.TryGetNode("UV", out FbxNode uv))
 			{
-				layer.UV = this.arrToXY(this.arrToDoubleArray(uv.Value as IEnumerable));
+				layer.UV = arrToXY(arrToDoubleArray(uv.Value as IEnumerable));
 			}
 
 			if (node.TryGetNode("UVIndex", out FbxNode indices))
 			{
-				layer.Indexes.AddRange(this.toArr<int>(indices.Value as IEnumerable));
+				layer.Indexes.AddRange(toArr<int>(indices.Value as IEnumerable));
 			}
 
 			return layer;
@@ -187,11 +188,11 @@ namespace MeshIO.FBX.Readers.Templates
 		{
 			LayerElementSmoothing layer = new LayerElementSmoothing();
 
-			this.mapCommonLayer(layer, node);
+			mapCommonLayer(layer, node);
 
 			if (node.TryGetNode("Smoothing", out FbxNode smooth))
 			{
-				layer.Smoothing.AddRange(this.toArr<int>(smooth.Value as IEnumerable));
+				layer.Smoothing.AddRange(toArr<int>(smooth.Value as IEnumerable));
 			}
 
 			return layer;
@@ -201,11 +202,11 @@ namespace MeshIO.FBX.Readers.Templates
 		{
 			LayerElementMaterial layer = new LayerElementMaterial();
 
-			this.mapCommonLayer(layer, node);
+			mapCommonLayer(layer, node);
 
 			if (node.TryGetNode("Materials", out FbxNode materials))
 			{
-				layer.Indexes.AddRange(this.toArr<int>(materials.Value as IEnumerable));
+				layer.Indexes.AddRange(toArr<int>(materials.Value as IEnumerable));
 			}
 
 			return layer;

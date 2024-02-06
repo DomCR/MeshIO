@@ -45,23 +45,15 @@ namespace MeshIO.FBX
 			switch (version)
 			{
 				case FbxVersion.v2000:
-					break;
 				case FbxVersion.v2001:
-					break;
 				case FbxVersion.v3000:
-					break;
 				case FbxVersion.v3001:
-					break;
 				case FbxVersion.v4000:
-					break;
 				case FbxVersion.v4001:
-					break;
 				case FbxVersion.v4050:
-					break;
 				case FbxVersion.v5000:
-					break;
 				case FbxVersion.v5800:
-					break;
+					throw new NotSupportedException();
 				case FbxVersion.v6000:
 				case FbxVersion.v6100:
 					return "Properties60";
@@ -74,9 +66,9 @@ namespace MeshIO.FBX
 				case FbxVersion.v7600:
 				case FbxVersion.v7700:
 					return "Properties70";
+				default:
+					throw new NotSupportedException();
 			}
-
-			throw new NotSupportedException();
 		}
 	}
 }

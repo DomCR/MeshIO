@@ -1,6 +1,8 @@
 ﻿using CSMath;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Xml.Linq;
 
 namespace MeshIO.FBX
 {
@@ -173,6 +175,51 @@ namespace MeshIO.FBX
 			}
 
 			return property;
+		}
+
+		public FbxNode ToNode()
+		{
+			//P : ["PropName", "PropType", "Label(?)", "Flags", __values__, …]
+			FbxNode p = new FbxNode("P", this.Name, this.FbxType, this.Label, MapPropertyFlags(this.Flags));
+
+			switch (this.Value)
+			{
+				case string:
+				case double:
+				case int:
+				case long:
+				case float:
+					p.Properties.Add(this.Value);
+					break;
+				case Color value:
+					if (value.A.HasValue)
+					{
+						p.Properties.Add(value.R / (double)255);
+						p.Properties.Add(value.G / (double)255);
+						p.Properties.Add(value.B / (double)255);
+						p.Properties.Add(value.A / (double)255);
+					}
+					else
+					{
+						p.Properties.Add(value.R / (double)255);
+						p.Properties.Add(value.G / (double)255);
+						p.Properties.Add(value.B / (double)255);
+					}
+					break;
+				case bool value:
+					p.Properties.Add(value ? 1 : 0);
+					break;
+				case XYZ value:
+					p.Properties.AddRange(value.ToEnumerable().Cast<object>());
+					break;
+				case null:
+					break;
+				default:
+					System.Diagnostics.Debug.Fail($"{Value.GetType().FullName}");
+					break;
+			}
+
+			return p;
 		}
 
 		public object GetFbxValue()

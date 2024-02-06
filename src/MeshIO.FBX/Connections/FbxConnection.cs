@@ -1,4 +1,4 @@
-﻿using MeshIO.FBX.Writers.Objects;
+﻿using MeshIO.FBX.Templates;
 
 namespace MeshIO.FBX.Connections
 {
@@ -10,11 +10,11 @@ namespace MeshIO.FBX.Connections
 
 		public string ChildId { get; }
 
-		public IFbxObjectWriter Child { get; }
+		public IFbxObjectTemplate Child { get; }
 
-		public IFbxObjectWriter Parent { get; }
+		public IFbxObjectTemplate Parent { get; }
 
-		public FbxConnection(IFbxObjectWriter child, IFbxObjectWriter parent)
+		public FbxConnection(IFbxObjectTemplate child, IFbxObjectTemplate parent)
 		{
 			Child = child;
 			Parent = parent;
