@@ -1,28 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using MeshIO.Entities.Geometries;
 using MeshIO.FBX.Readers;
 using MeshIO.FBX.Writers;
 
 namespace MeshIO.FBX.Templates
 {
-	internal static class FbxTemplateFactory
-	{
-		public static IFbxObjectTemplate Create<T>(T element)
-			where T : Element3D
-		{
-			switch (element)
-			{
-				case Mesh mesh:
-					return new FbxMeshTemplate(mesh);
-				case Node node:
-					return new FbxNodeTemplate(node);
-				default:
-					throw new NotImplementedException($"{nameof(IFbxObjectTemplate)} for {element.GetType()}");
-			}
-		}
-	}
-
 	internal abstract class FbxObjectTemplate<T> : IFbxObjectTemplate
 		where T : Element3D
 	{
