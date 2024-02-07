@@ -86,7 +86,8 @@ namespace MeshIO.FBX
 
 		public T GetProperty<T>(int index)
 		{
-			return (T)this.Properties.ElementAtOrDefault(index);
+			object value = this.Properties.ElementAtOrDefault(index);
+			return (T)Convert.ChangeType(value, typeof(T));
 		}
 
 		public override string ToString()

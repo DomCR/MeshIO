@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using MeshIO.FBX.Connections;
 using MeshIO.FBX.Templates;
 
 namespace MeshIO.FBX.Writers
 {
-    internal abstract class FbxFileWriterBase
+	internal abstract class FbxFileWriterBase
 	{
 		public FbxVersion Version { get { return this.Options.Version; } }
 
@@ -23,8 +25,10 @@ namespace MeshIO.FBX.Writers
 		protected readonly Dictionary<ulong, IFbxObjectTemplate> _objectTemplates = new();
 
 		protected readonly List<FbxConnection> _connections = new();
-		
+
 		private readonly FbxRootNode fbxRoot;
+
+		private readonly string MeshIOVersion;
 
 		protected FbxFileWriterBase(Scene scene, FbxWriterOptions options)
 		{
@@ -35,6 +39,8 @@ namespace MeshIO.FBX.Writers
 			{
 				Version = this.Options.Version
 			};
+
+			this.MeshIOVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
 		}
 
 		public static FbxFileWriterBase Create(Scene scene, FbxWriterOptions options)
@@ -74,6 +80,19 @@ namespace MeshIO.FBX.Writers
 			this.initializeRoot();
 
 			this.fbxRoot.Nodes.Add(this.nodeFBXHeaderExtension());
+
+			if (this.Options.IsBinaryFormat)
+			{
+				byte[] id = new byte[16];
+				Random random = new Random();
+				random.NextBytes(id);
+				this.fbxRoot.Add("FileId", id);
+
+				this.fbxRoot.Add("CreationTime", DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss:fff", CultureInfo.InvariantCulture));
+
+				this.fbxRoot.Add("Creator", $"MeshIO.FBX {this.MeshIOVersion}");
+			}
+
 			this.fbxRoot.Nodes.Add(this.nodeGlobalSettings());
 			this.fbxRoot.Nodes.Add(this.nodeDocuments());
 			this.fbxRoot.Nodes.Add(this.nodeReferences());
@@ -126,9 +145,13 @@ namespace MeshIO.FBX.Writers
 		{
 			FbxNode header = new FbxNode(FbxFileToken.FBXHeaderExtension);
 
-			header.Nodes.Add(new FbxNode(FbxFileToken.Creator, "MeshIO.FBX"));
-			header.Nodes.Add(new FbxNode("FBXVersion", (int)this.Options.Version));
 			header.Nodes.Add(new FbxNode(FbxFileToken.FBXHeaderVersion, 1003));
+			header.Nodes.Add(new FbxNode("FBXVersion", (int)this.Version));
+
+			if (this.Options.IsBinaryFormat)
+			{
+				header.Add("EncryptionType", 0);
+			}
 
 			DateTime now = DateTime.Now;
 			FbxNode tiemespan = new FbxNode(FbxFileToken.CreationTimeStamp);
@@ -140,8 +163,9 @@ namespace MeshIO.FBX.Writers
 			tiemespan.Nodes.Add(new FbxNode(nameof(now.Minute), now.Minute));
 			tiemespan.Nodes.Add(new FbxNode(nameof(now.Second), now.Second));
 			tiemespan.Nodes.Add(new FbxNode(nameof(now.Millisecond), now.Millisecond));
-
 			header.Nodes.Add(tiemespan);
+
+			header.Add(FbxFileToken.Creator, $"MeshIO.FBX {this.MeshIOVersion}");
 
 			return header;
 
@@ -168,11 +192,9 @@ namespace MeshIO.FBX.Writers
 			FbxNode documents = new FbxNode(FbxFileToken.Documents);
 
 			documents.Nodes.Add(new FbxNode(FbxFileToken.Count, this.Scene.SubScenes.Count + 1));
-			documents.Nodes.Add(new FbxNode(FbxFileToken.Document, this.Scene.GetIdOrDefault(), this.Scene.Name, FbxFileToken.Scene));
 
-			documents.Nodes.Add(this.PropertiesToNode(this.Scene.Properties));
-
-			documents.Nodes.Add(new FbxNode(FbxFileToken.RootNode, this.RootNode.Id));
+			var doc = documents.Add(FbxFileToken.Document, this.Scene.GetIdOrDefault(), this.Scene.Name, FbxFileToken.Scene);
+			doc.Add(FbxFileToken.RootNode, Convert.ToInt64(this.RootNode.Id));
 
 			return documents;
 		}
@@ -255,8 +277,8 @@ namespace MeshIO.FBX.Writers
 						throw new NotImplementedException();
 				}
 
-				con.Properties.Add(c.Child.Id);
-				con.Properties.Add(c.Parent.Id);
+				con.Properties.Add(long.Parse(c.Child.Id));
+				con.Properties.Add(long.Parse(c.Parent.Id));
 			}
 
 			return connections;

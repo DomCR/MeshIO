@@ -12,7 +12,7 @@ namespace MeshIO.FBX
 	/// <summary>
 	/// Writes an FBX document to a binary stream
 	/// </summary>
-	public class FbxBinaryWriter : FbxBinary, IFbxWriter
+	internal class FbxBinaryWriter : FbxBinary, IFbxWriter
 	{
 		public FbxRootNode Root { get; }
 

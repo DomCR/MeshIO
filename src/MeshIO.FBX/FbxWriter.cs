@@ -104,9 +104,19 @@ namespace MeshIO.FBX
 
 			FbxRootNode n = fwriter.ToNodeStructure();
 
-			using (IFbxWriter sw = FbxWriterFactory.Create(this.Options, n, this._stream))
+			if (true)
 			{
-				sw.Write();
+				using (IFbxWriter sw = FbxWriterFactory.Create(this.Options, n, this._stream))
+				{
+					sw.Write();
+				}
+			}
+			else
+			{
+				using (FbxAsciiWriter sw = new FbxAsciiWriter(n, this._stream))
+				{
+					sw.Write();
+				}
 			}
 		}
 

@@ -16,7 +16,7 @@ namespace MeshIO.FBX.Templates
 	{
 		public override string FbxObjectName { get { return FbxFileToken.Model; } }
 
-		public override string FbxTypeName { get { return string.Empty; } }
+		public override string FbxTypeName { get { return FbxFileToken.Mesh; } }
 
 		public FbxNodeTemplate(FbxNode node) : base(node, new Node())
 		{
@@ -35,7 +35,6 @@ namespace MeshIO.FBX.Templates
 
 		protected override void addObjectBody(FbxNode node, FbxFileWriterBase writer)
 		{
-
 			node.Add(FbxFileToken.Version, 232);
 
 			base.addObjectBody(node, writer);

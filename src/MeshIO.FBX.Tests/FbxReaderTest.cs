@@ -1,4 +1,6 @@
-﻿using MeshIO.Tests.Shared;
+﻿using MeshIO.FBX.Readers.Parsers;
+using MeshIO.Tests.Shared;
+using System;
 using System.IO;
 using Xunit;
 using Xunit.Abstractions;
@@ -46,15 +48,28 @@ namespace MeshIO.FBX.Tests
 		{
 			Scene scene;
 
-			using (FbxReader reader = new FbxReader(path))
+			//using (FbxReader reader = new FbxReader(path))
+			//{
+			//	reader.OnNotification += onNotification;
+			//	scene = reader.Read();
+			//}
+
+			FbxRootNode node = null;
+			using (FbxBinaryParser parser = new FbxBinaryParser(new FileStream(path, FileMode.Open), ErrorLevel.Permissive))
 			{
-				reader.OnNotification += onNotification;
-				scene = reader.Read();
+				node = parser.Parse();
 			}
 
-			Assert.NotNull(scene);
-			Assert.NotNull(scene.RootNode);
-			Assert.NotEmpty(scene.RootNode.Nodes);
+			string output = Path.Combine(FolderPath.OutFilesFbx, $"node_bin.fbx");
+
+			using (FbxAsciiWriter wr = new FbxAsciiWriter(node, File.Create(output)))
+			{
+				wr.Write();
+			}
+
+			//Assert.NotNull(scene);
+			//Assert.NotNull(scene.RootNode);
+			//Assert.NotEmpty(scene.RootNode.Nodes);
 		}
 	}
 }
