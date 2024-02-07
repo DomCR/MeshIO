@@ -35,9 +35,11 @@ namespace MeshIO.FBX
 		public FbxBinaryWriter(FbxRootNode root, Stream stream)
 		{
 			if (stream == null)
-				throw new ArgumentNullException(nameof(stream));
+            {
+                throw new ArgumentNullException(nameof(stream));
+            }
 
-			this.Root = root;
+            this.Root = root;
 
 			this.output = stream;
 
@@ -57,8 +59,11 @@ namespace MeshIO.FBX
 			// TODO: Do we write a top level node or not? Maybe check the version?
 			this.nodePath.Clear();
 			foreach (var node in this.Root.Nodes)
-				this.WriteNode(this.Root, node);
-			this.WriteNode(this.Root, null);
+            {
+                this.WriteNode(this.Root, node);
+            }
+
+            this.WriteNode(this.Root, null);
 			this.stream.Write(GenerateFooterCode(this.Root));
 			this.WriteFooter(this.stream, (int)this.Root.Version);
 			this.output.Write(this.memory.GetBuffer(), 0, (int)this.memory.Position);
@@ -95,6 +100,7 @@ namespace MeshIO.FBX
 			= new Dictionary<Type, WriterInfo>
 			{
 				{ typeof(int),  new WriterInfo('I', (sw, obj) => sw.Write((int)obj)) },
+				//{ typeof(byte),  new WriterInfo('I', (sw, obj) => sw.Write((byte)obj)) },
 				{ typeof(short),  new WriterInfo('Y', (sw, obj) => sw.Write((short)obj)) },
 				{ typeof(long),   new WriterInfo('L', (sw, obj) => sw.Write((long)obj)) },
 				{ typeof(float),  new WriterInfo('F', (sw, obj) => sw.Write((float)obj)) },
@@ -129,8 +135,11 @@ namespace MeshIO.FBX
 				for (int i = tokens.Length - 1; i >= 0; i--)
 				{
 					if (!first)
-						sb.Append(binarySeparator);
-					sb.Append(tokens[i]);
+                    {
+                        sb.Append(binarySeparator);
+                    }
+
+                    sb.Append(tokens[i]);
 					first = false;
 				}
 				str = sb.ToString();
@@ -161,8 +170,11 @@ namespace MeshIO.FBX
 				sw = new BinaryWriter(codec);
 			}
 			foreach (var obj in array)
-				writer(sw, obj);
-			if (compress)
+            {
+                writer(sw, obj);
+            }
+
+            if (compress)
 			{
 				codec.Close(); // This is important - otherwise bytes can be incorrect
 				var checksum = codec.Checksum;
@@ -189,12 +201,18 @@ namespace MeshIO.FBX
 		void WriteProperty(object obj, int id)
 		{
 			if (obj == null)
-				return;
-			WriterInfo writerInfo;
+            {
+                return;
+            }
+
+            WriterInfo writerInfo;
 			if (!writePropertyActions.TryGetValue(obj.GetType(), out writerInfo))
-				throw new FbxException(this.nodePath, id,
+            {
+                throw new FbxException(this.nodePath, id,
 					"Invalid property type " + obj.GetType());
-			this.stream.Write((byte)writerInfo.id);
+            }
+
+            this.stream.Write((byte)writerInfo.id);
 
 			if (writerInfo.writer == null) // Array type
 			{
@@ -202,8 +220,10 @@ namespace MeshIO.FBX
 				this.WriteArray((Array)obj, elementType, writePropertyActions[elementType].writer);
 			}
 			else
-				writerInfo.writer(this.stream, obj);
-		}
+            {
+                writerInfo.writer(this.stream, obj);
+            }
+        }
 
 		// Data for a null node
 		static readonly byte[] nullData = new byte[13];
@@ -222,11 +242,13 @@ namespace MeshIO.FBX
 				this.nodePath.Push(node.Name ?? "");
 				var name = string.IsNullOrEmpty(node.Name) ? null : Encoding.ASCII.GetBytes(node.Name);
 				if (name != null && name.Length > byte.MaxValue)
-					throw new FbxException(this.stream.BaseStream.Position,
+                {
+                    throw new FbxException(this.stream.BaseStream.Position,
 						"Node name is too long");
+                }
 
-				// Header
-				var endOffsetPos = this.stream.BaseStream.Position;
+                // Header
+                var endOffsetPos = this.stream.BaseStream.Position;
 				long propertyLengthPos;
 				if (document.Version >= FbxVersion.v7500)
 				{
@@ -245,10 +267,12 @@ namespace MeshIO.FBX
 
 				this.stream.Write((byte)(name?.Length ?? 0));
 				if (name != null)
-					this.stream.Write(name);
+                {
+                    this.stream.Write(name);
+                }
 
-				// Write properties and length
-				var propertyBegin = this.stream.BaseStream.Position;
+                // Write properties and length
+                var propertyBegin = this.stream.BaseStream.Position;
 				for (int i = 0; i < node.Properties.Count; i++)
 				{
 					this.WriteProperty(node.Properties[i], i);
@@ -256,10 +280,15 @@ namespace MeshIO.FBX
 				var propertyEnd = this.stream.BaseStream.Position;
 				this.stream.BaseStream.Position = propertyLengthPos;
 				if (document.Version >= FbxVersion.v7500)
-					this.stream.Write((long)(propertyEnd - propertyBegin));
-				else
-					this.stream.Write((int)(propertyEnd - propertyBegin));
-				this.stream.BaseStream.Position = propertyEnd;
+                {
+                    this.stream.Write((long)(propertyEnd - propertyBegin));
+                }
+                else
+                {
+                    this.stream.Write((int)(propertyEnd - propertyBegin));
+                }
+
+                this.stream.BaseStream.Position = propertyEnd;
 
 				// Write child nodes
 				if (node.Nodes.Count > 0)
@@ -267,8 +296,11 @@ namespace MeshIO.FBX
 					foreach (var n in node.Nodes)
 					{
 						if (n == null)
-							continue;
-						this.WriteNode(document, n);
+                        {
+                            continue;
+                        }
+
+                        this.WriteNode(document, n);
 					}
 					this.WriteNode(document, null);
 				}
@@ -277,10 +309,15 @@ namespace MeshIO.FBX
 				var dataEnd = this.stream.BaseStream.Position;
 				this.stream.BaseStream.Position = endOffsetPos;
 				if (document.Version >= FbxVersion.v7500)
-					this.stream.Write((long)dataEnd);
-				else
-					this.stream.Write((int)dataEnd);
-				this.stream.BaseStream.Position = dataEnd;
+                {
+                    this.stream.Write((long)dataEnd);
+                }
+                else
+                {
+                    this.stream.Write((int)dataEnd);
+                }
+
+                this.stream.BaseStream.Position = dataEnd;
 
 				this.nodePath.Pop();
 			}

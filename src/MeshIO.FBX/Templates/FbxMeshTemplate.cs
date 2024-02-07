@@ -11,199 +11,202 @@ using System.Linq;
 
 namespace MeshIO.FBX.Templates
 {
-	internal class FbxMeshTemplate : FbxGeometryTemplate<Mesh>
-	{
-		public override string FbxTypeName { get { return FbxFileToken.Mesh; } }
+    internal class FbxMeshTemplate : FbxGeometryTemplate<Mesh>
+    {
+        public override string FbxTypeName { get { return FbxFileToken.Mesh; } }
 
-		public FbxMeshTemplate(Mesh mesh) : base(mesh) { }
+        public FbxMeshTemplate(Mesh mesh) : base(mesh) { }
 
-		public FbxMeshTemplate(FbxNode node) : base(node, new Mesh())
-		{
-		}
+        public FbxMeshTemplate(FbxNode node) : base(node, new Mesh())
+        {
+        }
 
-		public override void Build(FbxFileBuilderBase builder)
-		{
-			base.Build(builder);
+        public override void Build(FbxFileBuilderBase builder)
+        {
+            base.Build(builder);
 
-			readPolygons();
-			readEdges();
-		}
+            readPolygons();
+            readEdges();
+        }
 
-		protected override void addObjectBody(FbxNode node, FbxFileWriterBase writer)
-		{
-			node.Add("GeometryVersion", 124);
+        protected override void addObjectBody(FbxNode node, FbxFileWriterBase writer)
+        {
+            node.Add("GeometryVersion", 124);
 
-			base.addObjectBody(node, writer);
+            var props = node.Add("Properties70");
+            props.Add("P", "Color", "ColorRGB", "Color", "", 0.0313725490196078, 0.23921568627451, 0.541176470588235);
 
-			if (this._element.Vertices.Any())
-			{
-				double[] arr = _element.Vertices.SelectMany(x => x.ToEnumerable()).ToArray();
-				node.Add("Vertices", arr);
-				node.Add("PolygonVertexIndex", polygonsArray(this._element));
+            base.addObjectBody(node, writer);
 
-				if (this._element.Edges.Any())
-				{
-					node.Add("Edges", this._element.Edges.ToArray());
-				}
-			}
+            if (this._element.Vertices.Any())
+            {
+                double[] arr = _element.Vertices.SelectMany(x => x.ToEnumerable()).ToArray();
+                node.Add("Vertices", arr);
+                node.Add("PolygonVertexIndex", polygonsArray(this._element));
 
-			this.writeLayers(node);
-		}
+                if (this._element.Edges.Any())
+                {
+                    node.Add("Edges", this._element.Edges.ToArray());
+                }
+            }
 
-		private void writeLayers(FbxNode node)
-		{
-			List<string> layerNames = new List<string>();
+            this.writeLayers(node);
+        }
 
-			foreach (LayerElement layer in this._element.Layers)
-			{
-				node.Nodes.Add(this.writeLayer(layer));
+        private void writeLayers(FbxNode node)
+        {
+            List<string> layerNames = new List<string>();
 
-				layerNames.Add(layer.GetFbxName());
-			}
+            foreach (LayerElement layer in this._element.Layers)
+            {
+                node.Nodes.Add(this.writeLayer(layer));
 
-			FbxNode layers = node.Add("Layer", 0);
-			layers.Add(FbxFileToken.Version, 100);
+                layerNames.Add(layer.GetFbxName());
+            }
 
-			foreach (string name in layerNames)
-			{
-				FbxNode layerElement = layers.Add("LayerElement");
+            FbxNode layers = node.Add("Layer", 0);
+            layers.Add(FbxFileToken.Version, 100);
 
-				layerElement.Add("Type", name);
-				layerElement.Add("TypedIndex", 0);
-			}
-		}
+            foreach (string name in layerNames)
+            {
+                FbxNode layerElement = layers.Add("LayerElement");
 
-		private FbxNode writeLayer<T>(T layer)
-			where T : LayerElement
-		{
-			FbxNode node = new FbxNode(layer.GetFbxName(), 0);
-			node.Add(FbxFileToken.Version, 100);
-			node.Add("Name", layer.Name);
-			node.Add("MappingInformationType", layer.MappingMode.GetFbxName());
-			node.Add("ReferenceInformationType", layer.ReferenceMode.GetFbxName());
+                layerElement.Add("Type", name);
+                layerElement.Add("TypedIndex", 0);
+            }
+        }
 
-			string indexesName = string.Empty;
-			switch (layer)
-			{
-				case LayerElementBinormal bnormals:
-					node.Add("Binormals", bnormals.Normals.SelectMany(x => x.ToEnumerable()).ToArray());
-					node.Add("BinormalsW", bnormals.Weights.ToArray());
-					indexesName = "BinormalsIndex";
-					break;
-				case LayerElementNormal normals:
-					node.Add("Normals", normals.Normals.SelectMany(x => x.ToEnumerable()).ToArray());
-					node.Add("NormalsW", normals.Weights.ToArray());
-					indexesName = "NormalsIndex";
-					break;
-				case LayerElementMaterial material:
-					node.Add("Materials", material.Indexes.ToArray());
-					break;
-				case LayerElementTangent tangents:
-					node.Add("Tangents", tangents.Tangents.SelectMany(x => x.ToEnumerable()).ToArray());
-					node.Add("TangentsW", tangents.Weights.ToArray());
-					indexesName = "TangentsIndex";
-					break;
-				case LayerElementUV uv:
-					node.Add("UV", uv.UV.SelectMany(x => x.ToEnumerable()).ToArray());
-					indexesName = "UVIndex";
-					break;
-				default:
-					break;
-			}
+        private FbxNode writeLayer<T>(T layer)
+            where T : LayerElement
+        {
+            FbxNode node = new FbxNode(layer.GetFbxName(), 0);
+            node.Add(FbxFileToken.Version, 100);
+            node.Add("Name", layer.Name);
+            node.Add("MappingInformationType", layer.MappingMode.GetFbxName());
+            node.Add("ReferenceInformationType", layer.ReferenceMode.GetFbxName());
 
-			if (layer.ReferenceMode != ReferenceMode.Direct && layer.Indexes.Any() && layer is not LayerElementMaterial)
-			{
-				node.Add(indexesName, layer.Indexes.ToArray());
-			}
+            string indexesName = string.Empty;
+            switch (layer)
+            {
+                case LayerElementBinormal bnormals:
+                    node.Add("Binormals", bnormals.Normals.SelectMany(x => x.ToEnumerable()).ToArray());
+                    node.Add("BinormalsW", bnormals.Weights.ToArray());
+                    indexesName = "BinormalsIndex";
+                    break;
+                case LayerElementNormal normals:
+                    node.Add("Normals", normals.Normals.SelectMany(x => x.ToEnumerable()).ToArray());
+                    node.Add("NormalsW", normals.Weights.ToArray());
+                    indexesName = "NormalsIndex";
+                    break;
+                case LayerElementMaterial material:
+                    node.Add("Materials", material.Indexes.ToArray());
+                    break;
+                case LayerElementTangent tangents:
+                    node.Add("Tangents", tangents.Tangents.SelectMany(x => x.ToEnumerable()).ToArray());
+                    node.Add("TangentsW", tangents.Weights.ToArray());
+                    indexesName = "TangentsIndex";
+                    break;
+                case LayerElementUV uv:
+                    node.Add("UV", uv.UV.SelectMany(x => x.ToEnumerable()).ToArray());
+                    indexesName = "UVIndex";
+                    break;
+                default:
+                    break;
+            }
 
-			return node;
-		}
+            if (layer.ReferenceMode != ReferenceMode.Direct && layer.Indexes.Any() && layer is not LayerElementMaterial)
+            {
+                node.Add(indexesName, layer.Indexes.ToArray());
+            }
 
-		private void readEdges()
-		{
-			if (FbxNode.TryGetNode("Edges", out FbxNode edges))
-			{
-				_element.Edges.AddRange(toArr<int>(edges.Value as IEnumerable));
-			}
-		}
+            return node;
+        }
 
-		private void readPolygons()
-		{
-			if (FbxNode.TryGetNode("PolygonVertexIndex", out FbxNode polygons))
-			{
-				_element.Polygons = mapPolygons(polygons.Value as int[]);
-			}
-		}
+        private void readEdges()
+        {
+            if (FbxNode.TryGetNode("Edges", out FbxNode edges))
+            {
+                _element.Edges.AddRange(toArr<int>(edges.Value as IEnumerable));
+            }
+        }
 
-		protected List<Polygon> mapPolygons(int[] arr)
-		{
-			List<Polygon> Polygons = new List<Polygon>();
+        private void readPolygons()
+        {
+            if (FbxNode.TryGetNode("PolygonVertexIndex", out FbxNode polygons))
+            {
+                _element.Polygons = mapPolygons(polygons.Value as int[]);
+            }
+        }
 
-			if (arr == null)
-				return Polygons;
+        protected List<Polygon> mapPolygons(int[] arr)
+        {
+            List<Polygon> Polygons = new List<Polygon>();
 
-			//Check if the arr are faces or quads
-			if (arr[2] < 0)
-			{
-				for (int i = 2; i < arr.Length; i += 3)
-				{
-					Triangle tmp = new Triangle(
-						arr[i - 2],
-						arr[i - 1],
-						//Substract a unit to the last
-						Math.Abs(arr[i]) - 1);
+            if (arr == null)
+                return Polygons;
 
-					Polygons.Add(tmp);
-				}
-			}
-			//Quads
-			else if (arr[3] < 0)
-			{
-				for (int i = 3; i < arr.Length; i += 4)
-				{
-					Quad tmp = new Quad(
-						Math.Abs(arr[i - 3]),
-						Math.Abs(arr[i - 2]),
-						Math.Abs(arr[i - 1]),
-						//Substract a unit to the last
-						Math.Abs(arr[i]) - 1);
+            //Check if the arr are faces or quads
+            if (arr[2] < 0)
+            {
+                for (int i = 2; i < arr.Length; i += 3)
+                {
+                    Triangle tmp = new Triangle(
+                        arr[i - 2],
+                        arr[i - 1],
+                        //Substract a unit to the last
+                        Math.Abs(arr[i]) - 1);
 
-					Polygons.Add(tmp);
-				}
-			}
+                    Polygons.Add(tmp);
+                }
+            }
+            //Quads
+            else if (arr[3] < 0)
+            {
+                for (int i = 3; i < arr.Length; i += 4)
+                {
+                    Quad tmp = new Quad(
+                        Math.Abs(arr[i - 3]),
+                        Math.Abs(arr[i - 2]),
+                        Math.Abs(arr[i - 1]),
+                        //Substract a unit to the last
+                        Math.Abs(arr[i]) - 1);
 
-			return Polygons;
-		}
+                    Polygons.Add(tmp);
+                }
+            }
 
-		protected int[] polygonsArray(Mesh mesh)
-		{
-			List<int> arr = new List<int>();
+            return Polygons;
+        }
 
-			//Check if the polygons list is empty
-			if (!mesh.Polygons.Any())
-				return arr.ToArray();
+        protected int[] polygonsArray(Mesh mesh)
+        {
+            List<int> arr = new List<int>();
 
-			if (mesh.Polygons.First() is Triangle)
-			{
-				foreach (Triangle t in mesh.Polygons)
-				{
-					arr.Add((int)t.Index0);
-					arr.Add((int)t.Index1);
-					arr.Add(-((int)t.Index2 + 1));
-				}
-			}
-			else
-			{
-				foreach (Quad t in mesh.Polygons)
-				{
-					arr.Add((int)t.Index0);
-					arr.Add((int)t.Index1);
-					arr.Add((int)t.Index2);
-					arr.Add(-((int)t.Index3 + 1));
-				}
-			}
+            //Check if the polygons list is empty
+            if (!mesh.Polygons.Any())
+                return arr.ToArray();
 
-			return arr.ToArray();
-		}
-	}
+            if (mesh.Polygons.First() is Triangle)
+            {
+                foreach (Triangle t in mesh.Polygons)
+                {
+                    arr.Add((int)t.Index0);
+                    arr.Add((int)t.Index1);
+                    arr.Add(-((int)t.Index2 + 1));
+                }
+            }
+            else
+            {
+                foreach (Quad t in mesh.Polygons)
+                {
+                    arr.Add((int)t.Index0);
+                    arr.Add((int)t.Index1);
+                    arr.Add((int)t.Index2);
+                    arr.Add(-((int)t.Index3 + 1));
+                }
+            }
+
+            return arr.ToArray();
+        }
+    }
 }
