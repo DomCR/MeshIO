@@ -16,19 +16,38 @@ namespace MeshIO.FBX.Tests
 		public FbxWriterTest(ITestOutputHelper output) : base(output) { }
 
 		[Fact]
-		public void IOTest()
+		public void ParserTest()
 		{
-			string path = Path.Combine(FolderPath.OutFilesFbx, $"__box_v7400_bin_holder.fbx");
-			string path1 = Path.Combine(FolderPath.OutFilesFbx, $"__box_v7400_bin_out.fbx");
+			string inPath = Path.Combine(FolderPath.InFilesFbx, "sample_basic_box_binary.fbx");
+			//inPath = Path.Combine(FolderPath.InFilesFbx, "sample_basic_box_ascii_clean.fbx");
+
 			FbxRootNode root = null;
-			using (FbxAsciiParser parser = new FbxAsciiParser(File.OpenRead(path)))
+			using (FbxBinaryParser parser = new FbxBinaryParser(File.OpenRead(inPath)))
 			{
 				root = parser.Parse();
 			}
 
-			using (FbxBinaryWriter wr = new FbxBinaryWriter(root, File.Create(path1)))
+			using (FbxBinaryWriter writer = new FbxBinaryWriter(root, File.Create(Path.Combine(FolderPath.OutFilesFbx, $"io_bin.fbx"))))
 			{
-				wr.Write();
+				writer.Write();
+			}
+		}
+
+		[Fact]
+		public void IOTest()
+		{
+			string inPath = Path.Combine(FolderPath.InFilesFbx, "sample_basic_box_binary.fbx");
+			//inPath = Path.Combine(FolderPath.InFilesFbx, "sample_basic_box_ascii_clean.fbx");
+
+			Scene scene = null;
+			using (FbxReader reader = new FbxReader(File.OpenRead(inPath)))
+			{
+				scene = reader.Read();
+			}
+
+			using (FbxWriter writer = new FbxWriter(File.Create(Path.Combine(FolderPath.OutFilesFbx, $"io_bin_writer.fbx")), scene))
+			{
+				writer.Write();
 			}
 		}
 
