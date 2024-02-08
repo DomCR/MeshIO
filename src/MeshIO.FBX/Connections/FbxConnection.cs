@@ -22,6 +22,7 @@ namespace MeshIO.FBX.Connections
 
 		public FbxConnection(FbxConnectionType type, string parentId, string childId)
 		{
+			ConnectionType = type;
 			ParentId = parentId;
 			ChildId = childId;
 		}
