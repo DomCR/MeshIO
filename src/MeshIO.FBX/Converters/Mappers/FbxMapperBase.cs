@@ -5,6 +5,7 @@ using System.Linq;
 
 namespace MeshIO.FBX.Converters.Mappers
 {
+	[Obsolete]
 	public abstract class FbxMapperBase : ConverterBase, IFbxMapper
 	{
 		public abstract string SectionName { get; }

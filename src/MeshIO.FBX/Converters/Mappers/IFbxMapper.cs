@@ -1,7 +1,9 @@
 ﻿using MeshIO.Core;
+using System;
 
 namespace MeshIO.FBX.Converters.Mappers
 {
+	[Obsolete]
 	public interface IFbxMapper
 	{
 		public event NotificationEventHandler OnNotification;
