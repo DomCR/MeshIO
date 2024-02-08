@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace MeshIO.FBX
 {
@@ -49,6 +50,10 @@ namespace MeshIO.FBX
 		/// </summary>
 		public FbxNode() : base() { }
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="name"></param>
 		public FbxNode(string name) : base()
 		{
 			Name = name;
@@ -64,9 +69,25 @@ namespace MeshIO.FBX
 			Properties = new List<object>(properties);
 		}
 
-		public T GetValueAs<T>()
+		public bool TryGetProperty<T>(int index, out T value)
 		{
-			throw new NotImplementedException();
+			var v = this.Properties.ElementAtOrDefault(index);
+			if (v is T t)
+			{
+				value = t;
+				return true;
+			}
+			else
+			{
+				value = default;
+				return false;
+			}
+		}
+
+		public T GetProperty<T>(int index)
+		{
+			object value = this.Properties.ElementAtOrDefault(index);
+			return (T)Convert.ChangeType(value, typeof(T));
 		}
 
 		public override string ToString()

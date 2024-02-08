@@ -1,12 +1,5 @@
-﻿using CSMath;
-using MeshIO.Entities.Geometries.Layers;
-using MeshIO.Entities.Geometries;
-using MeshIO.FBX.Exceptions;
-using MeshIO.Shaders;
-using System;
-using System.Collections;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using MeshIO.FBX.Converters.Mappers;
 
 namespace MeshIO.FBX.Converters
@@ -14,7 +7,8 @@ namespace MeshIO.FBX.Converters
 	/// <summary>
 	/// Base class to convert a node structure fbx <see cref="FbxRootNode"/> into a <see cref="Scene"/>
 	/// </summary>
-	public abstract class NodeConverterBase : ConverterBase, INodeConverter
+	[Obsolete]
+	internal abstract class NodeConverterBase : ConverterBase, INodeConverter
 	{
 		public const string TokenModel = "Model";
 

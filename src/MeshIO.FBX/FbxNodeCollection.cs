@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -8,7 +7,6 @@ namespace MeshIO.FBX
 	/// <summary>
 	/// Base class for nodes and documents
 	/// </summary>
-	[Obsolete("This class will be removed")]
 	public abstract class FbxNodeCollection : IEnumerable<FbxNode>
 	{
 		/// <summary>
@@ -26,6 +24,19 @@ namespace MeshIO.FBX
 		/// <param name="name"></param>
 		/// <returns>The child node, or null</returns>
 		public FbxNode this[string name] { get { return this.Nodes.Find(n => n != null && n.Name == name); } }
+
+		/// <summary>
+		/// Add a note into the collection
+		/// </summary>
+		/// <param name="name"></param>
+		/// <param name="args"></param>
+		/// <returns>the added node</returns>
+		public FbxNode Add(string name, params object[] args)
+		{
+			FbxNode n = new FbxNode(name, args);
+			this.Nodes.Add(n);
+			return n;
+		}
 
 		/// <summary>
 		/// Gets a child node, using a '/' separated path
@@ -71,7 +82,6 @@ namespace MeshIO.FBX
 		public bool TryGetNode(string name, out FbxNode node)
 		{
 			node = this[name];
-
 			return node != null;
 		}
 

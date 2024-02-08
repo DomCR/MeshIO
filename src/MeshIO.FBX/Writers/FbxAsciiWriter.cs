@@ -39,7 +39,9 @@ namespace MeshIO.FBX
 		public FbxAsciiWriter(FbxRootNode root, Stream stream)
 		{
 			if (stream == null)
+			{
 				throw new ArgumentNullException(nameof(stream));
+			}
 
 			this.Root = root;
 			this._stream = stream;
@@ -54,7 +56,10 @@ namespace MeshIO.FBX
 		public void Write()
 		{
 			if (this.Root == null)
+			{
 				throw new ArgumentNullException(nameof(this.Root));
+			}
+
 			var sb = new StringBuilder();
 
 			// Write version header (a comment, but required for many importers)
@@ -67,7 +72,10 @@ namespace MeshIO.FBX
 			foreach (var n in this.Root.Nodes)
 			{
 				if (n == null)
+				{
 					continue;
+				}
+
 				this.buildString(n, sb, this.Root.Version >= FbxVersion.v7100);
 				sb.Append('\n');
 			}
@@ -87,7 +95,10 @@ namespace MeshIO.FBX
 			int lineStart = sb.Length;
 			// Write identifier
 			for (int i = 0; i < indentLevel; i++)
+			{
 				sb.Append('\t');
+			}
+
 			sb.Append(node.Name).Append(':');
 
 			// Write properties
@@ -96,9 +107,15 @@ namespace MeshIO.FBX
 			{
 				var p = node.Properties[j];
 				if (p == null)
+				{
 					continue;
+				}
+
 				if (!first)
+				{
 					sb.Append(',');
+				}
+
 				sb.Append(' ');
 				if (p is string)
 				{
@@ -111,29 +128,40 @@ namespace MeshIO.FBX
 					// ReSharper disable once PossibleNullReferenceException
 					// We know it's an array, so we don't need to check for null
 					if (array.Rank != 1 || !elementType.IsPrimitive)
+					{
 						throw new FbxException(this._nodePath, j,
 							"Invalid array type " + p.GetType());
+					}
+
 					if (writeArrayLength)
 					{
 						sb.Append('*').Append(array.Length).Append(" {\n");
 						lineStart = sb.Length;
 						for (int i = -1; i < indentLevel; i++)
+						{
 							sb.Append('\t');
+						}
+
 						sb.Append("a: ");
 					}
 					bool pFirst = true;
 					foreach (var v in (Array)p)
 					{
 						if (!pFirst)
+						{
 							sb.Append(',');
+						}
+
 						var vstr = v.ToString();
 
 						if (this.ApplyLineMaxLength)
+						{
 							if ((sb.Length - lineStart) + vstr.Length >= this.MaxLineLength)
 							{
 								sb.Append('\n');
 								lineStart = sb.Length;
 							}
+						}
 
 						sb.Append(vstr);
 						pFirst = false;
@@ -142,17 +170,27 @@ namespace MeshIO.FBX
 					{
 						sb.Append('\n');
 						for (int i = 0; i < indentLevel; i++)
+						{
 							sb.Append('\t');
+						}
+
 						sb.Append('}');
 					}
 				}
 				else if (p is char)
+				{
 					sb.Append((char)p);
+				}
 				else if (p.GetType().IsPrimitive && p is IFormattable)
+				{
 					sb.Append(p);
+				}
 				else
+				{
 					throw new FbxException(this._nodePath, j,
 						"Invalid property type " + p.GetType());
+				}
+
 				first = false;
 			}
 
@@ -163,11 +201,17 @@ namespace MeshIO.FBX
 				foreach (var n in node.Nodes)
 				{
 					if (n == null)
+					{
 						continue;
+					}
+
 					this.buildString(n, sb, writeArrayLength, indentLevel + 1);
 				}
 				for (int i = 0; i < indentLevel; i++)
+				{
 					sb.Append('\t');
+				}
+
 				sb.Append('}');
 			}
 			sb.Append('\n');

@@ -30,7 +30,24 @@ namespace MeshIO.FBX.Tests
 			}
 		}
 
-		[Theory(Skip = "Not implemented")]
+		[Theory]
+		[MemberData(nameof(Versions))]
+		public void WriteAsciiFbxWithMesh(FbxVersion version)
+		{
+			FbxWriterOptions options = new FbxWriterOptions
+			{
+				IsBinaryFormat = false,
+				Version = version,
+			};
+
+			string path = Path.Combine(FolderPath.OutFilesFbx, $"box_{version}_ascii.fbx");
+
+			Scene scene = this.createScene();
+
+			this.writeFile(path, scene, options);
+		}
+
+		[Theory]
 		[MemberData(nameof(Versions))]
 		public void WriteEmptyBinaryStream(FbxVersion version)
 		{
@@ -49,16 +66,23 @@ namespace MeshIO.FBX.Tests
 
 		[Theory]
 		[MemberData(nameof(Versions))]
-		public void WriteAsciiFbxWithMesh(FbxVersion version)
+		public void WriteBinaryFbxWithMesh(FbxVersion version)
 		{
 			FbxWriterOptions options = new FbxWriterOptions
 			{
-				IsBinaryFormat = false,
+				IsBinaryFormat = true,
 				Version = version,
 			};
 
-			string path = Path.Combine(FolderPath.OutFilesFbx, $"box_{version}_ascii.fbx");
+			string path = Path.Combine(FolderPath.OutFilesFbx, $"box_{version}_binary.fbx");
 
+			Scene scene = this.createScene();
+
+			this.writeFile(path, scene, options);
+		}
+
+		private Scene createScene()
+		{
 			Scene scene = new Scene();
 
 			Node box = new Node("my_node");
@@ -67,10 +91,15 @@ namespace MeshIO.FBX.Tests
 
 			scene.RootNode.Nodes.Add(box);
 
+			return scene;
+		}
+
+		private void writeFile(string path, Scene scene, FbxWriterOptions options)
+		{
 			using (FbxWriter writer = new FbxWriter(path, scene, options))
 			{
 				writer.OnNotification += this.onNotification;
-				writer.Write(new FbxWriterOptions() { IsBinaryFormat = false });
+				writer.Write(options);
 			}
 		}
 	}

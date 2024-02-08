@@ -100,9 +100,13 @@ namespace MeshIO.FBX
 		/// <param name="options">Options to apply during the write operation</param>
 		public void Write(FbxWriterOptions options)
 		{
-			using (var writer = FbxFileWriterBase.Create(this.Scene, options, this._stream))
+			FbxFileWriterBase fwriter = FbxFileWriterBase.Create(this.Scene, options);
+
+			FbxRootNode n = fwriter.ToNodeStructure();
+
+			using (IFbxWriter sw = FbxWriterFactory.Create(this.Options, n, this._stream))
 			{
-				writer.Write();
+				sw.Write();
 			}
 		}
 

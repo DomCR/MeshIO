@@ -35,7 +35,9 @@ namespace MeshIO.FBX
 		public FbxBinaryWriter(FbxRootNode root, Stream stream)
 		{
 			if (stream == null)
+			{
 				throw new ArgumentNullException(nameof(stream));
+			}
 
 			this.Root = root;
 
@@ -57,7 +59,10 @@ namespace MeshIO.FBX
 			// TODO: Do we write a top level node or not? Maybe check the version?
 			this.nodePath.Clear();
 			foreach (var node in this.Root.Nodes)
+			{
 				this.WriteNode(this.Root, node);
+			}
+
 			this.WriteNode(this.Root, null);
 			this.stream.Write(GenerateFooterCode(this.Root));
 			this.WriteFooter(this.stream, (int)this.Root.Version);
@@ -94,9 +99,11 @@ namespace MeshIO.FBX
 		private static readonly Dictionary<Type, WriterInfo> writePropertyActions
 			= new Dictionary<Type, WriterInfo>
 			{
+				//{ typeof(byte), new WriterInfo('I', (sw, obj) => sw.Write((byte)obj)) },
 				{ typeof(int),  new WriterInfo('I', (sw, obj) => sw.Write((int)obj)) },
 				{ typeof(short),  new WriterInfo('Y', (sw, obj) => sw.Write((short)obj)) },
 				{ typeof(long),   new WriterInfo('L', (sw, obj) => sw.Write((long)obj)) },
+				//{ typeof(ulong),   new WriterInfo('L', (sw, obj) => sw.Write(Convert.ToInt64(obj))) },
 				{ typeof(float),  new WriterInfo('F', (sw, obj) => sw.Write((float)obj)) },
 				{ typeof(double), new WriterInfo('D', (sw, obj) => sw.Write((double)obj)) },
 				{ typeof(char),   new WriterInfo('C', (sw, obj) => sw.Write((byte)(char)obj)) },
@@ -129,7 +136,10 @@ namespace MeshIO.FBX
 				for (int i = tokens.Length - 1; i >= 0; i--)
 				{
 					if (!first)
+					{
 						sb.Append(binarySeparator);
+					}
+
 					sb.Append(tokens[i]);
 					first = false;
 				}
@@ -161,7 +171,10 @@ namespace MeshIO.FBX
 				sw = new BinaryWriter(codec);
 			}
 			foreach (var obj in array)
+			{
 				writer(sw, obj);
+			}
+
 			if (compress)
 			{
 				codec.Close(); // This is important - otherwise bytes can be incorrect
@@ -189,11 +202,17 @@ namespace MeshIO.FBX
 		void WriteProperty(object obj, int id)
 		{
 			if (obj == null)
+			{
 				return;
+			}
+
 			WriterInfo writerInfo;
 			if (!writePropertyActions.TryGetValue(obj.GetType(), out writerInfo))
+			{
 				throw new FbxException(this.nodePath, id,
 					"Invalid property type " + obj.GetType());
+			}
+
 			this.stream.Write((byte)writerInfo.id);
 
 			if (writerInfo.writer == null) // Array type
@@ -202,7 +221,9 @@ namespace MeshIO.FBX
 				this.WriteArray((Array)obj, elementType, writePropertyActions[elementType].writer);
 			}
 			else
+			{
 				writerInfo.writer(this.stream, obj);
+			}
 		}
 
 		// Data for a null node
@@ -222,8 +243,10 @@ namespace MeshIO.FBX
 				this.nodePath.Push(node.Name ?? "");
 				var name = string.IsNullOrEmpty(node.Name) ? null : Encoding.ASCII.GetBytes(node.Name);
 				if (name != null && name.Length > byte.MaxValue)
+				{
 					throw new FbxException(this.stream.BaseStream.Position,
 						"Node name is too long");
+				}
 
 				// Header
 				var endOffsetPos = this.stream.BaseStream.Position;
@@ -245,7 +268,9 @@ namespace MeshIO.FBX
 
 				this.stream.Write((byte)(name?.Length ?? 0));
 				if (name != null)
+				{
 					this.stream.Write(name);
+				}
 
 				// Write properties and length
 				var propertyBegin = this.stream.BaseStream.Position;
@@ -256,9 +281,14 @@ namespace MeshIO.FBX
 				var propertyEnd = this.stream.BaseStream.Position;
 				this.stream.BaseStream.Position = propertyLengthPos;
 				if (document.Version >= FbxVersion.v7500)
+				{
 					this.stream.Write((long)(propertyEnd - propertyBegin));
+				}
 				else
+				{
 					this.stream.Write((int)(propertyEnd - propertyBegin));
+				}
+
 				this.stream.BaseStream.Position = propertyEnd;
 
 				// Write child nodes
@@ -267,7 +297,10 @@ namespace MeshIO.FBX
 					foreach (var n in node.Nodes)
 					{
 						if (n == null)
+						{
 							continue;
+						}
+
 						this.WriteNode(document, n);
 					}
 					this.WriteNode(document, null);
@@ -277,9 +310,14 @@ namespace MeshIO.FBX
 				var dataEnd = this.stream.BaseStream.Position;
 				this.stream.BaseStream.Position = endOffsetPos;
 				if (document.Version >= FbxVersion.v7500)
+				{
 					this.stream.Write((long)dataEnd);
+				}
 				else
+				{
 					this.stream.Write((int)dataEnd);
+				}
+
 				this.stream.BaseStream.Position = dataEnd;
 
 				this.nodePath.Pop();

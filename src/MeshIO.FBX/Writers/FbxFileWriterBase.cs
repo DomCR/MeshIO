@@ -1,39 +1,49 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
+using System.Globalization;
 using System.Linq;
-using MeshIO.FBX.Writers.Connections;
-using MeshIO.FBX.Writers.Objects;
-using MeshIO.FBX.Writers.StreamWriter;
+using System.Reflection;
+using MeshIO.FBX.Connections;
+using MeshIO.FBX.Templates;
 
 namespace MeshIO.FBX.Writers
 {
-	internal abstract class FbxFileWriterBase : IDisposable
+	internal abstract class FbxFileWriterBase
 	{
+		public FbxVersion Version { get { return this.Options.Version; } }
+
 		public FbxWriterOptions Options { get; }
 
 		public Scene Scene { get; }
 
 		public Node RootNode { get { return this.Scene.RootNode; } }
 
-		private readonly IFbxStreamWriter _writer;
+		protected readonly Dictionary<string, FbxPropertyTemplate> _tempaltes = new();
 
-		private readonly Dictionary<string, FbxPropertyTemplate> _tempaltes = new();
+		protected readonly Dictionary<string, List<IFbxObjectTemplate>> _definedObjects = new();
 
-		private readonly Dictionary<string, List<IFbxObjectWriter>> _definedObjects = new();
+		protected readonly Dictionary<ulong, IFbxObjectTemplate> _objectTemplates = new();
 
-		private readonly Dictionary<ulong, IFbxObjectWriter> _objectWriters = new();
+		protected readonly List<FbxConnection> _connections = new();
 
-		private readonly List<Connections.FbxConnection> _connections = new();
+		private readonly FbxRootNode fbxRoot;
 
-		protected FbxFileWriterBase(Scene scene, FbxWriterOptions options, Stream stream)
+		private readonly string MeshIOVersion;
+
+		protected FbxFileWriterBase(Scene scene, FbxWriterOptions options)
 		{
 			this.Scene = scene;
 			this.Options = options;
-			this._writer = FbxStreamWriterBase.Create(options, stream);
+
+			this.fbxRoot = new FbxRootNode
+			{
+				Version = this.Options.Version
+			};
+
+			this.MeshIOVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
 		}
 
-		public static FbxFileWriterBase Create(Scene scene, FbxWriterOptions options, Stream stream)
+		public static FbxFileWriterBase Create(Scene scene, FbxWriterOptions options)
 		{
 			FbxVersion version = options.Version;
 			switch (version)
@@ -58,37 +68,39 @@ namespace MeshIO.FBX.Writers
 				case FbxVersion.v7500:
 				case FbxVersion.v7600:
 				case FbxVersion.v7700:
-					return new FbxFileWriter7000(scene, options, stream);
+					return new FbxFileWriter7000(scene, options);
 				default:
 					throw new NotSupportedException($"Unknown Fbx version {version} for writer");
 
 			}
 		}
 
-		public void Write()
+		public FbxRootNode ToNodeStructure()
 		{
 			this.initializeRoot();
 
-			this.writeHeaderComment();
-
-			this.writeFBXHeaderExtension();
+			this.fbxRoot.Nodes.Add(this.nodeFBXHeaderExtension());
 
 			if (this.Options.IsBinaryFormat)
 			{
-				//Seems to need some extra fields
+				byte[] id = new byte[16];
+				Random random = new Random();
+				random.NextBytes(id);
+				this.fbxRoot.Add("FileId", id);
+
+				this.fbxRoot.Add("CreationTime", DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss:fff", CultureInfo.InvariantCulture));
+
+				this.fbxRoot.Add("Creator", $"MeshIO.FBX {this.MeshIOVersion}");
 			}
 
-			this.writeGlobalSettings();
+			this.fbxRoot.Nodes.Add(this.nodeGlobalSettings());
+			this.fbxRoot.Nodes.Add(this.nodeDocuments());
+			this.fbxRoot.Nodes.Add(this.nodeReferences());
+			this.fbxRoot.Nodes.Add(this.nodeDefinitions());
+			this.fbxRoot.Nodes.Add(this.nodeObjects());
+			this.fbxRoot.Nodes.Add(this.nodeConnections());
 
-			this.writeDocuments();
-
-			this.writeReferences();
-
-			this.writeDefinitions();
-
-			this.writeObjects();
-
-			this.writeConnections();
+			return this.fbxRoot;
 		}
 
 		public bool TryGetPropertyTemplate(string fbxName, out FbxPropertyTemplate template)
@@ -96,64 +108,9 @@ namespace MeshIO.FBX.Writers
 			return this._tempaltes.TryGetValue(fbxName, out template);
 		}
 
-		public void WriteProperties(IEnumerable<Property> properties)
+		public void CreateConnection(Element3D child, IFbxObjectTemplate parent)
 		{
-			if (properties == null || !properties.Any())
-			{
-				return;
-			}
-
-			this._writer.WriteName(FbxFileToken.GetPropertiesName(this.Options.Version));
-			this._writer.WriteOpenBracket();
-
-			foreach (Property p in properties)
-			{
-				if (p is not FbxProperty fbxProp)
-				{
-					fbxProp = FbxProperty.CreateFrom(p);
-				}
-
-				if (fbxProp == null)
-				{
-					this._writer.WriteEmptyLine();
-					continue;
-				}
-
-				this._writer.WriteName("P");
-				this._writer.WriteValue(fbxProp.Name);
-				this._writer.WriteValue(fbxProp.FbxType);
-				this._writer.WriteValue(fbxProp.Label);
-				this._writer.WriteValue(FbxProperty.MapPropertyFlags(fbxProp.Flags));
-
-				if (fbxProp.Value is null)
-				{
-					this._writer.WriteEmptyLine();
-					continue;
-				}
-
-				object value = fbxProp.GetFbxValue();
-				if (value is System.Array arr)
-				{
-					foreach (var v in arr)
-					{
-						this._writer.WriteValue(v);
-					}
-				}
-				else
-				{
-					this._writer.WriteValue(value);
-				}
-
-				this._writer.WriteEmptyLine();
-			}
-
-			this._writer.WriteCloseBracket();
-			this._writer.WriteEmptyLine();
-		}
-
-		public void CreateConnection(Element3D child, IFbxObjectWriter parent)
-		{
-			IFbxObjectWriter objwriter = FbxObjectWriterFactory.Create(child);
+			IFbxObjectTemplate objwriter = FbxTemplateFactory.Create(child);
 			if (objwriter is null)
 			{
 				return;
@@ -165,157 +122,107 @@ namespace MeshIO.FBX.Writers
 
 			objwriter.ProcessChildren(this);
 
-			this._objectWriters.Add(child.Id.Value, objwriter);
-			if (!this._definedObjects.TryGetValue(objwriter.FbxObjectName, out List<IFbxObjectWriter> lst))
+			this._objectTemplates.Add(child.Id.Value, objwriter);
+			if (!this._definedObjects.TryGetValue(objwriter.FbxObjectName, out List<IFbxObjectTemplate> lst))
 			{
-				this._definedObjects.Add(objwriter.FbxObjectName, lst = new List<IFbxObjectWriter>());
+				this._definedObjects.Add(objwriter.FbxObjectName, lst = new List<IFbxObjectTemplate>());
 			}
 			lst.Add(objwriter);
 		}
 
-		private void initializeRoot()
+		protected void initializeRoot()
 		{
 			//Root node should be processed to create the connections but it is not writen in the file
 			this.RootNode.Id = 0;
 
-			IFbxObjectWriter objwriter = FbxObjectWriterFactory.Create(this.RootNode);
+			IFbxObjectTemplate root = FbxTemplateFactory.Create(this.RootNode);
 
-			objwriter.ProcessChildren(this);
+			root.ProcessChildren(this);
 		}
 
-		private void writeHeaderComment()
+
+		private FbxNode nodeFBXHeaderExtension()
 		{
-			int version = (int)this.Options.Version;
+			FbxNode header = new FbxNode(FbxFileToken.FBXHeaderExtension);
 
-			int major = (version / 1000) % 10;
-			int minor = (version / 100) % 10;
-
-			this._writer.WriteComment($" FBX {major}.{minor}.0 project file");
-		}
-
-		private void writeFBXHeaderExtension()
-		{
-			_writer.WriteName(FbxFileToken.FBXHeaderExtension);
-			_writer.WriteOpenBracket();
-
-			_writer.WritePairNodeValue(FbxFileToken.Creator, "MeshIO.FBX");
-			_writer.WritePairNodeValue(FbxFileToken.FBXVersion, (int)this.Options.Version);
-			_writer.WritePairNodeValue(FbxFileToken.FBXHeaderVersion, 1003);
+			header.Nodes.Add(new FbxNode(FbxFileToken.FBXHeaderVersion, 1003));
+			header.Nodes.Add(new FbxNode("FBXVersion", (int)this.Version));
 
 			if (this.Options.IsBinaryFormat)
 			{
-				_writer.WritePairNodeValue(FbxFileToken.EncryptionType, 0);
+				header.Add("EncryptionType", 0);
 			}
 
-			_writer.WriteName(FbxFileToken.CreationTimeStamp);
-			_writer.WriteOpenBracket();
-			System.DateTime now = System.DateTime.Now;
-			_writer.WritePairNodeValue(FbxFileToken.Version, 1000);
-			_writer.WritePairNodeValue(nameof(now.Year), now.Year);
-			_writer.WritePairNodeValue(nameof(now.Month), now.Month);
-			_writer.WritePairNodeValue(nameof(now.Day), now.Day);
-			_writer.WritePairNodeValue(nameof(now.Hour), now.Hour);
-			_writer.WritePairNodeValue(nameof(now.Minute), now.Minute);
-			_writer.WritePairNodeValue(nameof(now.Second), now.Second);
-			_writer.WritePairNodeValue(nameof(now.Millisecond), now.Millisecond);
-			_writer.WriteCloseBracket();
-			_writer.WriteEmptyLine();
+			DateTime now = DateTime.Now;
+			FbxNode tiemespan = new FbxNode(FbxFileToken.CreationTimeStamp);
+			tiemespan.Nodes.Add(new FbxNode(FbxFileToken.Version, 1000));
+			tiemespan.Nodes.Add(new FbxNode(nameof(now.Year), now.Year));
+			tiemespan.Nodes.Add(new FbxNode(nameof(now.Month), now.Month));
+			tiemespan.Nodes.Add(new FbxNode(nameof(now.Day), now.Day));
+			tiemespan.Nodes.Add(new FbxNode(nameof(now.Hour), now.Hour));
+			tiemespan.Nodes.Add(new FbxNode(nameof(now.Minute), now.Minute));
+			tiemespan.Nodes.Add(new FbxNode(nameof(now.Second), now.Second));
+			tiemespan.Nodes.Add(new FbxNode(nameof(now.Millisecond), now.Millisecond));
+			header.Nodes.Add(tiemespan);
 
-			this.writeSceneInfo();
+			header.Add(FbxFileToken.Creator, $"MeshIO.FBX {this.MeshIOVersion}");
 
-			_writer.WriteCloseBracket();
-			_writer.WriteEmptyLine();
+			return header;
+
+			throw new NotImplementedException();
 		}
 
-		private void writeSceneInfo()
+		private FbxNode nodeGlobalSettings()
 		{
-			//TODO: writeSceneInfo
+			FbxGlobalSettingsTemplate globalSettings = new FbxGlobalSettingsTemplate();
+
+			FbxNode settings = new FbxNode(FbxFileToken.GlobalSettings);
+
+			settings.Nodes.Add(new FbxNode(FbxFileToken.Version, 100));
+
+			settings.Nodes.Add(this.PropertiesToNode(globalSettings.FbxProperties));
+
+			this._definedObjects.Add(FbxFileToken.GlobalSettings, new List<IFbxObjectTemplate> { globalSettings });
+
+			return settings;
 		}
 
-		private void writeGlobalSettings()
+		private FbxNode nodeDocuments()
 		{
-			FbxGlobalSettingsWriter settingsWriter = new FbxGlobalSettingsWriter();
+			FbxNode documents = new FbxNode(FbxFileToken.Documents);
 
-			_writer.WriteName(FbxFileToken.GlobalSettings);
-			_writer.WriteOpenBracket();
-			_writer.WritePairNodeValue(FbxFileToken.Version, 100);
+			documents.Nodes.Add(new FbxNode(FbxFileToken.Count, this.Scene.SubScenes.Count + 1));
 
-			this.WriteProperties(settingsWriter.FbxProperties);
+			var doc = documents.Add(FbxFileToken.Document, this.Scene.GetIdOrDefault(), this.Scene.Name, FbxFileToken.Scene);
+			doc.Add(FbxFileToken.RootNode, Convert.ToInt64(this.RootNode.Id));
 
-			_writer.WriteCloseBracket();
-			_writer.WriteEmptyLine();
-
-			this._definedObjects.Add(FbxFileToken.GlobalSettings, new List<IFbxObjectWriter> { settingsWriter });
+			return documents;
 		}
 
-		private void writeDocuments()
+		private FbxNode nodeReferences()
 		{
-			_writer.WriteName(FbxFileToken.Documents);
+			FbxNode references = new FbxNode(FbxFileToken.References);
 
-			_writer.WriteOpenBracket();
-			_writer.WritePairNodeValue(FbxFileToken.Count, this.Scene.SubScenes.Count + 1);
+			references.Nodes.Add(null);
 
-			_writer.WriteName(FbxFileToken.Document);
-
-			_writer.WriteValue(Scene.GetIdOrDefault());
-			_writer.WriteValue(Scene.Name);
-			_writer.WriteValue(FbxFileToken.Scene);
-
-			_writer.WriteOpenBracket();
-
-			this.WriteProperties(Scene.Properties);
-
-			_writer.WritePairNodeValue(FbxFileToken.RootNode, 0L);
-			_writer.WriteCloseBracket();
-
-			foreach (Scene s in Scene.SubScenes)
-			{
-				//TODO: WriteSubScenes Verify this implementation
-				_writer.WriteValue(s.GetIdOrDefault());
-				_writer.WriteValue(s.Name);
-				_writer.WriteValue(FbxFileToken.Scene);
-				_writer.WriteOpenBracket();
-
-				this.WriteProperties(s.Properties);
-
-				_writer.WriteCloseBracket();
-
-			}
-
-			_writer.WriteCloseBracket();
-
+			return references;
 		}
 
-		private void writeReferences()
+		private FbxNode nodeDefinitions()
 		{
-			_writer.WriteName(FbxFileToken.References);
-			_writer.WriteOpenBracket();
+			FbxNode definitions = new FbxNode(FbxFileToken.Definitions);
 
-			//TODO: Write fbx references
-
-			_writer.WriteCloseBracket();
-			_writer.WriteEmptyLine();
-		}
-
-		private void writeDefinitions()
-		{
-			_writer.WriteName(FbxFileToken.Definitions);
-			_writer.WriteOpenBracket();
-
-			_writer.WritePairNodeValue(FbxFileToken.Version, 100);
-			_writer.WritePairNodeValue(FbxFileToken.Count, this._definedObjects.Sum(o => o.Value.Count));
+			definitions.Nodes.Add(new FbxNode(FbxFileToken.Version, 100));
+			definitions.Nodes.Add(new FbxNode(FbxFileToken.Count, this._definedObjects.Sum(o => o.Value.Count)));
 
 			foreach (var item in this._definedObjects)
 			{
-				_writer.WriteName(FbxFileToken.ObjectType);
-				_writer.WriteValue(item.Key);
-				_writer.WriteOpenBracket();
-				_writer.WritePairNodeValue(FbxFileToken.Count, item.Value.Count);
+				FbxNode d = new FbxNode(FbxFileToken.ObjectType, item.Key);
+				d.Nodes.Add(new FbxNode(FbxFileToken.Count, item.Value.Count));
 
 				if (item.Key == FbxFileToken.GlobalSettings)
 				{
-					_writer.WriteCloseBracket();
-					_writer.WriteEmptyLine();
+					definitions.Nodes.Add(d);
 					continue;
 				}
 
@@ -323,27 +230,22 @@ namespace MeshIO.FBX.Writers
 
 				this._tempaltes.Add(item.Key, template);
 
-				_writer.WriteName("PropertyTemplate");
-				_writer.WriteValue(template.Name);
-				_writer.WriteOpenBracket();
+				var t = new FbxNode("PropertyTemplate", template.Name);
+				t.Nodes.Add(this.PropertiesToNode(template.Properties.Values));
 
-				this.WriteProperties(template.Properties.Values);
+				d.Nodes.Add(t);
 
-				_writer.WriteCloseBracket();
-				_writer.WriteCloseBracket();
-				_writer.WriteEmptyLine();
+				definitions.Nodes.Add(d);
 			}
 
-			_writer.WriteCloseBracket();
-			_writer.WriteEmptyLine();
+			return definitions;
 		}
 
-		private void writeObjects()
+		private FbxNode nodeObjects()
 		{
-			_writer.WriteName(FbxFileToken.Objects);
-			_writer.WriteOpenBracket();
+			FbxNode objects = new FbxNode(FbxFileToken.Objects);
 
-			foreach (IFbxObjectWriter obj in this._objectWriters.Values)
+			foreach (IFbxObjectTemplate obj in this._objectTemplates.Values)
 			{
 				if (!this._tempaltes.TryGetValue(obj.FbxObjectName, out FbxPropertyTemplate template))
 				{
@@ -352,46 +254,56 @@ namespace MeshIO.FBX.Writers
 
 				obj.ApplyTemplate(template);
 
-				obj.Write(this, _writer);
+				objects.Nodes.Add(obj.ToFbxNode(this));
 			}
 
-			_writer.WriteCloseBracket();
-			_writer.WriteEmptyLine();
+			return objects;
 		}
 
-		private void writeConnections()
+		private FbxNode nodeConnections()
 		{
-			_writer.WriteName(FbxFileToken.Connections);
-			_writer.WriteOpenBracket();
+			FbxNode connections = new FbxNode(FbxFileToken.Connections);
 
 			foreach (FbxConnection c in this._connections)
 			{
-				this._writer.WriteComment(c.GetComment());
-
-				_writer.WriteName("C");
+				FbxNode con = connections.Add("C");
 
 				switch (c.ConnectionType)
 				{
 					case FbxConnectionType.ObjectObject:
-						_writer.WriteValue("OO");
+						con.Properties.Add("OO");
 						break;
 					default:
 						throw new NotImplementedException();
 				}
 
-				_writer.WriteValue(c.Child.Id);
-				_writer.WriteValue(c.Parent.Id);
-
-				_writer.WriteEmptyLine();
+				con.Properties.Add(long.Parse(c.Child.Id));
+				con.Properties.Add(long.Parse(c.Parent.Id));
 			}
 
-			_writer.WriteCloseBracket();
-			_writer.WriteEmptyLine();
+			return connections;
 		}
 
-		public void Dispose()
+		public FbxNode PropertiesToNode(IEnumerable<Property> properties)
 		{
-			this._writer.Dispose();
+			if (!properties.Any())
+			{
+				return null;
+			}
+
+			FbxNode node = new FbxNode(FbxFileToken.GetPropertiesName(this.Version));
+
+			foreach (Property p in properties)
+			{
+				if (p is not FbxProperty fbxProp)
+				{
+					fbxProp = FbxProperty.CreateFrom(p);
+				}
+
+				node.Nodes.Add(fbxProp.ToNode());
+			}
+
+			return node;
 		}
 	}
 }
