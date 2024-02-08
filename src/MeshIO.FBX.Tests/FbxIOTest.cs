@@ -10,12 +10,10 @@ namespace MeshIO.FBX.Tests
 	{
 		public FbxIOTest(ITestOutputHelper output) : base(output) { }
 
-
 		[Fact]
 		public void ParserTest()
 		{
 			string inPath = Path.Combine(FolderPath.InFilesFbx, "sample_basic_box_binary.fbx");
-			//inPath = Path.Combine(FolderPath.InFilesFbx, "sample_basic_box_ascii_clean.fbx");
 
 			FbxRootNode root = null;
 			using (FbxBinaryParser parser = new FbxBinaryParser(File.OpenRead(inPath)))
@@ -23,7 +21,7 @@ namespace MeshIO.FBX.Tests
 				root = parser.Parse();
 			}
 
-			using (FbxBinaryWriter writer = new FbxBinaryWriter(root, File.Create(Path.Combine(FolderPath.OutFilesFbx, $"io_bin.fbx"))))
+			using (FbxBinaryWriter writer = new FbxBinaryWriter(root, new MemoryStream()))
 			{
 				writer.Write();
 			}
@@ -37,10 +35,10 @@ namespace MeshIO.FBX.Tests
 			Scene scene = null;
 			using (FbxReader reader = new FbxReader(File.OpenRead(inPath)))
 			{
+				reader.OnNotification += this.onNotification;
 				scene = reader.Read();
 			}
 
-			//using (FbxWriter writer = new FbxWriter(File.Create(Path.Combine(FolderPath.OutFilesFbx, $"io_bin_writer.fbx")), scene))
 			using (FbxWriter writer = new FbxWriter(new MemoryStream(), scene))
 			{
 				writer.Write();
@@ -56,10 +54,10 @@ namespace MeshIO.FBX.Tests
 			Scene scene = null;
 			using (FbxReader reader = new FbxReader(File.OpenRead(inPath)))
 			{
+				reader.OnNotification += this.onNotification;
 				scene = reader.Read();
 			}
 
-			//using (FbxWriter writer = new FbxWriter(File.Create(Path.Combine(FolderPath.OutFilesFbx, $"io_bin_writer.fbx")), scene))
 			using (FbxWriter writer = new FbxWriter(new MemoryStream(), scene))
 			{
 				writer.Write();

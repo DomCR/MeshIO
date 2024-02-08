@@ -42,13 +42,7 @@ namespace MeshIO.FBX.Tests
 
 			string path = Path.Combine(FolderPath.OutFilesFbx, $"box_{version}_ascii.fbx");
 
-			Scene scene = new Scene();
-
-			Node box = new Node("my_node");
-			Mesh mesh = new Box("my_box").CreateMesh();
-			box.Entities.Add(mesh);
-
-			scene.RootNode.Nodes.Add(box);
+			Scene scene = this.createScene();
 
 			this.writeFile(path, scene, options);
 		}
@@ -82,6 +76,13 @@ namespace MeshIO.FBX.Tests
 
 			string path = Path.Combine(FolderPath.OutFilesFbx, $"box_{version}_binary.fbx");
 
+			Scene scene = this.createScene();
+
+			this.writeFile(path, scene, options);
+		}
+
+		private Scene createScene()
+		{
 			Scene scene = new Scene();
 
 			Node box = new Node("my_node");
@@ -90,12 +91,7 @@ namespace MeshIO.FBX.Tests
 
 			scene.RootNode.Nodes.Add(box);
 
-			this.writeFile(path, scene, options);
-
-			using (FbxReader reader = new FbxReader(path))
-			{
-				var s = reader.Read();
-			}
+			return scene;
 		}
 
 		private void writeFile(string path, Scene scene, FbxWriterOptions options)
