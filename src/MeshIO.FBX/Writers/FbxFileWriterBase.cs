@@ -174,7 +174,7 @@ namespace MeshIO.FBX.Writers
 
 		private FbxNode nodeGlobalSettings()
 		{
-			FbxGlobalSettingsWriter globalSettings = new FbxGlobalSettingsWriter();
+			FbxGlobalSettingsTemplate globalSettings = new FbxGlobalSettingsTemplate();
 
 			FbxNode settings = new FbxNode(FbxFileToken.GlobalSettings);
 

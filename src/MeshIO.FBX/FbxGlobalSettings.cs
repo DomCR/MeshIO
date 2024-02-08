@@ -49,6 +49,8 @@ namespace MeshIO.FBX
 					break;
 			}
 
+			//TODO: Replace for FbxGlobalSettingsTemplate
+
 			_properties.Add(new FbxPropertyOld<int>("UpAxis", null, 1, "int", "Integer", PropertyFlags.None));
 			_properties.Add(new FbxPropertyOld<int>("UpAxisSign", null, 1, "int", "Integer", PropertyFlags.None));
 			_properties.Add(new FbxPropertyOld<int>("FrontAxis", null, 2, "int", "Integer", PropertyFlags.None));
