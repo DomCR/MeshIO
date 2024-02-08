@@ -1,6 +1,4 @@
-﻿using MeshIO.FBX.Readers.Parsers;
-using MeshIO.Tests.Shared;
-using System;
+﻿using MeshIO.Tests.Shared;
 using System.IO;
 using Xunit;
 using Xunit.Abstractions;
@@ -29,6 +27,18 @@ namespace MeshIO.FBX.Tests
 		}
 
 		public FbxReaderTest(ITestOutputHelper output) : base(output) { }
+
+		[Theory]
+		[MemberData(nameof(AsciiFiles))]
+		[MemberData(nameof(BinaryFiles))]
+		public void ParseTest(string test)
+		{
+			using (FbxReader reader = new FbxReader(test))
+			{
+				reader.OnNotification += onNotification;
+				reader.Parse();
+			}
+		}
 
 		[Theory]
 		[MemberData(nameof(AsciiFiles))]

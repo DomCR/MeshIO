@@ -16,7 +16,7 @@ namespace MeshIO.FBX
 		/// Initializes a new instance of the <see cref="FbxReader"/> class for the specified file.
 		/// </summary>
 		/// <param name="path">The complete file path to read to.</param>
-		public FbxReader(string path) : this(new FileStream(path, FileMode.Open)) { }
+		public FbxReader(string path) : this(File.OpenRead(path)) { }
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="FbxReader"/> class for the specified stream.
@@ -31,29 +31,6 @@ namespace MeshIO.FBX
 				throw new ArgumentException("The stream must support seeking. Try reading the data into a buffer first");
 
 			this._stream = stream;
-		}
-
-		/// <summary>
-		/// Read the FBX file
-		/// </summary>
-		public Scene Read()
-		{
-			FbxRootNode root;
-			using (IFbxParser parser = getParser(this._stream, this.Options))
-			{
-				root = parser.Parse();
-			}
-
-			var reader = FbxFileBuilderBase.Create(root, this.Options);
-			reader.OnNotification += this.onNotificationEvent;
-
-			return reader.Read();
-		}
-
-		/// <inheritdoc/>
-		public override void Dispose()
-		{
-			_stream.Dispose();
 		}
 
 		/// <summary>
@@ -80,6 +57,38 @@ namespace MeshIO.FBX
 				reader.OnNotification += notificationHandler;
 				return reader.Read();
 			}
+		}
+
+		/// <summary>
+		/// Parse the FBX file
+		/// </summary>
+		public FbxRootNode Parse()
+		{
+			FbxRootNode root;
+			using (IFbxParser parser = getParser(this._stream, this.Options))
+			{
+				root = parser.Parse();
+			}
+
+			return root;
+		}
+
+		/// <summary>
+		/// Read the FBX file
+		/// </summary>
+		public Scene Read()
+		{
+			FbxRootNode root = this.Parse();
+			var reader = FbxFileBuilderBase.Create(root, this.Options);
+			reader.OnNotification += this.onNotificationEvent;
+
+			return reader.Read();
+		}
+
+		/// <inheritdoc/>
+		public override void Dispose()
+		{
+			_stream.Dispose();
 		}
 
 		private static IFbxParser getParser(Stream stream, FbxReaderOptions options)
