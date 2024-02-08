@@ -8,6 +8,9 @@ public static class FolderPath
 	public static readonly string InFilesFbx = Path.Combine(InFiles, "fbx");
 	public static readonly string OutFilesFbx = Path.Combine(OutFiles, "fbx");
 
+	public static readonly string InFilesObj = Path.Combine(InFiles, "obj");
+	public static readonly string OutFilesObj = Path.Combine(OutFiles, "obj");
+
 	public static readonly string InFilesStl = Path.Combine(InFiles, "stl");
 	public static readonly string OutFilesStl = Path.Combine(OutFiles, "stl");
 
@@ -20,6 +23,7 @@ public static class FolderPath
 		{
 			OutFiles,
 			OutFilesFbx,
+			OutFilesObj,
 			OutFilesStl,
 			OutFilesGltf,
 		};

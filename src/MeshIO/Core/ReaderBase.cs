@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 
 namespace MeshIO.Core
 {
@@ -8,8 +9,26 @@ namespace MeshIO.Core
 	{
 		public event NotificationEventHandler OnNotification;
 
+		protected readonly Stream _stream;
+
+		protected ReaderBase(Stream stream)
+		{
+			if (stream == null)
+				throw new ArgumentNullException(nameof(stream));
+
+			if (!stream.CanSeek)
+				throw new ArgumentException("The stream must support seeking");
+
+			this._stream = stream;
+		}
+
+		public abstract Scene Read();
+
 		/// <inheritdoc/>
-		public abstract void Dispose();
+		public virtual void Dispose()
+		{
+			this._stream.Dispose();
+		}
 
 		protected void triggerNotification(string message, NotificationType notificationType, Exception ex = null)
 		{
