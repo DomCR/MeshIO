@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Xml.Linq;
 
 namespace MeshIO.FBX
 {
@@ -44,7 +43,7 @@ namespace MeshIO.FBX
 
 	public class FbxProperty<T> : FbxProperty
 	{
-		public FbxProperty(string name, T value) : base(name, value) { }
+		public FbxProperty(string name, PropertyFlags flags, T value) : base(name, flags, value) { }
 	}
 
 	public class FbxProperty : Property
@@ -57,7 +56,7 @@ namespace MeshIO.FBX
 			public const string PrimaryVisibility = "Primary Visibility";
 			public const string CastsShadows = "Casts Shadows";
 
-			public static FbxProperty<bool> CreatePrimaryVisibility() => new FbxProperty<bool>(PrimaryVisibility, true);
+			//public static FbxProperty<bool> CreatePrimaryVisibility() => new FbxProperty<bool>(PrimaryVisibility, true);
 		}
 
 		/// <summary>
@@ -70,9 +69,8 @@ namespace MeshIO.FBX
 		/// </summary>
 		public string Label { get; }
 
-		public FbxProperty(string name, object value) : base(name)
+		public FbxProperty(string name, PropertyFlags flags, object value) : this(name, string.Empty, string.Empty, flags, value)
 		{
-			this.Value = value;
 			GetFbxValue(value, out string fbxtype, out string label);
 			this.FbxType = fbxtype;
 			this.Label = label;
@@ -83,7 +81,15 @@ namespace MeshIO.FBX
 			this.FbxType = fbxtype;
 			this.Label = label;
 			this.Flags = flags;
-			this.Value = value;
+
+			if (value is byte b)
+			{
+				this.Value = (int)b;
+			}
+			else
+			{
+				this.Value = value;
+			}
 		}
 
 		public FbxProperty(FbxProperty property, object value) : this(property.Name, property.FbxType, property.Label, property.Flags, value)
@@ -95,10 +101,9 @@ namespace MeshIO.FBX
 		/// </summary>
 		/// <param name="property"></param>
 		/// <returns></returns>
-		/// <exception cref="NotImplementedException"></exception>
 		public static FbxProperty CreateFrom(Property property)
 		{
-			throw new NotImplementedException();
+			return new FbxProperty(property.Name, property.Flags, property.Value);
 		}
 
 		public Property ToProperty()
@@ -269,6 +274,10 @@ namespace MeshIO.FBX
 					fbxtype = "double";
 					label = "Number";
 					return value;
+				case byte value:
+					fbxtype = "int";
+					label = "Integer";
+					return (int)value;
 				case int value:
 					fbxtype = "int";
 					label = "Integer";

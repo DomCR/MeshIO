@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace MeshIO.FBX.Readers
 {
-    internal abstract class FbxFileBuilderBase
+	internal abstract class FbxFileBuilderBase
 	{
 		public event NotificationEventHandler OnNotification;
 
@@ -160,9 +160,14 @@ namespace MeshIO.FBX.Readers
 			string type1 = node.GetProperty<string>(1);
 			string label = node.GetProperty<string>(2);
 			PropertyFlags flags = FbxProperty.ParseFlags(node.GetProperty<string>(3));
+
 			object value = null;
 
-			if (node.Properties.Count == 5)
+			if(node.Properties.Count == 4)
+			{
+				value = null;
+			}
+			else if (node.Properties.Count == 5)
 			{
 				value = node.Properties[4];
 			}

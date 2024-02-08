@@ -48,28 +48,15 @@ namespace MeshIO.FBX.Tests
 		{
 			Scene scene;
 
-			//using (FbxReader reader = new FbxReader(path))
-			//{
-			//	reader.OnNotification += onNotification;
-			//	scene = reader.Read();
-			//}
-
-			FbxRootNode node = null;
-			using (FbxBinaryParser parser = new FbxBinaryParser(new FileStream(path, FileMode.Open), ErrorLevel.Permissive))
+			using (FbxReader reader = new FbxReader(path))
 			{
-				node = parser.Parse();
+				reader.OnNotification += onNotification;
+				scene = reader.Read();
 			}
 
-			string output = Path.Combine(FolderPath.OutFilesFbx, $"node_bin.fbx");
-
-			using (FbxAsciiWriter wr = new FbxAsciiWriter(node, File.Create(output)))
-			{
-				wr.Write();
-			}
-
-			//Assert.NotNull(scene);
-			//Assert.NotNull(scene.RootNode);
-			//Assert.NotEmpty(scene.RootNode.Nodes);
+			Assert.NotNull(scene);
+			Assert.NotNull(scene.RootNode);
+			Assert.NotEmpty(scene.RootNode.Nodes);
 		}
 	}
 }

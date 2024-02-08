@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using MeshIO.FBX.Readers;
 using MeshIO.FBX.Writers;
 
@@ -80,7 +81,7 @@ namespace MeshIO.FBX.Templates
 			foreach (Property item in this._element.Properties)
 			{
 				if (template.Properties.TryGetValue(item.Name, out FbxProperty property)
-					&& item.Value.Equals(property.Value))
+					&& item.Value == property.Value)
 				{
 					continue;
 				}

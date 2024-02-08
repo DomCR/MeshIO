@@ -18,26 +18,26 @@ namespace MeshIO.FBX.Templates
 
 		public FbxGlobalSettingsWriter()
 		{
-			FbxProperties.Add(new("UpAxis", 1));
-			FbxProperties.Add(new("UpAxisSign", 1));
-			FbxProperties.Add(new("FrontAxis", 2));
-			FbxProperties.Add(new("FrontAxisSign", 1));
-			FbxProperties.Add(new("CoordAxis", 0));
-			FbxProperties.Add(new("CoordAxisSign", 1));
-			FbxProperties.Add(new("OriginalUpAxis", -1));
-			FbxProperties.Add(new("OriginalUpAxisSign", 1));
-			FbxProperties.Add(new("UnitScaleFactor", (double)1));
-			FbxProperties.Add(new("OriginalUnitScaleFactor", (double)1));
-			FbxProperties.Add(new("AmbientColor", new Color()));
-			FbxProperties.Add(new("DefaultCamera", "Producer Perspective"));
+			FbxProperties.Add(new("UpAxis", "int", "Integer", PropertyFlags.None, 1));
+			FbxProperties.Add(new("UpAxisSign", "int", "Integer", PropertyFlags.None, 1));
+			FbxProperties.Add(new("FrontAxis", "int", "Integer", PropertyFlags.None, 2));
+			FbxProperties.Add(new("FrontAxisSign", "int", "Integer", PropertyFlags.None, 1));
+			FbxProperties.Add(new("CoordAxis", "int", "Integer", PropertyFlags.None, 0));
+			FbxProperties.Add(new("CoordAxisSign", "int", "Integer", PropertyFlags.None, 1));
+			FbxProperties.Add(new("OriginalUpAxis", "int", "Integer", PropertyFlags.None, 2));
+			FbxProperties.Add(new("OriginalUpAxisSign", "int", "Integer", PropertyFlags.None, 1));
+			FbxProperties.Add(new("UnitScaleFactor", "double", "Number", PropertyFlags.None, 1.0d));
+			FbxProperties.Add(new("OriginalUnitScaleFactor", "double", "Number", PropertyFlags.None, 1.0d));
+			FbxProperties.Add(new("AmbientColor", "ColorRGB", "Color", PropertyFlags.None, new Color()));
+			FbxProperties.Add(new("DefaultCamera", "KString", string.Empty, PropertyFlags.None, "Producer Perspective"));
 			FbxProperties.Add(new("TimeMode", "enum", string.Empty, PropertyFlags.None, 6));
 			FbxProperties.Add(new("TimeProtocol", "enum", string.Empty, PropertyFlags.None, 2));
 			FbxProperties.Add(new("SnapOnFrameMode", "enum", string.Empty, PropertyFlags.None, 0));
 			FbxProperties.Add(new("TimeSpanStart", "KTime", "Time", PropertyFlags.None, 0));
 			FbxProperties.Add(new("TimeSpanStop", "KTime", "Time", PropertyFlags.None, 153953860000));
-			FbxProperties.Add(new("CustomFrameRate", (double)-1));
+			FbxProperties.Add(new("CustomFrameRate", "double", "Number", PropertyFlags.None, -1.0d));
 			FbxProperties.Add(new("TimeMarker", "Compound", string.Empty, PropertyFlags.None, string.Empty));
-			FbxProperties.Add(new("CurrentTimeMarker", -1));
+			FbxProperties.Add(new("CurrentTimeMarker", "int", "Integer", PropertyFlags.None, -1));
 		}
 
 		public void ProcessChildren(FbxFileWriterBase fbxFileWriterBase)
