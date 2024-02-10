@@ -1,4 +1,6 @@
-﻿using MeshIO.Core;
+﻿using CSMath;
+using MeshIO.Core;
+using MeshIO.Entities.Geometries;
 using System;
 using System.IO;
 using System.Text.RegularExpressions;
@@ -31,30 +33,110 @@ namespace MeshIO.OBJ
 		/// </summary>
 		public override Scene Read()
 		{
+			ObjData data = new ObjData();
 			Scene scene = new Scene();
 
 			while (!_reader.EndOfStream)
 			{
 				string line = _reader.ReadLine();
-				if (!this.processLine(line, out string token, out string values))
+				if (!this.processLine(line, out ObjFileToken token, out string values))
 				{
 					continue;
 				}
 
 				switch (token)
 				{
-					default:
-						this.triggerNotification($"[{nameof(ObjReader)}] Unknown token: {token}", NotificationType.Warning);
+					case ObjFileToken.Object:
+						data.CreateIndexer(values);
+						break;
+					case ObjFileToken.Vertice:
+						data.Vertices.Add(this.parseVertex(values));
+						break;
+					case ObjFileToken.Normal:
+						data.Normals.Add(this.parseNormal(values));
+						break;
+					case ObjFileToken.TextureVertice:
+						data.UVs.Add(this.parse<XYZ>(values));
+						break;
+					case ObjFileToken.Face:
 						break;
 				}
 			}
 
+			data.MoveNext();
+			this.processData(data, scene);
+
 			return scene;
 		}
 
-		private bool processLine(string line, out string token, out string values)
+		private void processData(ObjData data, Scene scene)
 		{
-			token = string.Empty;
+			foreach (ObjTemplate item in data.Templates)
+			{
+				Mesh mesh = item.CreateMesh();
+				Node node = new Node(item.Name);
+				node.Add(mesh);
+
+				scene.RootNode.Nodes.Add(node);
+			}
+		}
+
+		private T parse<T>(string line)
+			where T : IVector, new()
+		{
+			T v = new T();
+			string[] arr = (string[])line.Split(' ');
+
+			int i;
+			for (i = 0; i < arr.Length; i++)
+			{
+				v[i] = double.Parse(arr[i]);
+			}
+
+			if (arr.Length < v.Dimension)
+			{
+				v[i] = 1.0d;
+			}
+
+			return v;
+		}
+
+		private XYZM parseVertex(string line)
+		{
+			XYZM v = new XYZM();
+			string[] arr = (string[])line.Split(' ');
+
+			v.X = double.Parse(arr[0]);
+			v.Y = double.Parse(arr[1]);
+			v.Z = double.Parse(arr[2]);
+
+			if (arr.Length == 4)
+			{
+				v.M = double.Parse(arr[3]);
+			}
+			else
+			{
+				v.M = 1.0d;
+			}
+
+			return v;
+		}
+
+		private XYZ parseNormal(string line)
+		{
+			XYZ v = new XYZ();
+			string[] arr = (string[])line.Split(' ');
+
+			v.X = double.Parse(arr[0]);
+			v.Y = double.Parse(arr[1]);
+			v.Z = double.Parse(arr[2]);
+
+			return v;
+		}
+
+		private bool processLine(string line, out ObjFileToken token, out string values)
+		{
+			token = ObjFileToken.Undefined;
 			values = string.Empty;
 			if (line == null)
 			{
@@ -68,16 +150,24 @@ namespace MeshIO.OBJ
 				return false;
 			}
 
+			string strToken = string.Empty;
 			int indexOfSpace = line.IndexOf(' ');
 			if (indexOfSpace == -1)
 			{
-				token = line;
+				strToken = line;
 			}
 			else
 			{
-				token = line.Substring(0, indexOfSpace);
+				strToken = line.Substring(0, indexOfSpace);
 				values = line.Substring(indexOfSpace + 1);
 			}
+
+			if (!ObjFileParser.ParseToken(strToken, out token))
+			{
+				this.triggerNotification($"[{nameof(ObjReader)}] Unknown token: {token}", NotificationType.Warning);
+				return false;
+			}
+
 			return true;
 		}
 
