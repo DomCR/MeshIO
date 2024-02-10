@@ -27,11 +27,5 @@ namespace MeshIO.Entities.Geometries.Layers
 			this.MappingMode = mappingMode;
 			this.ReferenceMode = referenceMode;
 		}
-
-		[Obsolete]
-		public LayerElement(Geometry owner) : this()
-		{
-			this.Owner = owner;
-		}
 	}
 }

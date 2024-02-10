@@ -7,9 +7,6 @@ namespace MeshIO
 {
 	public class Node : SceneElement
 	{
-		[Obsolete]
-		public bool Shading { get; set; } = true;
-
 		/// <summary>
 		/// The node and all the components are visible or not
 		/// </summary>
@@ -24,12 +21,6 @@ namespace MeshIO
 		/// Get the parent for this node
 		/// </summary>
 		public Element3D Parent { get; }
-
-		/// <summary>
-		/// Get all linked elements to this node
-		/// </summary>
-		[Obsolete("Replace for the different collections, ")]
-		public List<Element3D> Children { get; } = new();
 
 		public List<Node> Nodes { get; } = new();
 

@@ -23,7 +23,7 @@ namespace MeshIO.STL.Tests
 			XYZ v2 = new XYZ(0, 1, 0);
 			XYZ v3 = new XYZ(1, 1, 0);
 
-			_mesh.AddTriangles(v1, v2, v3);
+			_mesh.AddPolygons(v1, v2, v3);
 			_mesh.Layers.GetLayer<LayerElementNormal>().Normals.Add(new XYZ(0, 0, 1));
 		}
 
