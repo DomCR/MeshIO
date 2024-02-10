@@ -100,7 +100,7 @@ namespace MeshIO.STL
 					XYZ v2 = new XYZ(this._stream.ReadSingle(), this._stream.ReadSingle(), this._stream.ReadSingle());
 					XYZ v3 = new XYZ(this._stream.ReadSingle(), this._stream.ReadSingle(), this._stream.ReadSingle());
 
-					mesh.AddTriangles(v1, v2, v3);
+					mesh.AddPolygons(v1, v2, v3);
 
 					ushort attByteCount = this._stream.ReadUShort();
 				}
@@ -126,7 +126,7 @@ namespace MeshIO.STL
 					XYZ v2 = this.readPoint(this._stream.ReadUntil('\n'), "vertex");
 					XYZ v3 = this.readPoint(this._stream.ReadUntil('\n'), "vertex");
 
-					mesh.AddTriangles(v1, v2, v3);
+					mesh.AddPolygons(v1, v2, v3);
 
 					this.checkLine(this._stream.ReadUntil('\n'), "endloop");
 					this.checkLine(this._stream.ReadUntil('\n'), "endfacet");

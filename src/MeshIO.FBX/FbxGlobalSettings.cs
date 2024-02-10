@@ -1,7 +1,11 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace MeshIO.FBX
 {
+	/// <summary>
+	/// Global settings to be setup in the fbx file
+	/// </summary>
 	public class FbxGlobalSettings
 	{
 		public int Version { get; }
@@ -18,7 +22,9 @@ namespace MeshIO.FBX
 			}
 		}
 
-		private PropertyCollection _properties = new PropertyCollection(null);
+		public IEnumerable<FbxProperty> Properties { get { return this._properties.Values; } }
+
+		private Dictionary<string, FbxProperty> _properties { get; } = new();
 
 		public FbxGlobalSettings(FbxVersion version)
 		{
@@ -49,28 +55,31 @@ namespace MeshIO.FBX
 					break;
 			}
 
-			//TODO: Replace for FbxGlobalSettingsTemplate
+			this.add(new("UpAxis", "int", "Integer", PropertyFlags.None, 1));
+			this.add(new("UpAxisSign", "int", "Integer", PropertyFlags.None, 1));
+			this.add(new("FrontAxis", "int", "Integer", PropertyFlags.None, 2));
+			this.add(new("FrontAxisSign", "int", "Integer", PropertyFlags.None, 1));
+			this.add(new("CoordAxis", "int", "Integer", PropertyFlags.None, 0));
+			this.add(new("CoordAxisSign", "int", "Integer", PropertyFlags.None, 1));
+			this.add(new("OriginalUpAxis", "int", "Integer", PropertyFlags.None, 2));
+			this.add(new("OriginalUpAxisSign", "int", "Integer", PropertyFlags.None, 1));
+			this.add(new("UnitScaleFactor", "double", "Number", PropertyFlags.None, 1.0d));
+			this.add(new("OriginalUnitScaleFactor", "double", "Number", PropertyFlags.None, 1.0d));
+			this.add(new("AmbientColor", "ColorRGB", "Color", PropertyFlags.None, new Color()));
+			this.add(new("DefaultCamera", "KString", string.Empty, PropertyFlags.None, "Producer Perspective"));
+			this.add(new("TimeMode", "enum", string.Empty, PropertyFlags.None, 6));
+			this.add(new("TimeProtocol", "enum", string.Empty, PropertyFlags.None, 2));
+			this.add(new("SnapOnFrameMode", "enum", string.Empty, PropertyFlags.None, 0));
+			this.add(new("TimeSpanStart", "KTime", "Time", PropertyFlags.None, 0));
+			this.add(new("TimeSpanStop", "KTime", "Time", PropertyFlags.None, 153953860000));
+			this.add(new("CustomFrameRate", "double", "Number", PropertyFlags.None, -1.0d));
+			this.add(new("TimeMarker", "Compound", string.Empty, PropertyFlags.None, string.Empty));
+			this.add(new("CurrentTimeMarker", "int", "Integer", PropertyFlags.None, -1));
+		}
 
-			_properties.Add(new FbxPropertyOld<int>("UpAxis", null, 1, "int", "Integer", PropertyFlags.None));
-			_properties.Add(new FbxPropertyOld<int>("UpAxisSign", null, 1, "int", "Integer", PropertyFlags.None));
-			_properties.Add(new FbxPropertyOld<int>("FrontAxis", null, 2, "int", "Integer", PropertyFlags.None));
-			_properties.Add(new FbxPropertyOld<int>("FrontAxisSign", null, 1, "int", "Integer", PropertyFlags.None));
-			_properties.Add(new FbxPropertyOld<int>("CoordAxis", null, 0, "int", "Integer", PropertyFlags.None));
-			_properties.Add(new FbxPropertyOld<int>("CoordAxisSign", null, 1, "int", "Integer", PropertyFlags.None));
-			_properties.Add(new FbxPropertyOld<int>("OriginalUpAxis", null, 2, "int", "Integer", PropertyFlags.None));
-			_properties.Add(new FbxPropertyOld<int>("OriginalUpAxisSign", null, 1, "int", "Integer", PropertyFlags.None));
-			_properties.Add(new FbxPropertyOld<double>("UnitScaleFactor", null, 100000, "double", "Number", PropertyFlags.None));
-			_properties.Add(new FbxPropertyOld<double>("OriginalUnitScaleFactor", null, 100, "double", "Number", PropertyFlags.None));
-			_properties.Add(new FbxPropertyOld<Color>("AmbientColor", null, new Color(), "ColorRGB", "Color", PropertyFlags.None));
-			_properties.Add(new FbxPropertyOld<string>("DefaultCamera", null, "Producer", "KString", "", PropertyFlags.None));
-			//_properties.Add(new FbxProperty<>("TimeMode", null, "enum", "", "", 6));
-			//_properties.Add(new FbxProperty<>("TimeProtocol", null, "enum", "", "", 2));
-			//_properties.Add(new FbxProperty<>("SnapOnFrameMode", null, "enum", "", "", 0));
-			//_properties.Add(new FbxProperty<>("TimeSpanStart", null, "KTime", "Time", "", 0));
-			//_properties.Add(new FbxProperty<>("TimeSpanStop", null, "KTime", "Time", "", 153953860));
-			_properties.Add(new FbxPropertyOld<double>("CustomFrameRate", null, -1, "double", "Number", PropertyFlags.None));
-			//_properties.Add(new FbxProperty<>("TimeMarker", null, "Compound", "", ""));
-			_properties.Add(new FbxPropertyOld<int>("CurrentTimeMarker", null, -1, "int", "Integer", PropertyFlags.None));
+		private void add(FbxProperty property)
+		{
+			this._properties.Add(property.Name, property);
 		}
 
 		private T getPropertyValue<T>([CallerMemberName] string name = null)
