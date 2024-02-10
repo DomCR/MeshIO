@@ -4,7 +4,6 @@ using CSUtilities.IO;
 using MeshIO.Core;
 using MeshIO.Entities.Geometries;
 using MeshIO.Entities.Geometries.Layers;
-using System;
 using System.IO;
 using System.Text.RegularExpressions;
 
@@ -15,33 +14,23 @@ namespace MeshIO.STL
 	/// </summary>
 	public class StlReader : ReaderBase
 	{
-		private StreamIO _stream;
+		private StreamIO _streamIO;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StlReader"/> class for the specified file.
 		/// </summary>
 		/// <param name="path">The complete file path to read to.</param>
-		public StlReader(string path)
+		public StlReader(string path) : this(new FileStream(path, FileMode.Open))
 		{
-			if (string.IsNullOrEmpty(path))
-				throw new ArgumentNullException(nameof(path));
-
-			this._stream = new StreamIO(path, FileMode.Open, FileAccess.Read);
 		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StlReader"/> class for the specified stream.
 		/// </summary>
 		/// <param name="stream">The stream to write to.</param>
-		public StlReader(Stream stream)
+		public StlReader(Stream stream) : base(stream)
 		{
-			if (stream == null)
-				throw new ArgumentNullException(nameof(stream));
-
-			if (!stream.CanSeek)
-				throw new ArgumentException("The stream must support seeking. Try reading the data into a buffer first");
-
-			this._stream = new StreamIO(stream);
+			this._streamIO = new StreamIO(this._stream);
 		}
 
 		/// <summary>
@@ -50,9 +39,9 @@ namespace MeshIO.STL
 		/// <returns>true if is binary</returns>
 		public bool IsBinary()
 		{
-			this._stream.Position = 0;
-			this._stream.ReadString(80);
-			int nTriangles = this._stream.ReadInt<LittleEndianConverter>();
+			this._streamIO.Position = 0;
+			this._streamIO.ReadString(80);
+			int nTriangles = this._streamIO.ReadInt<LittleEndianConverter>();
 
 			return this.checkStreamLenth(nTriangles);
 		}
@@ -64,9 +53,9 @@ namespace MeshIO.STL
 			Mesh mesh = this.ReadAsMesh();
 
 			Node node = new Node(mesh.Name);
-			node.Add(mesh);
+			node.Entities.Add(mesh);
 
-			scene.RootNode.Add(node);
+			scene.RootNode.Nodes.Add(node);
 
 			return scene;
 		}
@@ -77,61 +66,61 @@ namespace MeshIO.STL
 		/// <returns><see cref="Mesh"/> defined in the file</returns>
 		public Mesh ReadAsMesh()
 		{
-			this._stream.Position = 0;
+			this._streamIO.Position = 0;
 
-			string header = this._stream.ReadString(80);
+			string header = this._streamIO.ReadString(80);
 			this.triggerNotification(header.Replace("\0", ""), NotificationType.Information);
 
 			Mesh mesh = new Mesh();
 			LayerElementNormal normals = new LayerElementNormal();
 			mesh.Layers.Add(normals);
 
-			int nTriangles = this._stream.ReadInt<LittleEndianConverter>();
+			int nTriangles = this._streamIO.ReadInt<LittleEndianConverter>();
 
 			if (this.checkStreamLenth(nTriangles))
 			{
 				for (int i = 0; i < nTriangles; i++)
 				{
-					XYZ normal = new XYZ(this._stream.ReadSingle(), this._stream.ReadSingle(), this._stream.ReadSingle());
+					XYZ normal = new XYZ(this._streamIO.ReadSingle(), this._streamIO.ReadSingle(), this._streamIO.ReadSingle());
 
 					normals.Add(normal);
 
-					XYZ v1 = new XYZ(this._stream.ReadSingle(), this._stream.ReadSingle(), this._stream.ReadSingle());
-					XYZ v2 = new XYZ(this._stream.ReadSingle(), this._stream.ReadSingle(), this._stream.ReadSingle());
-					XYZ v3 = new XYZ(this._stream.ReadSingle(), this._stream.ReadSingle(), this._stream.ReadSingle());
+					XYZ v1 = new XYZ(this._streamIO.ReadSingle(), this._streamIO.ReadSingle(), this._streamIO.ReadSingle());
+					XYZ v2 = new XYZ(this._streamIO.ReadSingle(), this._streamIO.ReadSingle(), this._streamIO.ReadSingle());
+					XYZ v3 = new XYZ(this._streamIO.ReadSingle(), this._streamIO.ReadSingle(), this._streamIO.ReadSingle());
 
 					mesh.AddPolygons(v1, v2, v3);
 
-					ushort attByteCount = this._stream.ReadUShort();
+					ushort attByteCount = this._streamIO.ReadUShort();
 				}
 			}
 			else
 			{
-				this._stream.Position = 0;
+				this._streamIO.Position = 0;
 
-				string line = this._stream.ReadUntil('\n');
+				string line = this._streamIO.ReadUntil('\n');
 				string name = Regex.Match(line, @"solid \s\n", options: RegexOptions.IgnoreCase).Value;
 				mesh.Name = name;
 
-				line = this._stream.ReadUntil('\n');
+				line = this._streamIO.ReadUntil('\n');
 
 				while (!line.Contains($"endsolid {name}"))
 				{
 					XYZ normal = this.readPoint(line, "facet normal");
 					normals.Add(normal);
 
-					this.checkLine(this._stream.ReadUntil('\n'), "outer loop");
+					this.checkLine(this._streamIO.ReadUntil('\n'), "outer loop");
 
-					XYZ v1 = this.readPoint(this._stream.ReadUntil('\n'), "vertex");
-					XYZ v2 = this.readPoint(this._stream.ReadUntil('\n'), "vertex");
-					XYZ v3 = this.readPoint(this._stream.ReadUntil('\n'), "vertex");
+					XYZ v1 = this.readPoint(this._streamIO.ReadUntil('\n'), "vertex");
+					XYZ v2 = this.readPoint(this._streamIO.ReadUntil('\n'), "vertex");
+					XYZ v3 = this.readPoint(this._streamIO.ReadUntil('\n'), "vertex");
 
 					mesh.AddPolygons(v1, v2, v3);
 
-					this.checkLine(this._stream.ReadUntil('\n'), "endloop");
-					this.checkLine(this._stream.ReadUntil('\n'), "endfacet");
+					this.checkLine(this._streamIO.ReadUntil('\n'), "endloop");
+					this.checkLine(this._streamIO.ReadUntil('\n'), "endfacet");
 
-					line = this._stream.ReadUntil('\n');
+					line = this._streamIO.ReadUntil('\n');
 				}
 			}
 
@@ -141,13 +130,13 @@ namespace MeshIO.STL
 		/// <inheritdoc/>
 		public override void Dispose()
 		{
-			this._stream.Dispose();
+			this._streamIO.Dispose();
 		}
 
 		private bool checkStreamLenth(int nTriangles)
 		{
 			//Compare the length of the stream to check if is ascii file
-			return this._stream.Length == 84 + nTriangles * 50;
+			return this._streamIO.Length == 84 + nTriangles * 50;
 		}
 
 		private void checkLine(string line, string match)
