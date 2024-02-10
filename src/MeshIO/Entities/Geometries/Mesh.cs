@@ -11,7 +11,7 @@ namespace MeshIO.Entities.Geometries
 
 		public List<Polygon> Polygons { get; set; } = new List<Polygon>();
 
-		public Mesh() : base() { }
+		public Mesh() : this(string.Empty) { }
 
 		public Mesh(string name) : base(name) { }
 
@@ -23,11 +23,11 @@ namespace MeshIO.Entities.Geometries
 		public void AddPolygons(params XYZ[] vertices)
 		{
 			int count = vertices.Count();
-			if (vertices.Count() % 3 == 0)
+			if (count % 3 == 0)
 			{
 				this.addTriangles(vertices);
 			}
-			else if (vertices.Count() % 4 == 0)
+			else if (count % 4 == 0)
 			{
 				this.addQuads(vertices);
 			}

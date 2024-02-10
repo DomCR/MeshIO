@@ -12,7 +12,10 @@ namespace MeshIO.Entities
 		/// </summary>
 		public List<Node> ParentNodes { get; }
 
-		public Entity() : base() { }
+		/// <summary>
+		/// Default constructor
+		/// </summary>
+		public Entity() : this(string.Empty) { }
 
 		public Entity(string name) : base(name) { }
 	}

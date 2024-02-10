@@ -1,7 +1,8 @@
-﻿using System.Collections.Generic;
-
-namespace MeshIO
+﻿namespace MeshIO
 {
+	/// <summary>
+	/// Base class for objects that can be in a scene
+	/// </summary>
 	public abstract class SceneElement : Element3D
 	{
 		/// <summary>
