@@ -15,12 +15,30 @@ namespace MeshIO.Entities.Geometries
 
 		public Mesh(string name) : base(name) { }
 
-		[Obsolete]
-		public void AddTriangles(params XYZ[] vertices)
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="vertices"></param>
+		/// <exception cref="ArgumentException"></exception>
+		public void AddPolygons(params XYZ[] vertices)
 		{
-			if (vertices.Count() % 3 != 0)
-				throw new ArgumentException("The array of vertices should be multiple of 3", nameof(vertices));
+			int count = vertices.Count();
+			if (vertices.Count() % 3 == 0)
+			{
+				this.addTriangles(vertices);
+			}
+			else if (vertices.Count() % 4 == 0)
+			{
+				this.addQuads(vertices);
+			}
+			else
+			{
+				throw new ArgumentException("The array of vertices should be multiple of 3 or 4", nameof(vertices));
+			}
+		}
 
+		private void addTriangles(XYZ[] vertices)
+		{
 			if (this.Polygons.Any() && this.Polygons.First().GetType() != typeof(Triangle))
 				throw new ArgumentException("This mesh is not formed by Triangles");
 
@@ -38,5 +56,25 @@ namespace MeshIO.Entities.Geometries
 			}
 		}
 
+		private void addQuads(XYZ[] vertices)
+		{
+			if (this.Polygons.Any() && this.Polygons.First().GetType() != typeof(Quad))
+				throw new ArgumentException("This mesh is not formed by Quads");
+
+			for (int i = 0; i < vertices.Count(); i += 4)
+			{
+				this.Vertices.Add(vertices.ElementAt(i));
+				this.Vertices.Add(vertices.ElementAt(i + 1));
+				this.Vertices.Add(vertices.ElementAt(i + 2));
+				this.Vertices.Add(vertices.ElementAt(i + 3));
+
+				this.Polygons.Add(new Quad(
+						this.Vertices.Count - 4,
+						this.Vertices.Count - 3,
+						this.Vertices.Count - 2,
+						this.Vertices.Count - 1
+					));
+			}
+		}
 	}
 }
