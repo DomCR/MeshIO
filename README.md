@@ -30,6 +30,13 @@ For more [information](https://github.com/DomCR/MeshIO/tree/master/src/MeshIO.ST
 
 For more [information](https://github.com/DomCR/MeshIO/tree/master/src/MeshIO.GLTF).
 
+### MeshIO.OBJ
+
+- Read Wavefront OBJ files
+
+For more [information](https://github.com/DomCR/MeshIO/tree/master/src/MeshIO.OBJ).
+
+
 Contributing
 ------------
 
