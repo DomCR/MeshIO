@@ -63,7 +63,7 @@ namespace MeshIO.STL.Tests
 			this.readFile(test);
 		}
 
-		private Mesh readFile(string path)
+		private Scene readFile(string path)
 		{
 			using (StlReader reader = new StlReader(path))
 			{

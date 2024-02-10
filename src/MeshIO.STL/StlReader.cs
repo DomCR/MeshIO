@@ -57,11 +57,25 @@ namespace MeshIO.STL
 			return this.checkStreamLenth(nTriangles);
 		}
 
+		public override Scene Read()
+		{
+			Scene scene = new Scene();
+
+			Mesh mesh = this.ReadAsMesh();
+
+			Node node = new Node(mesh.Name);
+			node.Add(mesh);
+
+			scene.RootNode.Add(node);
+
+			return scene;
+		}
+
 		/// <summary>
 		/// Read the STL file
 		/// </summary>
-		/// <returns>mesh defined in the file</returns>
-		public Mesh Read()
+		/// <returns><see cref="Mesh"/> defined in the file</returns>
+		public Mesh ReadAsMesh()
 		{
 			this._stream.Position = 0;
 
