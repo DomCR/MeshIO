@@ -75,7 +75,7 @@ namespace MeshIO.OBJ
 			{
 				Mesh mesh = item.CreateMesh();
 				Node node = new Node(item.Name);
-				node.Add(mesh);
+				node.Entities.Add(mesh);
 
 				scene.RootNode.Nodes.Add(node);
 			}
