@@ -25,11 +25,15 @@ namespace MeshIO.OBJ.Tests
 		[MemberData(nameof(Files))]
 		public void ReadTest(string test)
 		{
+			Scene scene = null;
 			using (ObjReader reader = new ObjReader(test))
 			{
 				reader.OnNotification += this.onNotification;
-				reader.Read();
+				scene = reader.Read();
 			}
+
+			Assert.NotNull(scene);
+			Assert.NotEmpty(scene.RootNode.Nodes);
 		}
 	}
 }
