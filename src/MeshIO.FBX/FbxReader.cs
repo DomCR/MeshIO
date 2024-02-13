@@ -10,28 +10,17 @@ namespace MeshIO.FBX
 	{
 		public FbxReaderOptions Options { get; } = new FbxReaderOptions();
 
-		private Stream _stream;
-
 		/// <summary>
 		/// Initializes a new instance of the <see cref="FbxReader"/> class for the specified file.
 		/// </summary>
-		/// <param name="path">The complete file path to read to.</param>
-		public FbxReader(string path) : this(File.OpenRead(path)) { }
+		/// <param name="path">The complete file path to read from</param>
+		public FbxReader(string path) : base(File.OpenRead(path)) { }
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="FbxReader"/> class for the specified stream.
 		/// </summary>
-		/// <param name="stream">The stream to write to.</param>
-		public FbxReader(Stream stream)
-		{
-			if (stream == null)
-				throw new ArgumentNullException(nameof(stream));
-
-			if (!stream.CanSeek)
-				throw new ArgumentException("The stream must support seeking. Try reading the data into a buffer first");
-
-			this._stream = stream;
-		}
+		/// <param name="stream">The stream to read from</param>
+		public FbxReader(Stream stream) : base(stream) { }
 
 		/// <summary>
 		/// Read a fbx file into an scene
@@ -76,19 +65,13 @@ namespace MeshIO.FBX
 		/// <summary>
 		/// Read the FBX file
 		/// </summary>
-		public Scene Read()
+		public override Scene Read()
 		{
 			FbxRootNode root = this.Parse();
 			var reader = FbxFileBuilderBase.Create(root, this.Options);
 			reader.OnNotification += this.onNotificationEvent;
 
 			return reader.Read();
-		}
-
-		/// <inheritdoc/>
-		public override void Dispose()
-		{
-			_stream.Dispose();
 		}
 
 		private static IFbxParser getParser(Stream stream, FbxReaderOptions options)

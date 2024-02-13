@@ -40,7 +40,7 @@ namespace MeshIO.Entities.Geometries.Layers
 
 		public void CalculateFlatNormals()
 		{
-			if (!(this.Owner is Mesh mesh))
+			if (this.Owner is not Mesh mesh)
 				throw new InvalidOperationException();
 
 			this.Normals.Clear();

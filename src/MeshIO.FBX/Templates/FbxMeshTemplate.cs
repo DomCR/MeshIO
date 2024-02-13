@@ -137,10 +137,10 @@ namespace MeshIO.FBX.Templates
 
 		protected List<Polygon> mapPolygons(int[] arr)
 		{
-			List<Polygon> Polygons = new List<Polygon>();
+			List<Polygon> polygons = new List<Polygon>();
 
 			if (arr == null)
-				return Polygons;
+				return polygons;
 
 			//Check if the arr are faces or quads
 			if (arr[2] < 0)
@@ -153,7 +153,7 @@ namespace MeshIO.FBX.Templates
 						//Substract a unit to the last
 						Math.Abs(arr[i]) - 1);
 
-					Polygons.Add(tmp);
+					polygons.Add(tmp);
 				}
 			}
 			//Quads
@@ -168,11 +168,11 @@ namespace MeshIO.FBX.Templates
 						//Substract a unit to the last
 						Math.Abs(arr[i]) - 1);
 
-					Polygons.Add(tmp);
+					polygons.Add(tmp);
 				}
 			}
 
-			return Polygons;
+			return polygons;
 		}
 
 		protected int[] polygonsArray(Mesh mesh)

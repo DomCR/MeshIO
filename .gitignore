@@ -360,3 +360,5 @@ MigrationBackup/
 !MeshIO.OBJ
 /local
 /src/Tests/outFiles
+!src/Tests/inFiles/obj/
+!src/Tests/inFiles/obj/*.obj

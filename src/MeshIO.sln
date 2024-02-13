@@ -46,6 +46,8 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "MeshIO.Tests.Shared", "Mesh
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MeshIO.GLTF.Tests", "MeshIO.GLTF.Tests\MeshIO.GLTF.Tests.csproj", "{A6F2252F-C802-4317-BF05-073F31397AA1}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MeshIO.OBJ.Tests", "MeshIO.OBJ.Tests\MeshIO.OBJ.Tests.csproj", "{F5D9C9C7-0C3D-405B-A2AD-20E36557B2E7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -88,6 +90,10 @@ Global
 		{A6F2252F-C802-4317-BF05-073F31397AA1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A6F2252F-C802-4317-BF05-073F31397AA1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A6F2252F-C802-4317-BF05-073F31397AA1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F5D9C9C7-0C3D-405B-A2AD-20E36557B2E7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F5D9C9C7-0C3D-405B-A2AD-20E36557B2E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F5D9C9C7-0C3D-405B-A2AD-20E36557B2E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F5D9C9C7-0C3D-405B-A2AD-20E36557B2E7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -101,6 +107,7 @@ Global
 		{94C45D19-8231-437F-AB4D-02FA072A923C} = {4B0FFF9E-199B-4025-9CD2-0C8CE4ECB4C6}
 		{F82685A4-99C9-4B22-B9A9-C8897C9965C4} = {4B0FFF9E-199B-4025-9CD2-0C8CE4ECB4C6}
 		{A6F2252F-C802-4317-BF05-073F31397AA1} = {4B0FFF9E-199B-4025-9CD2-0C8CE4ECB4C6}
+		{F5D9C9C7-0C3D-405B-A2AD-20E36557B2E7} = {4B0FFF9E-199B-4025-9CD2-0C8CE4ECB4C6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B96D2DF1-9226-4CEE-BF70-43C8318F59DC}
@@ -114,6 +121,7 @@ Global
 		MeshIO.Tests.Shared\MeshIO.Tests.Shared.projitems*{94c45d19-8231-437f-ab4d-02fa072a923c}*SharedItemsImports = 5
 		MeshIO.Tests.Shared\MeshIO.Tests.Shared.projitems*{a6f2252f-c802-4317-bf05-073f31397aa1}*SharedItemsImports = 5
 		CSUtilities\CSUtilities\CSUtilities.projitems*{ad858f2b-04a1-41dd-bb3b-dde4804cd2e6}*SharedItemsImports = 13
+		MeshIO.Tests.Shared\MeshIO.Tests.Shared.projitems*{f5d9c9c7-0c3d-405b-a2ad-20e36557b2e7}*SharedItemsImports = 5
 		MeshIO.Tests.Shared\MeshIO.Tests.Shared.projitems*{f82685a4-99c9-4b22-b9a9-c8897c9965c4}*SharedItemsImports = 13
 	EndGlobalSection
 EndGlobal
