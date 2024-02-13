@@ -1,11 +1,4 @@
-﻿using CSMath;
-using MeshIO.Entities.Geometries;
-using MeshIO.Entities.Geometries.Layers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace MeshIO.OBJ
+﻿namespace MeshIO.OBJ
 {
 	internal enum ObjFileToken
 	{
@@ -30,5 +23,9 @@ namespace MeshIO.OBJ
 		/// f
 		/// </summary>
 		Face,
+		/// <summary>
+		/// #
+		/// </summary>
+		Comment
 	}
 }

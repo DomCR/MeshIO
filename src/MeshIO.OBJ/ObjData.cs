@@ -7,15 +7,14 @@ namespace MeshIO.OBJ
 	{
 		public ObjTemplate Current { get; private set; }
 
-		public List<XYZM> Vertices { get; } = [];
-
-		public List<XYZ> Normals { get; } = [];
-
-		public List<XYZ> UVs { get; } = [];
+		public ObjTemplate Placeholder { get; private set; }
 
 		public List<ObjTemplate> Templates { get; private set; } = [];
 
-		public ObjData() { }
+		public ObjData()
+		{
+			Placeholder = new ObjTemplate(string.Empty);
+		}
 
 		public void CreateIndexer(string line)
 		{
@@ -26,18 +25,28 @@ namespace MeshIO.OBJ
 
 		public void MoveNext()
 		{
-			if (this.Current != null)
+			if (this.Current == null)
 			{
-				this.Current.Vertices.AddRange(this.Vertices);
-				this.Current.Normals.AddRange(this.Normals);
-				this.Current.UVs.AddRange(this.UVs);
-
-				this.Templates.Add(this.Current);
-
-				this.Vertices.Clear();
-				this.Normals.Clear();
-				this.UVs.Clear();
+				return;
 			}
+
+			this.Current.Vertices.AddRange(this.Placeholder.Vertices);
+			this.Current.Normals.AddRange(this.Placeholder.Normals);
+			this.Current.UVs.AddRange(this.Placeholder.UVs);
+
+			this.Current.MeshPolygons.AddRange(this.Placeholder.MeshPolygons);
+			this.Current.TexturePolygons.AddRange(this.Placeholder.TexturePolygons);
+			this.Current.NormalPolygons.AddRange(this.Placeholder.NormalPolygons);
+
+			this.Templates.Add(this.Current);
+
+			this.Placeholder.Vertices.Clear();
+			this.Placeholder.Normals.Clear();
+			this.Placeholder.UVs.Clear();
+
+			this.Placeholder.MeshPolygons.Clear();
+			this.Placeholder.TexturePolygons.Clear();
+			this.Placeholder.NormalPolygons.Clear();
 		}
 	}
 }

@@ -23,6 +23,9 @@
 				case "vt":
 					token = ObjFileToken.TextureVertice;
 					return true;
+				case "#":
+					token = ObjFileToken.Comment;
+					return true;
 				default:
 					return false;
 			}

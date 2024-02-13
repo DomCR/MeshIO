@@ -1,6 +1,7 @@
 ﻿using CSMath;
 using MeshIO.Entities.Geometries;
 using MeshIO.Entities.Geometries.Layers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -15,6 +16,12 @@ namespace MeshIO.OBJ
 		public List<XYZ> Normals { get; } = [];
 
 		public List<XYZ> UVs { get; } = [];
+
+		public List<Polygon> MeshPolygons { get; } = [];
+
+		public List<Polygon> TexturePolygons { get; } = [];
+
+		public List<Polygon> NormalPolygons { get; } = [];
 
 		public ObjTemplate(string name)
 		{
@@ -37,8 +44,13 @@ namespace MeshIO.OBJ
 			if (UVs.Any())
 			{
 				LayerElementUV uv = new LayerElementUV(MappingMode.ByPolygonVertex, ReferenceMode.IndexToDirect);
-				uv.AddRange(this.UVs.Select(xy=> xy.Convert<XY>()));
+				uv.AddRange(this.UVs.Select(xy => xy.Convert<XY>()));
 				mesh.Layers.Add(uv);
+			}
+
+			if (MeshPolygons.Any())
+			{
+				mesh.Polygons.AddRange(MeshPolygons);
 			}
 
 			return mesh;

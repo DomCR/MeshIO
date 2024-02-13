@@ -1,8 +1,11 @@
 ﻿using CSMath;
+using CSUtilities.Extensions;
 using MeshIO.Core;
 using MeshIO.Entities.Geometries;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace MeshIO.OBJ
@@ -39,7 +42,7 @@ namespace MeshIO.OBJ
 			while (!_reader.EndOfStream)
 			{
 				string line = _reader.ReadLine();
-				if (!this.processLine(line, out ObjFileToken token, out string values))
+				if (string.IsNullOrEmpty(line) || !this.processLine(line, out ObjFileToken token, out string values))
 				{
 					continue;
 				}
@@ -50,15 +53,16 @@ namespace MeshIO.OBJ
 						data.CreateIndexer(values);
 						break;
 					case ObjFileToken.Vertice:
-						data.Vertices.Add(this.parseVertex(values));
+						data.Placeholder.Vertices.Add(this.parseVertex(values));
 						break;
 					case ObjFileToken.Normal:
-						data.Normals.Add(this.parseNormal(values));
+						data.Placeholder.Normals.Add(this.parseNormal(values));
 						break;
 					case ObjFileToken.TextureVertice:
-						data.UVs.Add(this.parse<XYZ>(values));
+						data.Placeholder.UVs.Add(this.parse<XYZ>(values));
 						break;
 					case ObjFileToken.Face:
+						this.parseFace(values, data);
 						break;
 				}
 			}
@@ -99,6 +103,54 @@ namespace MeshIO.OBJ
 			}
 
 			return v;
+		}
+
+		private void parseFace(string line, ObjData objdata)
+		{
+			string[] data = line.Split(' ');
+			List<int> vertices = new();
+			List<int> textures = new();
+			List<int> normals = new();
+
+			foreach (string item in data)
+			{
+				List<string> indices = item.Split('/').ToList();
+
+				//vertex_index/texture_index/normal_index
+				vertices.Add(int.Parse(indices[0]));
+
+				if (indices.TryGet(1, out string texture))
+				{
+					textures.Add(int.Parse(texture));
+				}
+
+				if (indices.TryGet(2, out string normal))
+				{
+					normals.Add(int.Parse(normal));
+				}
+			}
+
+			objdata.Placeholder.MeshPolygons.Add(createPolygon(vertices));
+			objdata.Placeholder.TexturePolygons.Add(createPolygon(textures));
+			objdata.Placeholder.NormalPolygons.Add(createPolygon(normals));
+		}
+
+		protected Polygon createPolygon(List<int> arr)
+		{
+			//Check if the arr are faces or quads
+			if (arr.Count % 3 == 0)
+			{
+				return new Triangle(arr[0], arr[1], arr[2]);
+			}
+			//Quads
+			else if (arr.Count % 4 == 0)
+			{
+				return new Triangle(arr[0], arr[1], arr[2]);
+			}
+			else
+			{
+				throw new ArgumentException();
+			}
 		}
 
 		private XYZM parseVertex(string line)
