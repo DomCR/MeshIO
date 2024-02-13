@@ -29,7 +29,16 @@ namespace MeshIO.OBJ
 
 			if (Normals.Any())
 			{
-				LayerElementNormal normals = new LayerElementNormal();
+				LayerElementNormal normals = new LayerElementNormal(MappingMode.ByPolygonVertex, ReferenceMode.IndexToDirect);
+				normals.AddRange(this.Normals);
+				mesh.Layers.Add(normals);
+			}
+
+			if (UVs.Any())
+			{
+				LayerElementUV uv = new LayerElementUV(MappingMode.ByPolygonVertex, ReferenceMode.IndexToDirect);
+				uv.AddRange(this.UVs.Select(xy=> xy.Convert<XY>()));
+				mesh.Layers.Add(uv);
 			}
 
 			return mesh;

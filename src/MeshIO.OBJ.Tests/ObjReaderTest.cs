@@ -1,5 +1,4 @@
-﻿using MeshIO.Entities.Geometries;
-using MeshIO.Tests.Shared;
+﻿using MeshIO.Tests.Shared;
 using System.IO;
 using Xunit;
 using Xunit.Abstractions;

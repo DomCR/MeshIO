@@ -164,7 +164,7 @@ namespace MeshIO.OBJ
 
 			if (!ObjFileParser.ParseToken(strToken, out token))
 			{
-				this.triggerNotification($"[{nameof(ObjReader)}] Unknown token: {token}", NotificationType.Warning);
+				this.triggerNotification($"[{nameof(ObjReader)}] Unknown token: {strToken}", NotificationType.Warning);
 				return false;
 			}
 
