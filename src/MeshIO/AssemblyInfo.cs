@@ -20,3 +20,4 @@ using System.Runtime.InteropServices;
 [assembly: InternalsVisibleTo("MeshIO.FBX")]
 [assembly: InternalsVisibleTo("MeshIO.GLTF")]
 [assembly: InternalsVisibleTo("MeshIO.STL")]
+[assembly: InternalsVisibleTo("MeshIO.OBJ")]
