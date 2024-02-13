@@ -8,6 +8,9 @@ namespace MeshIO.Entities
 
 		public XYZ UpVector { get; set; }
 
+		/// <summary>
+		/// Camera field of view
+		/// </summary>
 		public double FieldOfView { get; set; }
 
 		public double FieldOfViewX { get; set; }
