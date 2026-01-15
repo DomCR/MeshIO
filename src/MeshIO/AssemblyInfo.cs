@@ -1,4 +1,3 @@
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 // In SDK-style projects such as this one, several assembly attributes that were historically
@@ -16,8 +15,3 @@ using System.Runtime.InteropServices;
 // The following GUID is for the ID of the typelib if this project is exposed to COM.
 
 [assembly: Guid("9d28a275-f5b7-4403-8af4-b10241584094")]
-
-[assembly: InternalsVisibleTo("MeshIO.FBX")]
-[assembly: InternalsVisibleTo("MeshIO.GLTF")]
-[assembly: InternalsVisibleTo("MeshIO.STL")]
-[assembly: InternalsVisibleTo("MeshIO.OBJ")]

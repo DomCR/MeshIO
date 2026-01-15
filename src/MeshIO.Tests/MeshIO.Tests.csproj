@@ -1,5 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
-
+﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<TargetFramework>net6.0</TargetFramework>
 	</PropertyGroup>
@@ -20,7 +19,4 @@
 	<ItemGroup>
 		<ProjectReference Include="..\MeshIO\MeshIO.csproj" />
 	</ItemGroup>
-
-	<Import Project="..\MeshIO.Tests.Shared\MeshIO.Tests.Shared.projitems" Label="Shared" />
-
 </Project>
