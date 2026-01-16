@@ -1,6 +1,6 @@
 ﻿using CSUtilities.Converters;
 using CSUtilities.IO;
-using MeshIO.Core;
+using MeshIO.Formats;
 using MeshIO.GLTF.Exceptions;
 using MeshIO.GLTF.Schema;
 using MeshIO.GLTF.Schema.V2;

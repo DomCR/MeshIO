@@ -10,6 +10,7 @@ using MeshIO.Shaders;
 using MeshIO.Entities;
 using MeshIO.GLTF.Exceptions;
 using MeshIO.Core;
+using MeshIO.Formats;
 
 namespace MeshIO.GLTF
 {

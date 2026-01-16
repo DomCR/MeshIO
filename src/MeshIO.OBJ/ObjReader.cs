@@ -2,6 +2,7 @@
 using CSUtilities.Extensions;
 using MeshIO.Core;
 using MeshIO.Entities.Geometries;
+using MeshIO.Formats;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -119,15 +120,16 @@ namespace MeshIO.OBJ
 				//vertex_index/texture_index/normal_index
 				vertices.Add(int.Parse(indices[0]));
 
-				if (indices.TryGet(1, out string texture))
-				{
-					textures.Add(int.Parse(texture));
-				}
+				//TODO: Needs fix
+				//if (indices.TryGet(1, out string texture))
+				//{
+				//	textures.Add(int.Parse(texture));
+				//}
 
-				if (indices.TryGet(2, out string normal))
-				{
-					normals.Add(int.Parse(normal));
-				}
+				//if (indices.TryGet(2, out string normal))
+				//{
+				//	normals.Add(int.Parse(normal));
+				//}
 			}
 
 			objdata.Placeholder.MeshPolygons.Add(createPolygon(vertices));

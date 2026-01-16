@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace MeshIO.Tests.Shared
+namespace MeshIO.Tests.Common
 {
 	public class CSMathRandom : Random
 	{
@@ -27,7 +27,7 @@ namespace MeshIO.Tests.Shared
 		public T Next<T>()
 			where T : struct
 		{
-			T value = default(T);
+			T value = default;
 
 			return setValue(value);
 		}

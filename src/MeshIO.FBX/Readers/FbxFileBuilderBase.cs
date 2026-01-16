@@ -1,6 +1,7 @@
 ﻿using MeshIO.Core;
 using MeshIO.FBX.Connections;
 using MeshIO.FBX.Templates;
+using MeshIO.Formats;
 using System;
 using System.Collections.Generic;
 

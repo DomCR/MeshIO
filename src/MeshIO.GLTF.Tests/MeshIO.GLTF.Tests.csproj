@@ -22,10 +22,6 @@
 		</PackageReference>
 	</ItemGroup>
 
-	<ItemGroup>
-		<ProjectReference Include="..\MeshIO.GLTF\MeshIO.GLTF.csproj" />
-	</ItemGroup>
-
 	<Import Project="..\MeshIO.Tests.Shared\MeshIO.Tests.Shared.projitems" Label="Shared" />
 
 </Project>

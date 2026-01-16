@@ -1,7 +1,8 @@
-﻿using System;
+﻿using MeshIO.Core;
+using System;
 using System.IO;
 
-namespace MeshIO.Core
+namespace MeshIO.Formats
 {
 	public delegate void NotificationEventHandler(object sender, NotificationEventArgs e);
 

@@ -1,7 +1,7 @@
 ﻿using MeshIO.Core;
 using Xunit.Abstractions;
 
-namespace MeshIO.Tests.Shared
+namespace MeshIO.Tests.Common
 {
 	public abstract class IOTestsBase
 	{

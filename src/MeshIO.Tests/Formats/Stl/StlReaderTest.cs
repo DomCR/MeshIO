@@ -1,5 +1,5 @@
 ﻿using MeshIO.Formats.Stl;
-using MeshIO.Tests.Shared;
+using MeshIO.Tests.Common;
 using System.IO;
 using Xunit;
 using Xunit.Abstractions;

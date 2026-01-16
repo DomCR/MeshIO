@@ -1,6 +1,7 @@
-﻿using System;
+﻿using MeshIO.Core;
+using System;
 
-namespace MeshIO.Core
+namespace MeshIO.Formats
 {
 	public abstract class WriterBase : IDisposable
 	{

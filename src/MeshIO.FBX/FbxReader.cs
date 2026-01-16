@@ -1,6 +1,6 @@
-﻿using MeshIO.Core;
-using MeshIO.FBX.Readers;
+﻿using MeshIO.FBX.Readers;
 using MeshIO.FBX.Readers.Parsers;
+using MeshIO.Formats;
 using System;
 using System.IO;
 

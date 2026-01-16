@@ -1,5 +1,5 @@
-﻿using MeshIO.Core;
-using MeshIO.FBX.Writers;
+﻿using MeshIO.FBX.Writers;
+using MeshIO.Formats;
 using System;
 using System.IO;
 

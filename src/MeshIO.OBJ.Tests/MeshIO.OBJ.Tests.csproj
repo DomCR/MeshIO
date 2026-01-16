@@ -18,10 +18,6 @@
 		</PackageReference>
 	</ItemGroup>
 
-	<ItemGroup>
-		<ProjectReference Include="..\MeshIO.OBJ\MeshIO.OBJ.csproj" />
-	</ItemGroup>
-
 	<Import Project="..\MeshIO.Tests.Shared\MeshIO.Tests.Shared.projitems" Label="Shared" />
 
 </Project>

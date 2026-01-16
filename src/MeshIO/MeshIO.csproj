@@ -27,4 +27,8 @@
 
 	<Import Project="..\CSUtilities\CSUtilities\CSUtilities.projitems" Label="Shared" />
 
+	<ItemGroup>
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+	</ItemGroup>
+
 </Project>

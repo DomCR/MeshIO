@@ -1,6 +1,5 @@
 ﻿using CSMath;
 using MeshIO.Tests.Common;
-using MeshIO.Tests.Shared;
 using System;
 using Xunit;
 

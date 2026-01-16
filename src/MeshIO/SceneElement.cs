@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace MeshIO
+﻿namespace MeshIO
 {
 	public abstract class SceneElement : Element3D
 	{

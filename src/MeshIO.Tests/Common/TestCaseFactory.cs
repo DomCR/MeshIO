@@ -1,6 +1,6 @@
 ﻿using MeshIO.Entities.Geometries;
 
-namespace MeshIO.Tests.Shared
+namespace MeshIO.Tests.Common
 {
 	public static class TestCaseFactory
 	{
