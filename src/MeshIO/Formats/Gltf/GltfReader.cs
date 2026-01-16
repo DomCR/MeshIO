@@ -50,9 +50,12 @@ namespace MeshIO.Formats.Gltf
 				throw new GltfReaderException("Chunk type does not match", this._streamIO.Position);
 
 			string json = this._streamIO.ReadString((int)jsonChunkLength);
-
+#if NET5_0_OR_GREATER
+			//this._root = System.Text.Json.JsonSerializer.Deserialize<GltfRoot>(json);
+#else
+			//this._root = Newtonsoft.Json.JsonConvert.DeserializeObject<GltfRoot>(json);
+#endif
 			this._root = Newtonsoft.Json.JsonConvert.DeserializeObject<GltfRoot>(json);
-
 			//Chunk 1 bin
 			uint binChunkLength = this._streamIO.ReadUInt<LittleEndianConverter>();
 			string binChunkType = this._streamIO.ReadString(4);
