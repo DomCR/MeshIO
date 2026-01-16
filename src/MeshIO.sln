@@ -11,12 +11,6 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "CSMath", "CSUtilities\CSMat
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "CSUtilities", "CSUtilities\CSUtilities\CSUtilities.shproj", "{AD858F2B-04A1-41DD-BB3B-DDE4804CD2E6}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Github Actions", "Github Actions", "{907EB71A-E08D-4483-BC11-B96E1F65BDF6}"
-	ProjectSection(SolutionItems) = preProject
-		..\.github\workflows\build.yml = ..\.github\workflows\build.yml
-		..\.github\workflows\build_n_test.yml = ..\.github\workflows\build_n_test.yml
-	EndProjectSection
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "repo", "repo", "{F37B65A4-9A24-41EA-9A72-D3439074C3D2}"
 	ProjectSection(SolutionItems) = preProject
 		..\.editorconfig = ..\.editorconfig
@@ -49,7 +43,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{411B6122-5EF6-46DB-A8F2-43E9C1841E4A} = {D5A86352-D79D-4308-819A-2C4402CBCE96}
 		{AD858F2B-04A1-41DD-BB3B-DDE4804CD2E6} = {D5A86352-D79D-4308-819A-2C4402CBCE96}
-		{907EB71A-E08D-4483-BC11-B96E1F65BDF6} = {F37B65A4-9A24-41EA-9A72-D3439074C3D2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B96D2DF1-9226-4CEE-BF70-43C8318F59DC}

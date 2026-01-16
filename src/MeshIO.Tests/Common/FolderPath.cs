@@ -1,5 +1,7 @@
+using System;
 using System.IO;
 
+[Obsolete]
 public static class FolderPath
 {
 	public const string InFiles = "../../../../Tests/inFiles";

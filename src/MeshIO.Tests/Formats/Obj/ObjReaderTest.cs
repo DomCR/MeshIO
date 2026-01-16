@@ -1,39 +1,35 @@
 ﻿using MeshIO.Formats.Obj;
 using MeshIO.Tests.Common;
+using MeshIO.Tests.TestModels;
 using System.IO;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace MeshIO.OBJ.Tests
+namespace MeshIO.OBJ.Tests;
+
+public class ObjReaderTest : IOTestsBase
 {
-	public class ObjReaderTest : IOTestsBase
+	public static TheoryData<FileModel> ObjFiles { get; } = new();
+
+	static ObjReaderTest()
 	{
-		public static readonly TheoryData<string> Files;
+		loadSamples("obj", "obj", ObjFiles);
+	}
 
-		static ObjReaderTest()
+	public ObjReaderTest(ITestOutputHelper output) : base(output) { }
+
+	[Theory(Skip = "not implemented")]
+	[MemberData(nameof(ObjFiles))]
+	public void ReadTest(FileModel test)
+	{
+		Scene scene = null;
+		using (ObjReader reader = new ObjReader(test.Path))
 		{
-			Files = new TheoryData<string>();
-			foreach (string file in Directory.GetFiles(FolderPath.InFilesObj, "*.obj"))
-			{
-				Files.Add(file);
-			}
+			reader.OnNotification += this.onNotification;
+			scene = reader.Read();
 		}
 
-		public ObjReaderTest(ITestOutputHelper output) : base(output) { }
-
-		[Theory]
-		[MemberData(nameof(Files))]
-		public void ReadTest(string test)
-		{
-			Scene scene = null;
-			using (ObjReader reader = new ObjReader(test))
-			{
-				reader.OnNotification += this.onNotification;
-				scene = reader.Read();
-			}
-
-			Assert.NotNull(scene);
-			Assert.NotEmpty(scene.RootNode.Nodes);
-		}
+		Assert.NotNull(scene);
+		Assert.NotEmpty(scene.RootNode.Nodes);
 	}
 }

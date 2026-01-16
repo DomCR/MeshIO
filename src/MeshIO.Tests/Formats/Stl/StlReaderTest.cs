@@ -1,75 +1,60 @@
 ﻿using MeshIO.Formats.Stl;
 using MeshIO.Tests.Common;
-using System.IO;
+using MeshIO.Tests.TestModels;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace MeshIO.Tests.Formats.Stl
+namespace MeshIO.Tests.Formats.Stl;
+
+public class StlReaderTest : IOTestsBase
 {
-	public class StlReaderTest : IOTestsBase
+	public static TheoryData<FileModel> StlAsciiFiles { get; } = new();
+	public static TheoryData<FileModel> StlBinaryFiles { get; } = new();
+
+	static StlReaderTest()
 	{
-		public static readonly TheoryData<string> AsciiFiles;
+		loadSamples("stl", "_ascii", "stl", StlAsciiFiles);
+		loadSamples("stl", "_binary", "stl", StlBinaryFiles);
+	}
 
-		public static readonly TheoryData<string> BinaryFiles;
+	public StlReaderTest(ITestOutputHelper output) : base(output)
+	{
+	}
 
-		static StlReaderTest()
+	[Theory]
+	[MemberData(nameof(StlAsciiFiles))]
+	public void IsAsciiTest(FileModel test)
+	{
+		using (StlReader reader = new StlReader(test.Path))
 		{
-			AsciiFiles = new TheoryData<string>();
-			foreach (string file in Directory.GetFiles(FolderPath.InFilesStl, "*_ascii.stl"))
-			{
-				AsciiFiles.Add(file);
-			}
-
-			BinaryFiles = new TheoryData<string>();
-			foreach (string file in Directory.GetFiles(FolderPath.InFilesStl, "*_binary.stl"))
-			{
-				BinaryFiles.Add(file);
-			}
+			Assert.False(reader.IsBinary());
 		}
+	}
 
-		public StlReaderTest(ITestOutputHelper output) : base(output) { }
-
-		[Theory]
-		[MemberData(nameof(BinaryFiles))]
-		public void IsBinaryTest(string test)
+	[Theory]
+	[MemberData(nameof(StlBinaryFiles))]
+	public void IsBinaryTest(FileModel test)
+	{
+		using (StlReader reader = new StlReader(test.Path))
 		{
-			using (StlReader reader = new StlReader(test))
-			{
-				Assert.True(reader.IsBinary());
-			}
+			Assert.True(reader.IsBinary());
 		}
+	}
 
-		[Theory]
-		[MemberData(nameof(AsciiFiles))]
-		public void IsAsciiTest(string test)
-		{
-			using (StlReader reader = new StlReader(test))
-			{
-				Assert.False(reader.IsBinary());
-			}
-		}
+	[Theory]
+	[MemberData(nameof(StlBinaryFiles))]
+	[MemberData(nameof(StlAsciiFiles))]
+	public void ReadTest(FileModel test)
+	{
+		this.readFile(test);
+	}
 
-		[Theory]
-		[MemberData(nameof(AsciiFiles))]
-		public void ReadAsciiTest(string test)
+	private Scene readFile(FileModel test)
+	{
+		using (StlReader reader = new StlReader(test.Path))
 		{
-			this.readFile(test);
-		}
-
-		[Theory]
-		[MemberData(nameof(BinaryFiles))]
-		public void ReadBinaryTest(string test)
-		{
-			this.readFile(test);
-		}
-
-		private Scene readFile(string path)
-		{
-			using (StlReader reader = new StlReader(path))
-			{
-				reader.OnNotification += this.onNotification;
-				return reader.Read();
-			}
+			reader.OnNotification += this.onNotification;
+			return reader.Read();
 		}
 	}
 }

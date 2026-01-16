@@ -1,52 +1,46 @@
 using MeshIO.Formats.Gltf;
 using MeshIO.Tests.Common;
-using System.IO;
+using MeshIO.Tests.TestModels;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace MeshIO.Tests.Formats.Gltf
+namespace MeshIO.Tests.Formats.Gltf;
+
+public class GltfReaderTests : IOTestsBase
 {
-	public class GltfReaderTests : IOTestsBase
+	public static TheoryData<FileModel> GlbFiles { get; } = new();
+
+	public static TheoryData<FileModel> GltfFiles { get; } = new();
+
+	static GltfReaderTests()
 	{
-		public static readonly TheoryData<string> GlbFiles = new TheoryData<string>();
+		loadSamples("glb-gltf", "glb", GlbFiles);
+		loadSamples("glb-gltf", "gltf", GltfFiles);
+	}
 
-		public static readonly TheoryData<string> GltfFiles = new TheoryData<string>();
+	public GltfReaderTests(ITestOutputHelper output) : base(output)
+	{
+	}
 
-		static GltfReaderTests()
+	[Theory]
+	[MemberData(nameof(GlbFiles))]
+	public void ReadGlb(FileModel test)
+	{
+		using (GltfReader reader = new GltfReader(test.Path))
 		{
-			foreach (string file in Directory.GetFiles(FolderPath.InFilesGltf, "*.glb"))
-			{
-				GlbFiles.Add(file);
-			}
-
-			foreach (string file in Directory.GetFiles(FolderPath.InFilesGltf, "*.gltf"))
-			{
-				GltfFiles.Add(file);
-			}
+			reader.OnNotification += this.onNotification;
+			reader.Read();
 		}
+	}
 
-		public GltfReaderTests(ITestOutputHelper output) : base(output) { }
-
-		[Theory]
-		[MemberData(nameof(GlbFiles))]
-		public void ReadGlb(string path)
+	[Theory(Skip = "Gltf not implemented")]
+	[MemberData(nameof(GltfFiles))]
+	public void ReadGltf(FileModel test)
+	{
+		using (GltfReader reader = new GltfReader(test.Path))
 		{
-			using (GltfReader reader = new GltfReader(path))
-			{
-				reader.OnNotification += this.onNotification;
-				reader.Read();
-			}
-		}
-
-		[Theory(Skip = "Gltf not implemented")]
-		[MemberData(nameof(GltfFiles))]
-		public void ReadGltf(string path)
-		{
-			using (GltfReader reader = new GltfReader(path))
-			{
-				reader.OnNotification += this.onNotification;
-				reader.Read();
-			}
+			reader.OnNotification += this.onNotification;
+			reader.Read();
 		}
 	}
 }

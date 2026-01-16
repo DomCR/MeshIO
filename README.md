@@ -1,4 +1,4 @@
-# MeshIO ![Build](https://github.com/DomCr/MeshIO/actions/workflows/csharp.yml/badge.svg) ![License](https://img.shields.io/github/license/DomCr/MeshIO) ![nuget](https://img.shields.io/nuget/v/MeshIO)
+# MeshIO ![Build](https://github.com/DomCr/MeshIO/actions/workflows/csharp.yml/badge.svg) ![License](https://img.shields.io/github/license/DomCr/MeshIO) ![nuget](https://img.shields.io/nuget/v/MeshIO) [![Coverage Status](https://coveralls.io/repos/github/DomCR/MeshIO/badge.svg?branch=master)](https://coveralls.io/github/DomCR/MeshIO?branch=master)
 
 C# modular library to read/write and modify different 3D formats.
 
