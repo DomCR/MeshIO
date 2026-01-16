@@ -1,4 +1,5 @@
-﻿using MeshIO.Entities;
+﻿using CSMath;
+using MeshIO.Entities;
 using MeshIO.Shaders;
 using System;
 using System.Collections.Generic;

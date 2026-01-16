@@ -362,3 +362,5 @@ MigrationBackup/
 /src/Tests/outFiles
 !src/Tests/inFiles/obj/
 !src/Tests/inFiles/obj/*.obj
+!src/MeshIO/Formats/Obj
+!src/MeshIO.Tests/Formats/Obj

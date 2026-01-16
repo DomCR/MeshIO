@@ -5,27 +5,11 @@ VisualStudioVersion = 17.1.32210.238
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MeshIO", "MeshIO\MeshIO.csproj", "{3F391F00-A310-4681-BE94-15329D662A3D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MeshIO.FBX", "MeshIO.FBX\MeshIO.FBX.csproj", "{FE3E6007-BC34-4E40-9C65-5FA5274AA3AA}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MeshIO.GLTF", "MeshIO.GLTF\MeshIO.GLTF.csproj", "{D1EA3B08-85CC-4085-BAA1-C47040E7E621}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MeshIO.OBJ", "MeshIO.OBJ\MeshIO.OBJ.csproj", "{23E1077D-5EED-43D7-ABAB-F3DB7BA21E37}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{4B0FFF9E-199B-4025-9CD2-0C8CE4ECB4C6}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Submodules", "Submodules", "{D5A86352-D79D-4308-819A-2C4402CBCE96}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MeshIO.STL", "MeshIO.STL\MeshIO.STL.csproj", "{9EA2BA2C-39BF-451A-A2EF-1AA0B9E2EC7B}"
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "CSMath", "CSUtilities\CSMath\CSMath.shproj", "{411B6122-5EF6-46DB-A8F2-43E9C1841E4A}"
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "CSUtilities", "CSUtilities\CSUtilities\CSUtilities.shproj", "{AD858F2B-04A1-41DD-BB3B-DDE4804CD2E6}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Github Actions", "Github Actions", "{907EB71A-E08D-4483-BC11-B96E1F65BDF6}"
-	ProjectSection(SolutionItems) = preProject
-		..\.github\workflows\build.yml = ..\.github\workflows\build.yml
-		..\.github\workflows\build_n_test.yml = ..\.github\workflows\build_n_test.yml
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "repo", "repo", "{F37B65A4-9A24-41EA-9A72-D3439074C3D2}"
 	ProjectSection(SolutionItems) = preProject
@@ -36,17 +20,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "repo", "repo", "{F37B65A4-9
 		..\README.md = ..\README.md
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MeshIO.FBX.Tests", "MeshIO.FBX.Tests\MeshIO.FBX.Tests.csproj", "{264D4186-7537-4302-8BE9-1A3B56E6709C}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MeshIO.STL.Tests", "MeshIO.STL.Tests\MeshIO.STL.Tests.csproj", "{2A24034A-98C3-49C2-8175-48F03FE53081}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MeshIO.Tests", "MeshIO.Tests\MeshIO.Tests.csproj", "{94C45D19-8231-437F-AB4D-02FA072A923C}"
-EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "MeshIO.Tests.Shared", "MeshIO.Tests.Shared\MeshIO.Tests.Shared.shproj", "{F82685A4-99C9-4B22-B9A9-C8897C9965C4}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MeshIO.GLTF.Tests", "MeshIO.GLTF.Tests\MeshIO.GLTF.Tests.csproj", "{A6F2252F-C802-4317-BF05-073F31397AA1}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MeshIO.OBJ.Tests", "MeshIO.OBJ.Tests\MeshIO.OBJ.Tests.csproj", "{F5D9C9C7-0C3D-405B-A2AD-20E36557B2E7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -58,42 +32,10 @@ Global
 		{3F391F00-A310-4681-BE94-15329D662A3D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3F391F00-A310-4681-BE94-15329D662A3D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3F391F00-A310-4681-BE94-15329D662A3D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FE3E6007-BC34-4E40-9C65-5FA5274AA3AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FE3E6007-BC34-4E40-9C65-5FA5274AA3AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FE3E6007-BC34-4E40-9C65-5FA5274AA3AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FE3E6007-BC34-4E40-9C65-5FA5274AA3AA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D1EA3B08-85CC-4085-BAA1-C47040E7E621}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D1EA3B08-85CC-4085-BAA1-C47040E7E621}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D1EA3B08-85CC-4085-BAA1-C47040E7E621}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D1EA3B08-85CC-4085-BAA1-C47040E7E621}.Release|Any CPU.Build.0 = Release|Any CPU
-		{23E1077D-5EED-43D7-ABAB-F3DB7BA21E37}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{23E1077D-5EED-43D7-ABAB-F3DB7BA21E37}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{23E1077D-5EED-43D7-ABAB-F3DB7BA21E37}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{23E1077D-5EED-43D7-ABAB-F3DB7BA21E37}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9EA2BA2C-39BF-451A-A2EF-1AA0B9E2EC7B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9EA2BA2C-39BF-451A-A2EF-1AA0B9E2EC7B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9EA2BA2C-39BF-451A-A2EF-1AA0B9E2EC7B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9EA2BA2C-39BF-451A-A2EF-1AA0B9E2EC7B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{264D4186-7537-4302-8BE9-1A3B56E6709C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{264D4186-7537-4302-8BE9-1A3B56E6709C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{264D4186-7537-4302-8BE9-1A3B56E6709C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{264D4186-7537-4302-8BE9-1A3B56E6709C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2A24034A-98C3-49C2-8175-48F03FE53081}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2A24034A-98C3-49C2-8175-48F03FE53081}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2A24034A-98C3-49C2-8175-48F03FE53081}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2A24034A-98C3-49C2-8175-48F03FE53081}.Release|Any CPU.Build.0 = Release|Any CPU
 		{94C45D19-8231-437F-AB4D-02FA072A923C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{94C45D19-8231-437F-AB4D-02FA072A923C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{94C45D19-8231-437F-AB4D-02FA072A923C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{94C45D19-8231-437F-AB4D-02FA072A923C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A6F2252F-C802-4317-BF05-073F31397AA1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A6F2252F-C802-4317-BF05-073F31397AA1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A6F2252F-C802-4317-BF05-073F31397AA1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A6F2252F-C802-4317-BF05-073F31397AA1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F5D9C9C7-0C3D-405B-A2AD-20E36557B2E7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F5D9C9C7-0C3D-405B-A2AD-20E36557B2E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F5D9C9C7-0C3D-405B-A2AD-20E36557B2E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F5D9C9C7-0C3D-405B-A2AD-20E36557B2E7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -101,27 +43,14 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{411B6122-5EF6-46DB-A8F2-43E9C1841E4A} = {D5A86352-D79D-4308-819A-2C4402CBCE96}
 		{AD858F2B-04A1-41DD-BB3B-DDE4804CD2E6} = {D5A86352-D79D-4308-819A-2C4402CBCE96}
-		{907EB71A-E08D-4483-BC11-B96E1F65BDF6} = {F37B65A4-9A24-41EA-9A72-D3439074C3D2}
-		{264D4186-7537-4302-8BE9-1A3B56E6709C} = {4B0FFF9E-199B-4025-9CD2-0C8CE4ECB4C6}
-		{2A24034A-98C3-49C2-8175-48F03FE53081} = {4B0FFF9E-199B-4025-9CD2-0C8CE4ECB4C6}
-		{94C45D19-8231-437F-AB4D-02FA072A923C} = {4B0FFF9E-199B-4025-9CD2-0C8CE4ECB4C6}
-		{F82685A4-99C9-4B22-B9A9-C8897C9965C4} = {4B0FFF9E-199B-4025-9CD2-0C8CE4ECB4C6}
-		{A6F2252F-C802-4317-BF05-073F31397AA1} = {4B0FFF9E-199B-4025-9CD2-0C8CE4ECB4C6}
-		{F5D9C9C7-0C3D-405B-A2AD-20E36557B2E7} = {4B0FFF9E-199B-4025-9CD2-0C8CE4ECB4C6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B96D2DF1-9226-4CEE-BF70-43C8318F59DC}
 	EndGlobalSection
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		MeshIO.Tests.Shared\MeshIO.Tests.Shared.projitems*{264d4186-7537-4302-8be9-1a3b56e6709c}*SharedItemsImports = 5
-		MeshIO.Tests.Shared\MeshIO.Tests.Shared.projitems*{2a24034a-98c3-49c2-8175-48f03fe53081}*SharedItemsImports = 5
 		CSUtilities\CSMath\CSMath.projitems*{3f391f00-a310-4681-be94-15329d662a3d}*SharedItemsImports = 5
 		CSUtilities\CSUtilities\CSUtilities.projitems*{3f391f00-a310-4681-be94-15329d662a3d}*SharedItemsImports = 5
 		CSUtilities\CSMath\CSMath.projitems*{411b6122-5ef6-46db-a8f2-43e9c1841e4a}*SharedItemsImports = 13
-		MeshIO.Tests.Shared\MeshIO.Tests.Shared.projitems*{94c45d19-8231-437f-ab4d-02fa072a923c}*SharedItemsImports = 5
-		MeshIO.Tests.Shared\MeshIO.Tests.Shared.projitems*{a6f2252f-c802-4317-bf05-073f31397aa1}*SharedItemsImports = 5
 		CSUtilities\CSUtilities\CSUtilities.projitems*{ad858f2b-04a1-41dd-bb3b-dde4804cd2e6}*SharedItemsImports = 13
-		MeshIO.Tests.Shared\MeshIO.Tests.Shared.projitems*{f5d9c9c7-0c3d-405b-a2ad-20e36557b2e7}*SharedItemsImports = 5
-		MeshIO.Tests.Shared\MeshIO.Tests.Shared.projitems*{f82685a4-99c9-4b22-b9a9-c8897c9965c4}*SharedItemsImports = 13
 	EndGlobalSection
 EndGlobal
