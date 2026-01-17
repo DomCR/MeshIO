@@ -1,5 +1,8 @@
-﻿namespace MeshIO.Entities.Geometries
+﻿using System;
+
+namespace MeshIO.Entities.Geometries
 {
+    [Obsolete]
     public class Quad : Polygon
     {
         public int Index0 { get; set; }

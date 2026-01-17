@@ -1,8 +1,10 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace MeshIO.Entities.Geometries
 {
+	[Obsolete]
 	public abstract class Polygon : IEnumerable<int>
 	{
 		public abstract int[] ToArray();

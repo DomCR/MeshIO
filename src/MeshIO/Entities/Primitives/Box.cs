@@ -8,24 +8,59 @@ namespace MeshIO.Entities.Primitives
 {
 	public class Box : Primitive
 	{
-		public double XDimension { get; set; } = 1.0;
-
-		public double YDimension { get; set; } = 1.0;
-
-		public double ZDimension { get; set; } = 1.0;
-
+		/// <summary>
+		/// Gets or sets the center point of the object in 3D space.
+		/// </summary>
 		public XYZ Center { get; set; } = XYZ.Zero;
 
+		/// <summary>
+		/// Gets the length of the bounding box along the X-axis.
+		/// </summary>
+		public double LengthX { get; set; } = 1.0;
+
+		/// <summary>
+		/// Gets the length of the bounding box along the Y-axis.
+		/// </summary>
+		public double LengthY { get; set; } = 1.0;
+
+		/// <summary>
+		/// Gets the length of the bounding box along the Z-axis.
+		/// </summary>
+		public double LengthZ { get; set; } = 1.0;
+
+		/// <summary>
+		/// Initializes a new instance of the Box class with an empty label.
+		/// </summary>
 		public Box() : this(string.Empty) { }
 
+		/// <summary>
+		/// Initializes a new instance of the Box class with the specified name.
+		/// </summary>
+		/// <param name="name">The name to assign to the box. Cannot be null or empty.</param>
 		public Box(string name) : base(name) { }
 
+		/// <summary>
+		/// Initializes a new instance of the Box class with the specified dimensions and center point.
+		/// </summary>
+		/// <param name="xDimension">The length of the box along the X-axis. Must be a positive value.</param>
+		/// <param name="yDimension">The length of the box along the Y-axis. Must be a positive value.</param>
+		/// <param name="zDimension">The length of the box along the Z-axis. Must be a positive value.</param>
+		/// <param name="center">The center point of the box, specified as an XYZ coordinate.</param>
 		public Box(double xDimension, double yDimension, double zDimension, XYZ center) : this()
 		{
-			this.XDimension = xDimension;
-			this.YDimension = yDimension;
-			this.ZDimension = zDimension;
+			this.LengthX = xDimension;
+			this.LengthY = yDimension;
+			this.LengthZ = zDimension;
 			this.Center = center;
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the Box class using the specified bounding box dimensions and center.
+		/// </summary>
+		/// <param name="boundingBox">The bounding box that provides the dimensions and center point for the new box. Cannot be null.</param>
+		public Box(BoundingBox boundingBox)
+			: this(boundingBox.LengthX, boundingBox.LengthY, boundingBox.LengthZ, boundingBox.Center)
+		{
 		}
 
 		/// <inheritdoc/>
@@ -35,7 +70,7 @@ namespace MeshIO.Entities.Primitives
 		/// <see cref="LayerElementUV"/><br/>
 		/// configured with <see cref="MappingMode.ByVertex"/> and <see cref=" ReferenceMode.Direct"/>
 		/// </remarks>
-		public override Mesh CreateMesh()
+		public override Mesh ToMesh()
 		{
 			List<XYZ> vertices = new List<XYZ>();
 			List<XYZ> normals = new List<XYZ>();
@@ -44,12 +79,12 @@ namespace MeshIO.Entities.Primitives
 
 			int currQuad = 0;
 
-			this.createFace(2, 1, 0, -1, -1, this.ZDimension, this.YDimension, this.XDimension, vertices, normals, uvs, polygons, ref currQuad);
-			this.createFace(2, 1, 0, 1, -1, this.ZDimension, this.YDimension, 0.0 - this.XDimension, vertices, normals, uvs, polygons, ref currQuad);
-			this.createFace(0, 2, 1, 1, 1, this.XDimension, this.ZDimension, this.YDimension, vertices, normals, uvs, polygons, ref currQuad);
-			this.createFace(0, 2, 1, 1, -1, this.XDimension, this.ZDimension, 0.0 - this.YDimension, vertices, normals, uvs, polygons, ref currQuad);
-			this.createFace(0, 1, 2, 1, -1, this.XDimension, this.YDimension, this.ZDimension, vertices, normals, uvs, polygons, ref currQuad);
-			this.createFace(0, 1, 2, -1, -1, this.XDimension, this.YDimension, 0.0 - this.ZDimension, vertices, normals, uvs, polygons, ref currQuad);
+			this.createFace(2, 1, 0, -1, -1, this.LengthZ, this.LengthY, this.LengthX, vertices, normals, uvs, polygons, ref currQuad);
+			this.createFace(2, 1, 0, 1, -1, this.LengthZ, this.LengthY, 0.0 - this.LengthX, vertices, normals, uvs, polygons, ref currQuad);
+			this.createFace(0, 2, 1, 1, 1, this.LengthX, this.LengthZ, this.LengthY, vertices, normals, uvs, polygons, ref currQuad);
+			this.createFace(0, 2, 1, 1, -1, this.LengthX, this.LengthZ, 0.0 - this.LengthY, vertices, normals, uvs, polygons, ref currQuad);
+			this.createFace(0, 1, 2, 1, -1, this.LengthX, this.LengthY, this.LengthZ, vertices, normals, uvs, polygons, ref currQuad);
+			this.createFace(0, 1, 2, -1, -1, this.LengthX, this.LengthY, 0.0 - this.LengthZ, vertices, normals, uvs, polygons, ref currQuad);
 
 			return this.createMesh(vertices, normals, uvs, polygons.Cast<Polygon>().ToList());
 		}
