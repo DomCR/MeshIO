@@ -88,7 +88,7 @@ namespace MeshIO.Formats.Fbx.Templates
 			{
 				if (!builder.TryGetTemplate(c.ChildId, out IFbxObjectTemplate template))
 				{
-					builder.Notify($"[{_element.GetType().FullName}] child object not found {c.ChildId}", Core.NotificationType.Warning);
+					builder.Notify($"[{_element.GetType().FullName}] child object not found {c.ChildId}", MeshIO.NotificationType.Warning);
 					continue;
 				}
 

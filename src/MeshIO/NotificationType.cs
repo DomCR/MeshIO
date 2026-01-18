@@ -1,4 +1,4 @@
-﻿namespace MeshIO.Core
+﻿namespace MeshIO
 {
 	public enum NotificationType
 	{

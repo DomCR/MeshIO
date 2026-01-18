@@ -1,5 +1,4 @@
-﻿using MeshIO.Core;
-using System;
+﻿using System;
 
 namespace MeshIO.Formats
 {

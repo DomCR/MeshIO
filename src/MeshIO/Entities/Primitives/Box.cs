@@ -42,15 +42,15 @@ namespace MeshIO.Entities.Primitives
 		/// <summary>
 		/// Initializes a new instance of the Box class with the specified dimensions and center point.
 		/// </summary>
-		/// <param name="xDimension">The length of the box along the X-axis. Must be a positive value.</param>
-		/// <param name="yDimension">The length of the box along the Y-axis. Must be a positive value.</param>
-		/// <param name="zDimension">The length of the box along the Z-axis. Must be a positive value.</param>
+		/// <param name="lengthX">The length of the box along the X-axis. Must be a positive value.</param>
+		/// <param name="lengthY">The length of the box along the Y-axis. Must be a positive value.</param>
+		/// <param name="lengthZ">The length of the box along the Z-axis. Must be a positive value.</param>
 		/// <param name="center">The center point of the box, specified as an XYZ coordinate.</param>
-		public Box(double xDimension, double yDimension, double zDimension, XYZ center) : this()
+		public Box(double lengthX, double lengthY, double lengthZ, XYZ center) : this()
 		{
-			this.LengthX = xDimension;
-			this.LengthY = yDimension;
-			this.LengthZ = zDimension;
+			this.LengthX = lengthX;
+			this.LengthY = lengthY;
+			this.LengthZ = lengthZ;
 			this.Center = center;
 		}
 
@@ -93,7 +93,10 @@ namespace MeshIO.Entities.Primitives
 			int index0, int index1, int index2,
 			int dir1, int dir2,
 			double length, double height, double width,
-			List<XYZ> vertices, List<XYZ> normals, List<XY> uvs, List<Quad> polygons,
+			List<XYZ> vertices, 
+			List<XYZ> normals, 
+			List<XY> uvs, 
+			List<Quad> polygons,
 			ref int currQuad)
 		{
 			//Creates a face with no shared vertices

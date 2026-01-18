@@ -1,5 +1,4 @@
-﻿using MeshIO.Core;
-using MeshIO.Formats.Fbx.Connections;
+﻿using MeshIO.Formats.Fbx.Connections;
 using MeshIO.Formats.Fbx.Templates;
 using System;
 using System.Collections.Generic;
