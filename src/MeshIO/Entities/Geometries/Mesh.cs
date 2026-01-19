@@ -15,11 +15,6 @@ namespace MeshIO.Entities.Geometries
 
 		public Mesh(string name) : base(name) { }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="vertices"></param>
-		/// <exception cref="ArgumentException"></exception>
 		public void AddPolygons(params IEnumerable<XYZ> vertices)
 		{
 			int count = vertices.Count();

@@ -8,13 +8,14 @@ namespace MeshIO.Formats.Stl
 {
 	internal class StlBinaryStreamReader : IStlStreamReader
 	{
+		public event NotificationEventHandler OnNotification;
+
 		private readonly BinaryReader reader;
+
 		public StlBinaryStreamReader(Stream stream)
 		{
 			reader = new BinaryReader(stream);
 		}
-
-		public event NotificationEventHandler OnNotification;
 
 		public IEnumerable<Mesh> Read()
 		{

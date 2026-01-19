@@ -38,6 +38,28 @@ namespace MeshIO.Entities.Geometries.Layers
 			}
 		}
 
+		public static LayerElementNormal CreateFlatNormals(Mesh mesh)
+		{
+			LayerElementNormal layer = new LayerElementNormal();
+
+			layer.Normals.Clear();
+
+			layer.MappingMode = MappingMode.ByPolygon;
+			layer.ReferenceMode = ReferenceMode.Direct;
+
+			foreach (Polygon item in mesh.Polygons)
+			{
+				XYZ normal = XYZ.FindNormal(
+					mesh.Vertices[item.ToArray()[0]],
+					mesh.Vertices[item.ToArray()[1]],
+					mesh.Vertices[item.ToArray()[2]]);
+
+				layer.Normals.Add(normal.Normalize());
+			}
+
+			return layer;
+		}
+
 		public void CalculateFlatNormals()
 		{
 			if (this.Owner is not Mesh mesh)

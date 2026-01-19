@@ -14,6 +14,8 @@
 
 		public const string Loop = "loop";
 
+		public const string Normal = "normal";
+
 		public const string Outer = "outer";
 
 		public const string Solid = "solid";
