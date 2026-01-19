@@ -1,6 +1,8 @@
-﻿using MeshIO.Formats.Stl;
+﻿using MeshIO.Formats;
+using MeshIO.Formats.Stl;
 using MeshIO.Tests.Common;
 using MeshIO.Tests.TestModels;
+using System.IO;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -25,20 +27,14 @@ public class StlReaderTest : IOTestsBase
 	[MemberData(nameof(StlAsciiFiles))]
 	public void IsAsciiTest(FileModel test)
 	{
-		using (StlReader reader = new StlReader(test.Path))
-		{
-			Assert.False(reader.IsBinary());
-		}
+		Assert.Equal(ContentType.ASCII, StlReader.GetContentType(File.OpenRead(test.Path)));
 	}
 
 	[Theory]
 	[MemberData(nameof(StlBinaryFiles))]
 	public void IsBinaryTest(FileModel test)
 	{
-		using (StlReader reader = new StlReader(test.Path))
-		{
-			Assert.True(reader.IsBinary());
-		}
+		Assert.Equal(ContentType.Binary, StlReader.GetContentType(File.OpenRead(test.Path)));
 	}
 
 	[Theory]

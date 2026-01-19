@@ -11,7 +11,7 @@ public class BoxTests
 	public void CreateDefault()
 	{
 		Box box = new Box();
-		Mesh mesh = box.CreateMesh();
+		Mesh mesh = box.ToMesh();
 
 		Assert.NotEmpty(mesh.Vertices);
 		Assert.Equal(24, mesh.Vertices.Count);

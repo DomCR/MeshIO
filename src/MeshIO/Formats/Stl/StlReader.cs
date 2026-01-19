@@ -1,10 +1,8 @@
-﻿using CSMath;
-using CSUtilities.Converters;
-using CSUtilities.IO;
-using MeshIO.Entities.Geometries;
-using MeshIO.Entities.Geometries.Layers;
+﻿using MeshIO.Entities.Geometries;
+using System;
+using System.Collections.Generic;
 using System.IO;
-using System.Text.RegularExpressions;
+using System.Text;
 
 namespace MeshIO.Formats.Stl
 {
@@ -41,31 +39,46 @@ namespace MeshIO.Formats.Stl
 		}
 
 		/// <summary>
-		/// Determines whether the underlying stream contains data in binary format.
+		/// Determines the content type of a mesh stream by inspecting its header.
 		/// </summary>
-		/// <remarks>This method inspects the stream from its beginning to assess whether the data is in binary format.
-		/// The stream position is reset to the start before analysis. Calling this method will modify the stream's current
-		/// position.</remarks>
-		/// <returns>true if the stream is detected to be in binary format; otherwise, false.</returns>
-		public bool IsBinary()
+		/// <remarks>The method reads the first five bytes of the stream to identify the content type. The stream
+		/// position is reset to its original position after the operation. The method assumes the stream contains data in a
+		/// supported mesh format.</remarks>
+		/// <param name="stream">The input stream containing mesh data to analyze. The stream must be readable and seekable.</param>
+		/// <returns>A value indicating whether the mesh data in the stream is in ASCII or binary format.</returns>
+		/// <exception cref="NullReferenceException">Thrown if <paramref name="stream"/> is null.</exception>
+		public static MeshIO.Formats.ContentType GetContentType(Stream stream)
 		{
-			this._stream.Position = 0;
-			this._stream.ReadString(80);
-			int nTriangles = this._stream.ReadInt<LittleEndianConverter>();
+			if (stream == null)
+			{
+				throw new NullReferenceException(nameof(stream));
+			}
 
-			return this.checkStreamLenth(nTriangles);
+			if (stream.Length < 5)
+			{
+				return ContentType.Binary;
+			}
+
+			byte[] buffer = new byte[5];
+			string header;
+
+			stream.Seek(0, SeekOrigin.Begin);
+			stream.Read(buffer, 0, buffer.Length);
+			stream.Seek(0, SeekOrigin.Begin);
+
+			header = Encoding.ASCII.GetString(buffer);
+
+			return StlFileToken.Solid.Equals(header, StringComparison.InvariantCultureIgnoreCase) ? ContentType.ASCII : ContentType.Binary;
 		}
 
+		/// <inheritdoc/>
 		public override Scene Read()
 		{
 			Scene scene = new Scene();
 
-			Mesh mesh = this.ReadAsMesh();
+			var meshes = this.ReadMeshes();
 
-			Node node = new Node(mesh.Name);
-			node.Entities.Add(mesh);
-
-			scene.RootNode.Nodes.Add(node);
+			scene.RootNode.Entities.AddRange(meshes);
 
 			return scene;
 		}
@@ -74,99 +87,31 @@ namespace MeshIO.Formats.Stl
 		/// Read the STL file
 		/// </summary>
 		/// <returns><see cref="Mesh"/> defined in the file</returns>
-		public Mesh ReadAsMesh()
+		public IEnumerable<Mesh> ReadMeshes()
 		{
 			this._stream.Position = 0;
 
-			string header = this._stream.ReadString(80);
-			this.triggerNotification(header.Replace("\0", ""), NotificationType.Information);
-
-			Mesh mesh = new Mesh();
-			LayerElementNormal normals = new LayerElementNormal();
-			mesh.Layers.Add(normals);
-
-			int nTriangles = this._stream.ReadInt<LittleEndianConverter>();
-
-			if (this.checkStreamLenth(nTriangles))
+			IStlStreamReader reader = null;
+			var contentType = StlReader.GetContentType(this._stream.Stream);
+			switch (contentType)
 			{
-				for (int i = 0; i < nTriangles; i++)
-				{
-					XYZ normal = new XYZ(this._stream.ReadSingle(), this._stream.ReadSingle(), this._stream.ReadSingle());
-
-					normals.Add(normal);
-
-					XYZ v1 = new XYZ(this._stream.ReadSingle(), this._stream.ReadSingle(), this._stream.ReadSingle());
-					XYZ v2 = new XYZ(this._stream.ReadSingle(), this._stream.ReadSingle(), this._stream.ReadSingle());
-					XYZ v3 = new XYZ(this._stream.ReadSingle(), this._stream.ReadSingle(), this._stream.ReadSingle());
-
-					mesh.AddPolygons(v1, v2, v3);
-
-					ushort attByteCount = this._stream.ReadUShort();
-				}
-			}
-			else
-			{
-				this._stream.Position = 0;
-
-				string line = this._stream.ReadUntil('\n');
-				string name = Regex.Match(line, @"solid \s\n", options: RegexOptions.IgnoreCase).Value;
-				mesh.Name = name;
-
-				line = this._stream.ReadUntil('\n');
-
-				while (!line.Contains($"endsolid {name}"))
-				{
-					XYZ normal = this.readPoint(line, "facet normal");
-					normals.Add(normal);
-
-					this.checkLine(this._stream.ReadUntil('\n'), "outer loop");
-
-					XYZ v1 = this.readPoint(this._stream.ReadUntil('\n'), "vertex");
-					XYZ v2 = this.readPoint(this._stream.ReadUntil('\n'), "vertex");
-					XYZ v3 = this.readPoint(this._stream.ReadUntil('\n'), "vertex");
-
-					mesh.AddPolygons(v1, v2, v3);
-
-					this.checkLine(this._stream.ReadUntil('\n'), "endloop");
-					this.checkLine(this._stream.ReadUntil('\n'), "endfacet");
-
-					line = this._stream.ReadUntil('\n');
-				}
+				case ContentType.Binary:
+					reader = new StlBinaryStreamReader(this._stream.Stream);
+					break;
+				case ContentType.ASCII:
+					reader = new StlTextStreamReader(this._stream.Stream);
+					break;
 			}
 
-			return mesh;
+			reader.OnNotification += this.onNotificationEvent;
+
+			return reader.Read();
 		}
 
 		/// <inheritdoc/>
 		public override void Dispose()
 		{
 			this._stream.Dispose();
-		}
-
-		private bool checkStreamLenth(int nTriangles)
-		{
-			//Compare the length of the stream to check if is ascii file
-			return this._stream.Length == 84 + nTriangles * 50;
-		}
-
-		private void checkLine(string line, string match)
-		{
-			if (string.IsNullOrEmpty(match) &&
-				Regex.Match(line, match + @" \s\n", options: RegexOptions.IgnoreCase).Success)
-			{
-				throw new StlException($"Expected match: {match} | line: {line}");
-			}
-		}
-
-		private XYZ readPoint(string line, string match)
-		{
-			this.checkLine(line, match);
-
-			var x = Regex.Match(line, @"\d+(\.\d+)?");
-			var y = x.NextMatch();
-			var z = y.NextMatch();
-
-			return new XYZ(double.Parse(x.Value), double.Parse(y.Value), double.Parse(z.Value));
 		}
 	}
 }
