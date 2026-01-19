@@ -7,7 +7,7 @@ using System.IO;
 
 namespace MeshIO.Formats;
 
-public static class FileExtensions
+public static class FileFormat
 {
 	public const string Fbx = "fbx";
 
@@ -52,6 +52,33 @@ public static class FileExtensions
 	}
 
 	/// <summary>
+	/// Returns the standard file extension associated with the specified file format type.
+	/// </summary>
+	/// <param name="type">The file format type for which to retrieve the corresponding file extension.</param>
+	/// <returns>A string containing the file extension for the specified file format type, including the leading period (for
+	/// example, ".fbx").</returns>
+	/// <exception cref="NotSupportedException">Thrown if <paramref name="type"/> is <see cref="FileFormatType.Unknown"/> or an unsupported value.</exception>
+	public static string GetExtension(FileFormatType type)
+	{
+		switch (type)
+		{
+			case FileFormatType.Fbx:
+				return Fbx;
+			case FileFormatType.Gltf:
+				return Gltf;
+			case FileFormatType.Glb:
+				return Glb;
+			case FileFormatType.Obj:
+				return Obj;
+			case FileFormatType.Stl:
+				return Stl;
+			case FileFormatType.Unknown:
+			default:
+				throw new NotSupportedException();
+		}
+	}
+
+	/// <summary>
 	/// Creates an appropriate scene reader for the specified file path based on the file's extension.
 	/// </summary>
 	/// <remarks>Supported file formats include FBX, GLB, GLTF, OBJ, and STL. The method selects the appropriate
@@ -64,7 +91,7 @@ public static class FileExtensions
 	/// <exception cref="NotSupportedException">Thrown if the file extension is not recognized or supported.</exception>
 	public static ISceneReader GetReader(string path, NotificationEventHandler notification = null)
 	{
-		var type = FileExtensions.FromExtension(Path.GetExtension(path));
+		var type = FileFormat.FromExtension(Path.GetExtension(path));
 		switch (type)
 		{
 			case FileFormatType.Fbx:
@@ -112,13 +139,13 @@ public static class FileExtensions
 		}
 	}
 
-	public static ISceneWriter GetWriter(string path, Scene scene, NotificationEventHandler notification = null)
+	public static ISceneWriter GetWriter(string path, Scene scene, SceneWriterOptions options = null, NotificationEventHandler notification = null)
 	{
-		var type = FileExtensions.FromExtension(Path.GetExtension(path));
+		var type = FileFormat.FromExtension(Path.GetExtension(path));
 		switch (type)
 		{
 			case FileFormatType.Fbx:
-				return new FbxWriter(path, scene, notification: notification);
+				return new FbxWriter(path, scene, options as FbxWriterOptions, notification);
 			case FileFormatType.Glb:
 			case FileFormatType.Gltf:
 				throw new NotImplementedException();
@@ -127,7 +154,7 @@ public static class FileExtensions
 				throw new NotImplementedException();
 			//return new Obj.ObjWriter(path, notification);
 			case FileFormatType.Stl:
-				return new Stl.StlWriter(path, scene, notification: notification);
+				return new Stl.StlWriter(path, scene, options as StlWriterOptions, notification);
 			case FileFormatType.Unknown:
 			default:
 				throw new NotSupportedException();
@@ -157,7 +184,7 @@ public static class FileExtensions
 
 	public static SceneWriterOptions GetWriterOptions(string path)
 	{
-		var type = FileExtensions.FromExtension(Path.GetExtension(path));
+		var type = FileFormat.FromExtension(Path.GetExtension(path));
 		return GetWriterOptions(type);
 	}
 
