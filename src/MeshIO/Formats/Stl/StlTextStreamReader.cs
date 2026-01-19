@@ -10,11 +10,11 @@ internal class StlTextStreamReader : IStlStreamReader
 {
 	public event NotificationEventHandler OnNotification;
 
-	private readonly StreamReader reader;
+	private readonly StreamReader _reader;
 
 	public StlTextStreamReader(Stream stream)
 	{
-		this.reader = new StreamReader(stream);
+		this._reader = new StreamReader(stream);
 	}
 
 	public IEnumerable<Mesh> Read()
@@ -25,9 +25,9 @@ internal class StlTextStreamReader : IStlStreamReader
 		XYZ normal = XYZ.NaN;
 		LayerElementNormal normals = new(MappingMode.ByPolygon, ReferenceMode.Direct);
 		List<XYZ> loop = new();
-		while (!reader.EndOfStream)
+		while (!_reader.EndOfStream)
 		{
-			if (!processArgs(reader.ReadLine(), out var keyword, out var value))
+			if (!processArgs(_reader.ReadLine(), out var keyword, out var value))
 			{
 				continue;
 			}
