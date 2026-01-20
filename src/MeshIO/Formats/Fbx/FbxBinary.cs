@@ -72,11 +72,12 @@ namespace MeshIO.Formats.Fbx
 		/// </summary>
 		/// <param name="stream"></param>
 		/// <returns><c>true</c> if it's compliant</returns>
-		public static bool ReadHeader(Stream stream)
+		public static ContentType ReadHeader(Stream stream)
 		{
 			var buf = new byte[headerString.Length];
+			stream.Seek(0, SeekOrigin.Begin);
 			stream.Read(buf, 0, buf.Length);
-			return CheckEqual(buf, headerString);
+			return CheckEqual(buf, headerString) ? ContentType.Binary : ContentType.ASCII;
 		}
 
 		public abstract void Dispose();

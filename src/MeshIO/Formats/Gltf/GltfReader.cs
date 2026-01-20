@@ -10,7 +10,7 @@ using System.IO;
 
 namespace MeshIO.Formats.Gltf
 {
-	public class GltfReader : SceneReader
+	public class GltfReader : SceneReader<GltfReaderOptions>
 	{
 		private StreamIO _binaryStream;
 
@@ -18,11 +18,13 @@ namespace MeshIO.Formats.Gltf
 
 		private GltfRoot _root;
 
-		public GltfReader(string path, NotificationEventHandler notification = null)
-			: base(path, notification) { }
+		/// <inheritdoc/>
+		public GltfReader(string path, GltfReaderOptions options = null, NotificationEventHandler notification = null)
+			: base(path, options, notification) { }
 
-		public GltfReader(Stream stream, NotificationEventHandler notification = null)
-			: base(stream, notification)
+		/// <inheritdoc/>
+		public GltfReader(Stream stream, GltfReaderOptions options = null, NotificationEventHandler notification = null)
+			: base(stream, options, notification)
 		{
 		}
 

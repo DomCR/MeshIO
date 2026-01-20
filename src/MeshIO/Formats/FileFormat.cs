@@ -95,14 +95,14 @@ public static class FileFormat
 		switch (type)
 		{
 			case FileFormatType.Fbx:
-				return new FbxReader(path, notification);
+				return new FbxReader(path, null, notification);
 			case FileFormatType.Glb:
 			case FileFormatType.Gltf:
-				return new GltfReader(path, notification);
+				return new GltfReader(path, null, notification);
 			case FileFormatType.Obj:
-				return new Obj.ObjReader(path, notification);
+				return new Obj.ObjReader(path, null, notification);
 			case FileFormatType.Stl:
-				return new Stl.StlReader(path, notification);
+				return new Stl.StlReader(path, null, notification);
 			case FileFormatType.Unknown:
 			default:
 				throw new NotSupportedException();
@@ -125,14 +125,14 @@ public static class FileFormat
 		switch (type)
 		{
 			case FileFormatType.Fbx:
-				return new FbxReader(stream, notification);
+				return new FbxReader(stream, null, notification);
 			case FileFormatType.Glb:
 			case FileFormatType.Gltf:
-				return new GltfReader(stream, notification);
+				return new GltfReader(stream, null, notification);
 			case FileFormatType.Obj:
-				return new ObjReader(stream, notification);
+				return new ObjReader(stream, null, notification);
 			case FileFormatType.Stl:
-				return new StlReader(stream, notification);
+				return new StlReader(stream, null, notification);
 			case FileFormatType.Unknown:
 			default:
 				throw new NotSupportedException();

@@ -12,66 +12,73 @@ namespace MeshIO.Formats.Fbx
 	/// controlling the reading process via the Options property. Notifications and warnings encountered during reading can
 	/// be handled by subscribing to the OnNotification event or by providing a notification handler.
 	/// </remarks>
-	public class FbxReader : SceneReader
+	public class FbxReader : SceneReader<FbxReaderOptions>
 	{
-		/// <summary>
-		/// Gets the options used to control the behavior of the FBX reader.
-		/// </summary>
-		/// <remarks>Use this property to configure how FBX files are read, such as specifying import settings or
-		/// handling of specific data types. The options are read-only; to modify them, update the properties of the returned
-		/// <see cref="FbxReaderOptions"/> instance.</remarks>
-		public FbxReaderOptions Options { get; } = new FbxReaderOptions();
+		/// <inheritdoc/>
+		public FbxReader(string path, FbxReaderOptions options, NotificationEventHandler notification = null)
+			: base(path, options, notification) { }
+
+		/// <inheritdoc/>
+		public FbxReader(Stream stream, FbxReaderOptions options, NotificationEventHandler notification = null)
+			: base(stream, options, notification) { }
 
 		/// <summary>
-		/// Initializes a new instance of the FbxReader class for reading FBX files from the specified path.
+		/// Determines the content type of the data in the specified stream.
 		/// </summary>
-		/// <param name="path">The file system path to the FBX file to be read. Cannot be null or empty.</param>
-		/// <param name="notification">An optional delegate to receive notifications or warnings during the reading process. If null, notifications are not
+		/// <remarks>The method does not consume or modify the contents of the stream. After the method returns, the
+		/// stream position is reset to the beginning. The caller is responsible for managing the lifetime of the
+		/// stream.</remarks>
+		/// <param name="stream">The input stream containing the data to analyze. The stream must be readable and seekable. The position of the
+		/// stream will be reset to the beginning before and after the operation.</param>
+		/// <returns>A value of type <see cref="MeshIO.Formats.ContentType"/> that indicates the detected content type of the stream.</returns>
+		public static MeshIO.Formats.ContentType GetContentType(Stream stream)
+		{
+			stream.Seek(0, SeekOrigin.Begin);
+			var content = FbxBinary.ReadHeader(stream);
+			stream.Seek(0, SeekOrigin.Begin);
+			return content;
+		}
+
+		/// <summary>
+		/// Reads an FBX file from the specified path and returns a parsed scene object.
+		/// </summary>
+		/// <param name="path">The file system path to the FBX file to read. Must refer to a valid FBX file.</param>
+		/// <param name="options">Optional reader options that control how the FBX file is parsed. If null, default options are used.</param>
+		/// <param name="notification">An optional event handler for receiving notifications or warnings during the read operation. If null, notifications
+		/// are ignored.</param>
+		/// <returns>A Scene object representing the contents of the FBX file. Returns null if the file cannot be read or parsed.</returns>
+		public static Scene Read(string path, FbxReaderOptions options = null, NotificationEventHandler notification = null)
+		{
+			using (FbxReader reader = new FbxReader(path, options, notification))
+			{
+				return reader.Read();
+			}
+		}
+
+		/// <summary>
+		/// Reads an FBX scene from the specified stream using the provided reader options and notification handler.
+		/// </summary>
+		/// <remarks>The caller is responsible for ensuring that the stream remains open and accessible for the duration
+		/// of the read operation. This method does not modify the position of the stream after reading.</remarks>
+		/// <param name="stream">The input stream containing the FBX data to be read. The stream must be readable and positioned at the start of the
+		/// FBX content.</param>
+		/// <param name="options">Optional reader options that configure how the FBX data is parsed. If null, default options are used.</param>
+		/// <param name="notification">An optional event handler for receiving notifications during the reading process. If null, no notifications are
 		/// raised.</param>
-		public FbxReader(string path, NotificationEventHandler notification = null)
-			: base(path, notification) { }
-
-		/// <summary>
-		/// Initializes a new instance of the FbxReader class to read FBX data from the specified stream.
-		/// </summary>
-		/// <remarks>The caller is responsible for managing the lifetime of the provided stream. The FbxReader does not
-		/// close or dispose the stream when finished.</remarks>
-		/// <param name="stream">The input stream containing FBX data to be read. The stream must be readable and positioned at the start of the FBX
-		/// content.</param>
-		/// <param name="notification">An optional event handler for receiving notifications or warnings during the reading process. If null, notifications
-		/// are not raised.</param>
-		public FbxReader(Stream stream, NotificationEventHandler notification = null)
-			: base(stream, notification) { }
-
-		/// <summary>
-		/// Read a fbx file into an scene
-		/// </summary>
-		/// <returns></returns>
-		public static Scene Read(string path, NotificationEventHandler notificationHandler = null)
+		/// <returns>A Scene object representing the contents of the FBX file. Returns null if the stream does not contain a valid FBX
+		/// scene.</returns>
+		public static Scene Read(Stream stream, FbxReaderOptions options = null, NotificationEventHandler notification = null)
 		{
-			using (FbxReader reader = new FbxReader(path))
+			using (FbxReader reader = new FbxReader(stream, options, notification))
 			{
-				reader.OnNotification += notificationHandler;
 				return reader.Read();
 			}
 		}
 
 		/// <summary>
-		/// Read a fbx stream into an scene
+		/// Parses the input stream and returns the root node of the FBX document.
 		/// </summary>
-		/// <returns></returns>
-		public static Scene Read(Stream stream, NotificationEventHandler notificationHandler = null)
-		{
-			using (FbxReader reader = new FbxReader(stream))
-			{
-				reader.OnNotification += notificationHandler;
-				return reader.Read();
-			}
-		}
-
-		/// <summary>
-		/// Parse the FBX file
-		/// </summary>
+		/// <returns>The root node of the parsed FBX document. The returned object represents the top-level structure of the FBX file.</returns>
 		public FbxRootNode Parse()
 		{
 			FbxRootNode root;
@@ -87,16 +94,16 @@ namespace MeshIO.Formats.Fbx
 		public override Scene Read()
 		{
 			FbxRootNode root = this.Parse();
-			var reader = FbxFileBuilderBase.Create(root, this.Options);
-			reader.OnNotification += this.onNotificationEvent;
+			var builder = FbxFileBuilderBase.Create(root, this.Options);
+			builder.OnNotification += this.onNotificationEvent;
 
-			return reader.Read();
+			return builder.Build();
 		}
 
 		private static IFbxParser getParser(Stream stream, FbxReaderOptions options)
 		{
 			IFbxParser parser = null;
-			if (FbxBinary.ReadHeader(stream))
+			if (FbxBinary.ReadHeader(stream) == ContentType.Binary)
 			{
 				parser = new FbxBinaryParser(stream, options.ErrorLevel);
 			}

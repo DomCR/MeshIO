@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 
 namespace MeshIO.Formats.Obj
 {
-	public class ObjReader : SceneReader
+	public class ObjReader : SceneReader<ObjReaderOptions>
 	{
 		private readonly Regex _matchNoneWhiteSpaces;
 		private readonly StreamReader _reader;
@@ -17,15 +17,15 @@ namespace MeshIO.Formats.Obj
 		/// Initializes a new instance of the <see cref="ObjReader"/> class for the specified file.
 		/// </summary>
 		/// <param name="path">The complete file path to read from</param>
-		public ObjReader(string path, NotificationEventHandler notification = null)
-			: base(path) { }
+		public ObjReader(string path, ObjReaderOptions options = null, NotificationEventHandler notification = null)
+			: base(path, options, notification) { }
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ObjReader"/> class for the specified stream.
 		/// </summary>
 		/// <param name="stream">The stream to read from</param>
-		public ObjReader(Stream stream, NotificationEventHandler notification = null)
-			: base(stream, notification)
+		public ObjReader(Stream stream, ObjReaderOptions options = null, NotificationEventHandler notification = null)
+			: base(stream, options, notification)
 		{
 			_reader = new StreamReader(stream);
 			_matchNoneWhiteSpaces = new Regex(@"\s+", RegexOptions.Compiled);

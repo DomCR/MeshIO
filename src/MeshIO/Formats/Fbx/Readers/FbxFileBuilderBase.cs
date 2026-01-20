@@ -66,7 +66,7 @@ namespace MeshIO.Formats.Fbx.Readers
 			}
 		}
 
-		public Scene Read()
+		public Scene Build()
 		{
 			foreach (FbxNode n in Root)
 			{

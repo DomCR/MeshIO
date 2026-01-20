@@ -1,4 +1,5 @@
-﻿using MeshIO.Entities.Geometries;
+﻿using CSUtilities.IO;
+using MeshIO.Entities.Geometries;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -13,17 +14,17 @@ namespace MeshIO.Formats.Stl
 	/// <remarks>The StlReader class enables importing mesh data from STL files into a scene graph. It supports
 	/// reading from file paths or streams and can notify callers of progress or events during the reading process via an
 	/// optional notification handler. STL files are commonly used for 3D printing and CAD applications.</remarks>
-	public class StlReader : SceneReader
+	public class StlReader : SceneReader<StlReaderOptions>
 	{
 		/// <inheritdoc/>
-		public StlReader(string path, NotificationEventHandler notification = null)
-			: base(path, notification)
+		public StlReader(string path, StlReaderOptions options = null, NotificationEventHandler notification = null)
+			: base(path, null, notification)
 		{
 		}
 
 		/// <inheritdoc/>
-		public StlReader(Stream stream, NotificationEventHandler notification = null)
-			: base(stream, notification)
+		public StlReader(Stream stream, StlReaderOptions options = null, NotificationEventHandler notification = null)
+			: base(stream, options, notification)
 		{
 		}
 
@@ -58,6 +59,47 @@ namespace MeshIO.Formats.Stl
 			header = Encoding.ASCII.GetString(buffer);
 
 			return StlFileToken.Solid.Equals(header, StringComparison.InvariantCultureIgnoreCase) ? ContentType.ASCII : ContentType.Binary;
+		}
+
+		/// <summary>
+		/// Reads a scene from the specified STL data stream.
+		/// </summary>
+		/// <remarks>The method does not close the provided stream. The caller is responsible for managing the
+		/// stream's lifetime. The method supports both ASCII and binary STL formats.</remarks>
+		/// <param name="stream">The input stream containing STL data to be read. The stream must be readable and positioned at the beginning of
+		/// the STL content.</param>
+		/// <param name="options">Optional reader options that control how the STL file is parsed. If null, default options are used.</param>
+		/// <param name="notification">An optional event handler for receiving notifications or progress updates during the read operation. May be null
+		/// if notifications are not required.</param>
+		/// <returns>A Scene object representing the contents of the STL data read from the stream.</returns>
+		public static Scene Read(Stream stream, StlReaderOptions options, NotificationEventHandler notification = null)
+		{
+			using (StlReader reader = new StlReader(stream, options, notification))
+			{
+				return reader.Read();
+			}
+		}
+
+		/// <summary>
+		/// Reads a 3D scene from an STL file at the specified path.
+		/// </summary>
+		/// <param name="path">The file system path to the STL file to read. Cannot be null or empty.</param>
+		/// <param name="options">Optional reader options that control how the STL file is parsed. If null, default options are used.</param>
+		/// <param name="notification">An optional event handler for receiving notifications during the read operation. If null, no notifications are
+		/// raised.</param>
+		/// <returns>A Scene object representing the contents of the STL file.</returns>
+		public static Scene Read(string path, StlReaderOptions options, NotificationEventHandler notification = null)
+		{
+			using (StlReader reader = new StlReader(path, options, notification))
+			{
+				return reader.Read();
+			}
+		}
+
+		/// <inheritdoc/>
+		public override void Dispose()
+		{
+			this._stream.Dispose();
 		}
 
 		/// <inheritdoc/>
@@ -99,12 +141,6 @@ namespace MeshIO.Formats.Stl
 			reader.OnNotification += this.onNotificationEvent;
 
 			return reader.Read();
-		}
-
-		/// <inheritdoc/>
-		public override void Dispose()
-		{
-			this._stream.Dispose();
 		}
 	}
 }
