@@ -15,24 +15,13 @@ namespace MeshIO.Formats.Stl
 	/// optional notification handler. STL files are commonly used for 3D printing and CAD applications.</remarks>
 	public class StlReader : SceneReader
 	{
-		/// <summary>
-		/// Initializes a new instance of the StlReader class for reading STL files from the specified path.
-		/// </summary>
-		/// <param name="path">The file system path to the STL file to be read. Cannot be null or empty.</param>
-		/// <param name="notification">An optional delegate to receive notifications or progress updates during the reading process. Can be null if
-		/// notifications are not required.</param>
+		/// <inheritdoc/>
 		public StlReader(string path, NotificationEventHandler notification = null)
 			: base(path, notification)
 		{
 		}
 
-		/// <summary>
-		/// Initializes a new instance of the StlReader class using the specified input stream.
-		/// </summary>
-		/// <param name="stream">The input stream containing the STL data to be read. The stream must be readable and positioned at the beginning of
-		/// the STL content.</param>
-		/// <param name="notification">An optional delegate to receive notifications or progress updates during the reading process. Can be null if
-		/// notifications are not required.</param>
+		/// <inheritdoc/>
 		public StlReader(Stream stream, NotificationEventHandler notification = null)
 			: base(stream, notification)
 		{

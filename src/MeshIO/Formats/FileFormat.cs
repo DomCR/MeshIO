@@ -139,6 +139,21 @@ public static class FileFormat
 		}
 	}
 
+	/// <summary>
+	/// Creates an appropriate scene writer for the specified file path and scene, based on the file format extension.
+	/// </summary>
+	/// <remarks>The method selects the writer implementation based on the file extension of the provided path. For unsupported or unrecognized formats, an
+	/// exception is thrown.</remarks>
+	/// <param name="path">The file path where the scene will be written. The file extension determines the writer type. Cannot be null or
+	/// empty.</param>
+	/// <param name="scene">The scene to be written to the file. Cannot be null.</param>
+	/// <param name="options">Optional writer-specific options that configure the output. May be null if default options are sufficient.</param>
+	/// <param name="notification">An optional event handler for receiving notifications during the writing process. May be null if notifications are
+	/// not required.</param>
+	/// <returns>An instance of a scene writer suitable for the specified file format.</returns>
+	/// <exception cref="NotImplementedException">Thrown if the file format specified by the extension is recognized but not yet supported (for example, GLTF or OBJ
+	/// formats).</exception>
+	/// <exception cref="NotSupportedException">Thrown if the file format specified by the extension is not recognized or not supported.</exception>
 	public static ISceneWriter GetWriter(string path, Scene scene, SceneWriterOptions options = null, NotificationEventHandler notification = null)
 	{
 		var type = FileFormat.FromExtension(Path.GetExtension(path));
@@ -161,6 +176,21 @@ public static class FileFormat
 		}
 	}
 
+	/// <summary>
+	/// Creates an ISceneWriter instance for the specified file format, writing the provided scene data to the given
+	/// stream.
+	/// </summary>
+	/// <remarks>The caller is responsible for managing the lifetime of the provided stream. Only certain file
+	/// formats are currently supported; others will result in exceptions.</remarks>
+	/// <param name="type">The file format to use for writing the scene. Must be a supported value of FileFormatType.</param>
+	/// <param name="stream">The output stream to which the scene data will be written. Must be writable and remain open for the duration of the
+	/// writer's use.</param>
+	/// <param name="scene">The scene to serialize and write to the output stream.</param>
+	/// <param name="notification">An optional event handler for receiving notifications during the writing process. May be null if notifications are
+	/// not required.</param>
+	/// <returns>An ISceneWriter instance configured to write the scene data in the specified format to the provided stream.</returns>
+	/// <exception cref="NotImplementedException">Thrown if the specified file format is recognized but not yet implemented.</exception>
+	/// <exception cref="NotSupportedException">Thrown if the specified file format is not supported.</exception>
 	public static ISceneWriter GetWriter(FileFormatType type, Stream stream, Scene scene, NotificationEventHandler notification = null)
 	{
 		switch (type)
@@ -182,12 +212,25 @@ public static class FileFormat
 		}
 	}
 
+	/// <summary>
+	/// Retrieves the default writer options for the file format associated with the specified file path.
+	/// </summary>
+	/// <param name="path">The file path used to determine the file format. The file extension is used to select the appropriate writer
+	/// options.</param>
+	/// <returns>A <see cref="SceneWriterOptions"/> instance containing the default options for the detected file format.</returns>
 	public static SceneWriterOptions GetWriterOptions(string path)
 	{
 		var type = FileFormat.FromExtension(Path.GetExtension(path));
 		return GetWriterOptions(type);
 	}
 
+	/// <summary>
+	/// Creates a new instance of scene writer options appropriate for the specified file format type.
+	/// </summary>
+	/// <param name="type">The file format type for which to obtain writer options.</param>
+	/// <returns>A <see cref="SceneWriterOptions"/> instance configured for the specified file format type.</returns>
+	/// <exception cref="NotImplementedException">Thrown if writer options for the specified <paramref name="type"/> are not yet implemented.</exception>
+	/// <exception cref="NotSupportedException">Thrown if the specified <paramref name="type"/> is unknown or not supported.</exception>
 	public static SceneWriterOptions GetWriterOptions(FileFormatType type)
 	{
 		switch (type)

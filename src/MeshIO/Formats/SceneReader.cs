@@ -1,6 +1,4 @@
 ﻿using CSUtilities.IO;
-using MeshIO.Formats.Fbx;
-using MeshIO.Formats.Gltf;
 using System;
 using System.IO;
 
@@ -21,11 +19,25 @@ namespace MeshIO.Formats
 
 		internal readonly StreamIO _stream;
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="SceneReader"/> class for reading from the specified file path.
+		/// </summary>
+		/// <param name="path">The path to the file to be read. Must refer to an existing file accessible for reading.</param>
+		/// <param name="notification">An optional delegate to receive notifications during the reading process. May be null if no notifications are
+		/// required.</param>
 		protected SceneReader(string path, NotificationEventHandler notification = null)
 			: this(File.Open(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite), notification)
 		{
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="SceneReader"/> class using the specified stream and optional notification handler.
+		/// </summary>
+		/// <param name="stream">The input stream containing scene data. The stream must support seeking and cannot be null.</param>
+		/// <param name="notification">An optional delegate to handle notification events during scene reading. May be null if no notifications are
+		/// required.</param>
+		/// <exception cref="ArgumentNullException">Thrown if the stream parameter is null.</exception>
+		/// <exception cref="ArgumentException">Thrown if the stream does not support seeking.</exception>
 		protected SceneReader(Stream stream, NotificationEventHandler notification = null)
 		{
 			if (stream == null)
