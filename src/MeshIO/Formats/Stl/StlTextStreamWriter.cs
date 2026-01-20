@@ -18,6 +18,7 @@ namespace MeshIO.Formats.Stl
 		private readonly Scene _scene;
 
 		private readonly StreamWriter _writer;
+		private readonly IEnumerable<Mesh> _meshes;
 
 		public StlTextStreamWriter(Stream stream, Scene scene, StlWriterOptions options)
 		{
@@ -26,9 +27,24 @@ namespace MeshIO.Formats.Stl
 			this._options = options;
 		}
 
+		public StlTextStreamWriter(Stream stream, IEnumerable<Mesh> meshes, StlWriterOptions options)
+		{
+			this._writer = new StreamWriter(stream, new UTF8Encoding(false));
+			this._meshes = meshes;
+			this._options = options;
+		}
+
 		public void Write()
 		{
-			IEnumerable<Mesh> meshes = this.extractMeshes(this._scene.RootNode);
+			IEnumerable<Mesh> meshes = null;
+			if (this._scene != null)
+			{
+				meshes = StlWriterUtils.ExtractMeshes(this._scene.RootNode);
+			}
+			else
+			{
+				meshes = this._meshes;
+			}
 
 			if (!meshes.Any())
 			{
@@ -94,56 +110,6 @@ namespace MeshIO.Formats.Stl
 		private string doubleToString(double value)
 		{
 			return value.ToString("0.0###############", System.Globalization.CultureInfo.InvariantCulture);
-		}
-
-		private IEnumerable<Mesh> extractMeshes(Node node)
-		{
-			List<Mesh> meshes = new List<Mesh>();
-
-			foreach (var n in node.Nodes)
-			{
-				meshes.AddRange(this.extractMeshes(n));
-			}
-
-			foreach (var m in _scene.RootNode.Entities.OfType<Mesh>())
-			{
-				meshes.Add(prepare(m));
-			}
-
-			foreach (var p in _scene.RootNode.Entities.OfType<Primitive>())
-			{
-				meshes.Add(prepare(p.ToMesh()));
-			}
-
-			return meshes;
-		}
-
-		private Mesh prepare(Mesh mesh)
-		{
-			if (mesh.Layers.TryGetLayer<LayerElementNormal>(out var layer)
-				&& layer.MappingMode == MappingMode.ByPolygon
-				&& !mesh.Polygons.Any(p => p is Quad))
-			{
-				return mesh;
-			}
-
-			Mesh m = new Mesh(mesh.Name);
-			m.Vertices.AddRange(mesh.Vertices);
-			foreach (var item in mesh.Polygons)
-			{
-				if (item is Quad quad)
-				{
-					m.Polygons.AddRange(quad.ToTriangles());
-				}
-				else if (item is Triangle triangle)
-				{
-					m.Polygons.Add(triangle);
-				}
-			}
-
-			m.Layers.Add(LayerElementNormal.CreateFlatNormals(m));
-
-			return m;
 		}
 	}
 }

@@ -81,7 +81,7 @@ public static class FileFormat
 	/// <summary>
 	/// Creates an appropriate scene reader for the specified file path based on the file's extension.
 	/// </summary>
-	/// <remarks>Supported file formats include FBX, GLB, GLTF, OBJ, and STL. The method selects the appropriate
+	/// <remarks>The method selects the appropriate
 	/// reader implementation based on the file extension. If the file format is not supported, a <see
 	/// cref="NotSupportedException"/> is thrown.</remarks>
 	/// <param name="path">The path to the scene file to be read. The file extension determines the reader type. Cannot be null or empty.</param>

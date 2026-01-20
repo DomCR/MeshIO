@@ -63,7 +63,7 @@ internal class StlTextStreamReader : IStlStreamReader
 					meshes.Add(mesh);
 					break;
 				default:
-					this.OnNotification.Invoke(this, new NotificationEventArgs($"Unknown keyword {keyword}.", NotificationType.Warning));
+					this.OnNotification?.Invoke(this, new NotificationEventArgs($"Unknown keyword {keyword}.", NotificationType.Warning));
 					break;
 			}
 		}

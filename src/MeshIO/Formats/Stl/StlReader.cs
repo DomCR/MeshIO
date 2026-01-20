@@ -84,9 +84,13 @@ namespace MeshIO.Formats.Stl
 		}
 
 		/// <summary>
-		/// Read the STL file
+		/// Reads all meshes from the underlying STL stream and returns them as a sequence of Mesh objects.
 		/// </summary>
-		/// <returns><see cref="Mesh"/> defined in the file</returns>
+		/// <remarks>The method automatically detects whether the STL stream is in binary or ASCII format and uses the
+		/// appropriate reader. The stream position is reset to the beginning before reading. Notifications raised during
+		/// reading are forwarded to the registered event handler, if any.</remarks>
+		/// <returns>An enumerable collection of Mesh objects parsed from the STL stream. The collection will be empty if the stream
+		/// contains no meshes.</returns>
 		public IEnumerable<Mesh> ReadMeshes()
 		{
 			this._stream.Position = 0;
