@@ -1,6 +1,5 @@
 ﻿using MeshIO.Entities.Geometries;
 using MeshIO.Entities.Geometries.Layers;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -89,10 +88,5 @@ internal class StlBinaryStreamWriter : IStlStreamWriter
 		}
 
 		this._writer.Flush();
-	}
-
-	private Mesh mergeMeshes(IEnumerable<Mesh> meshes)
-	{
-		throw new NotImplementedException();
 	}
 }
