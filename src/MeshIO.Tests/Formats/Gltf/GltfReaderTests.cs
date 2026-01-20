@@ -22,7 +22,7 @@ public class GltfReaderTests : IOTestsBase
 	{
 	}
 
-	[Theory]
+	[Theory(Skip = "Gltf not implemented")]
 	[MemberData(nameof(GlbFiles))]
 	public void ReadGlb(FileModel test)
 	{

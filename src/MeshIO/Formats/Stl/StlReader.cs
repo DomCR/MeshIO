@@ -1,162 +1,110 @@
-﻿using CSMath;
-using CSUtilities.Converters;
-using CSUtilities.IO;
-using MeshIO.Core;
-using MeshIO.Entities.Geometries;
-using MeshIO.Entities.Geometries.Layers;
+﻿using MeshIO.Entities.Geometries;
+using System;
+using System.Collections.Generic;
 using System.IO;
-using System.Text.RegularExpressions;
+using System.Text;
 
 namespace MeshIO.Formats.Stl
 {
 	/// <summary>
-	/// Reader for STL files in ascii or binary
+	/// Provides functionality to read 3D geometry data from STL (Stereolithography) files and streams, supporting both
+	/// binary and ASCII STL formats.
 	/// </summary>
-	public class StlReader : ReaderBase
+	/// <remarks>The StlReader class enables importing mesh data from STL files into a scene graph. It supports
+	/// reading from file paths or streams and can notify callers of progress or events during the reading process via an
+	/// optional notification handler. STL files are commonly used for 3D printing and CAD applications.</remarks>
+	public class StlReader : SceneReader
 	{
-		private StreamIO _streamIO;
+		/// <inheritdoc/>
+		public StlReader(string path, NotificationEventHandler notification = null)
+			: base(path, notification)
+		{
+		}
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="StlReader"/> class for the specified file.
-		/// </summary>
-		/// <param name="path">The complete file path to read to.</param>
-		public StlReader(string path) : this(new FileStream(path, FileMode.Open))
+		/// <inheritdoc/>
+		public StlReader(Stream stream, NotificationEventHandler notification = null)
+			: base(stream, notification)
 		{
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="StlReader"/> class for the specified stream.
+		/// Determines the content type of a mesh stream by inspecting its header.
 		/// </summary>
-		/// <param name="stream">The stream to write to.</param>
-		public StlReader(Stream stream) : base(stream)
+		/// <remarks>The method reads the first five bytes of the stream to identify the content type. The stream
+		/// position is reset to its original position after the operation. The method assumes the stream contains data in a
+		/// supported mesh format.</remarks>
+		/// <param name="stream">The input stream containing mesh data to analyze. The stream must be readable and seekable.</param>
+		/// <returns>A value indicating whether the mesh data in the stream is in ASCII or binary format.</returns>
+		/// <exception cref="NullReferenceException">Thrown if <paramref name="stream"/> is null.</exception>
+		public static MeshIO.Formats.ContentType GetContentType(Stream stream)
 		{
-			this._streamIO = new StreamIO(this._stream);
+			if (stream == null)
+			{
+				throw new NullReferenceException(nameof(stream));
+			}
+
+			if (stream.Length < 5)
+			{
+				return ContentType.Binary;
+			}
+
+			byte[] buffer = new byte[5];
+			string header;
+
+			stream.Seek(0, SeekOrigin.Begin);
+			stream.Read(buffer, 0, buffer.Length);
+			stream.Seek(0, SeekOrigin.Begin);
+
+			header = Encoding.ASCII.GetString(buffer);
+
+			return StlFileToken.Solid.Equals(header, StringComparison.InvariantCultureIgnoreCase) ? ContentType.ASCII : ContentType.Binary;
 		}
 
-		/// <summary>
-		/// Check the format of the file
-		/// </summary>
-		/// <returns>true if is binary</returns>
-		public bool IsBinary()
-		{
-			this._streamIO.Position = 0;
-			this._streamIO.ReadString(80);
-			int nTriangles = this._streamIO.ReadInt<LittleEndianConverter>();
-
-			return this.checkStreamLenth(nTriangles);
-		}
-
+		/// <inheritdoc/>
 		public override Scene Read()
 		{
 			Scene scene = new Scene();
 
-			Mesh mesh = this.ReadAsMesh();
+			var meshes = this.ReadMeshes();
 
-			Node node = new Node(mesh.Name);
-			node.Entities.Add(mesh);
-
-			scene.RootNode.Nodes.Add(node);
+			scene.RootNode.Entities.AddRange(meshes);
 
 			return scene;
 		}
 
 		/// <summary>
-		/// Read the STL file
+		/// Reads all meshes from the underlying STL stream and returns them as a sequence of Mesh objects.
 		/// </summary>
-		/// <returns><see cref="Mesh"/> defined in the file</returns>
-		public Mesh ReadAsMesh()
+		/// <remarks>The method automatically detects whether the STL stream is in binary or ASCII format and uses the
+		/// appropriate reader. The stream position is reset to the beginning before reading. Notifications raised during
+		/// reading are forwarded to the registered event handler, if any.</remarks>
+		/// <returns>An enumerable collection of Mesh objects parsed from the STL stream. The collection will be empty if the stream
+		/// contains no meshes.</returns>
+		public IEnumerable<Mesh> ReadMeshes()
 		{
-			this._streamIO.Position = 0;
+			this._stream.Position = 0;
 
-			string header = this._streamIO.ReadString(80);
-			this.triggerNotification(header.Replace("\0", ""), NotificationType.Information);
-
-			Mesh mesh = new Mesh();
-			LayerElementNormal normals = new LayerElementNormal();
-			mesh.Layers.Add(normals);
-
-			int nTriangles = this._streamIO.ReadInt<LittleEndianConverter>();
-
-			if (this.checkStreamLenth(nTriangles))
+			IStlStreamReader reader = null;
+			var contentType = StlReader.GetContentType(this._stream.Stream);
+			switch (contentType)
 			{
-				for (int i = 0; i < nTriangles; i++)
-				{
-					XYZ normal = new XYZ(this._streamIO.ReadSingle(), this._streamIO.ReadSingle(), this._streamIO.ReadSingle());
-
-					normals.Add(normal);
-
-					XYZ v1 = new XYZ(this._streamIO.ReadSingle(), this._streamIO.ReadSingle(), this._streamIO.ReadSingle());
-					XYZ v2 = new XYZ(this._streamIO.ReadSingle(), this._streamIO.ReadSingle(), this._streamIO.ReadSingle());
-					XYZ v3 = new XYZ(this._streamIO.ReadSingle(), this._streamIO.ReadSingle(), this._streamIO.ReadSingle());
-
-					mesh.AddPolygons(v1, v2, v3);
-
-					ushort attByteCount = this._streamIO.ReadUShort();
-				}
-			}
-			else
-			{
-				this._streamIO.Position = 0;
-
-				string line = this._streamIO.ReadUntil('\n');
-				string name = Regex.Match(line, @"solid \s\n", options: RegexOptions.IgnoreCase).Value;
-				mesh.Name = name;
-
-				line = this._streamIO.ReadUntil('\n');
-
-				while (!line.Contains($"endsolid {name}"))
-				{
-					XYZ normal = this.readPoint(line, "facet normal");
-					normals.Add(normal);
-
-					this.checkLine(this._streamIO.ReadUntil('\n'), "outer loop");
-
-					XYZ v1 = this.readPoint(this._streamIO.ReadUntil('\n'), "vertex");
-					XYZ v2 = this.readPoint(this._streamIO.ReadUntil('\n'), "vertex");
-					XYZ v3 = this.readPoint(this._streamIO.ReadUntil('\n'), "vertex");
-
-					mesh.AddPolygons(v1, v2, v3);
-
-					this.checkLine(this._streamIO.ReadUntil('\n'), "endloop");
-					this.checkLine(this._streamIO.ReadUntil('\n'), "endfacet");
-
-					line = this._streamIO.ReadUntil('\n');
-				}
+				case ContentType.Binary:
+					reader = new StlBinaryStreamReader(this._stream.Stream);
+					break;
+				case ContentType.ASCII:
+					reader = new StlTextStreamReader(this._stream.Stream);
+					break;
 			}
 
-			return mesh;
+			reader.OnNotification += this.onNotificationEvent;
+
+			return reader.Read();
 		}
 
 		/// <inheritdoc/>
 		public override void Dispose()
 		{
-			this._streamIO.Dispose();
-		}
-
-		private bool checkStreamLenth(int nTriangles)
-		{
-			//Compare the length of the stream to check if is ascii file
-			return this._streamIO.Length == 84 + nTriangles * 50;
-		}
-
-		private void checkLine(string line, string match)
-		{
-			if (string.IsNullOrEmpty(match) &&
-				Regex.Match(line, match + @" \s\n", options: RegexOptions.IgnoreCase).Success)
-			{
-				throw new StlException($"Expected match: {match} | line: {line}");
-			}
-		}
-
-		private XYZ readPoint(string line, string match)
-		{
-			this.checkLine(line, match);
-
-			var x = Regex.Match(line, @"\d+(\.\d+)?");
-			var y = x.NextMatch();
-			var z = y.NextMatch();
-
-			return new XYZ(double.Parse(x.Value), double.Parse(y.Value), double.Parse(z.Value));
+			this._stream.Dispose();
 		}
 	}
 }

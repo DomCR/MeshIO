@@ -15,12 +15,7 @@ namespace MeshIO.Entities.Geometries
 
 		public Mesh(string name) : base(name) { }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="vertices"></param>
-		/// <exception cref="ArgumentException"></exception>
-		public void AddPolygons(params XYZ[] vertices)
+		public void AddPolygons(params IEnumerable<XYZ> vertices)
 		{
 			int count = vertices.Count();
 			if (vertices.Count() % 3 == 0)
@@ -37,7 +32,7 @@ namespace MeshIO.Entities.Geometries
 			}
 		}
 
-		private void addTriangles(XYZ[] vertices)
+		private void addTriangles(IEnumerable<XYZ> vertices)
 		{
 			if (this.Polygons.Any() && this.Polygons.First().GetType() != typeof(Triangle))
 				throw new ArgumentException("This mesh is not formed by Triangles");
@@ -56,7 +51,7 @@ namespace MeshIO.Entities.Geometries
 			}
 		}
 
-		private void addQuads(XYZ[] vertices)
+		private void addQuads(IEnumerable<XYZ> vertices)
 		{
 			if (this.Polygons.Any() && this.Polygons.First().GetType() != typeof(Quad))
 				throw new ArgumentException("This mesh is not formed by Quads");

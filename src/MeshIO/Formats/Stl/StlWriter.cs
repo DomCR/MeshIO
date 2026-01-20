@@ -1,157 +1,117 @@
-﻿using CSMath;
-using CSUtilities.IO;
-using MeshIO.Entities.Geometries.Layers;
-using System;
+﻿using MeshIO.Entities.Geometries;
+using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using MeshIO.Entities.Geometries;
 
 namespace MeshIO.Formats.Stl
 {
-	public class StlWriter : IDisposable
+	/// <summary>
+	/// Provides functionality to write 3D scenes or meshes to files or streams in the STL (Stereolithography) format.
+	/// </summary>
+	/// <remarks>The StlWriter class supports both ASCII and binary STL output, as determined by the specified
+	/// options. It can write single or multiple meshes, or an entire scene, to a file or stream. Notification events can be
+	/// used to receive progress or status updates during the write operation. This class is not thread-safe.</remarks>
+	public class StlWriter : SceneWriter<StlWriterOptions>
 	{
-		private System.Globalization.NumberFormatInfo _nfi;
+		/// <inheritdoc/>
+		public StlWriter(string path, Scene scene, StlWriterOptions options = null, NotificationEventHandler notification = null)
+			: base(path, scene, options, notification) { }
 
-		private StreamIO _stream;
-
-		private StlWriter()
+		/// <inheritdoc/>
+		public StlWriter(Stream stream, Scene scene, StlWriterOptions options = null, NotificationEventHandler notification = null)
+			: base(stream, scene, options, notification)
 		{
-			this._nfi = new();
-			this._nfi.NumberDecimalSeparator = ".";
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="StlWriter"/> class for the specified file.
+		/// Writes the specified mesh to a file in STL format at the given path.
 		/// </summary>
-		/// <param name="path">The complete file path to write to.</param>
-		public StlWriter(string path) : this()
+		/// <param name="path">The file system path where the STL file will be written. If the file exists, it will be overwritten.</param>
+		/// <param name="mesh">The mesh to write to the STL file. Cannot be null.</param>
+		/// <param name="options">Optional settings that control how the STL file is written. If null, default options are used.</param>
+		/// <param name="notification">An optional event handler for receiving progress or status notifications during the write operation. If null, no
+		/// notifications are sent.</param>
+		public static void WriteMesh(string path, Mesh mesh, StlWriterOptions options = null, NotificationEventHandler notification = null)
 		{
-			if (string.IsNullOrEmpty(path))
-				throw new ArgumentNullException(nameof(path));
-
-			this._stream = new StreamIO(File.Create(path));
+			WriteMesh(path, [mesh], options, notification);
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="StlWriter"/> class for the specified stream.
+		/// Writes one or more meshes to a file in STL format at the specified path.
 		/// </summary>
-		/// <param name="stream">The stream to write to.</param>
-		public StlWriter(Stream stream) : this()
+		/// <param name="path">The file system path where the STL file will be created. If the file already exists, it will be overwritten.</param>
+		/// <param name="meshes">A collection of meshes to write to the STL file. Each mesh in the collection will be included in the output.</param>
+		/// <param name="options">Optional settings that control how the STL file is written. If null, default options are used.</param>
+		/// <param name="notification">An optional event handler that receives progress or status notifications during the write operation. Can be null
+		/// if notifications are not needed.</param>
+		public static void WriteMesh(string path, IEnumerable<Mesh> meshes, StlWriterOptions options = null, NotificationEventHandler notification = null)
 		{
-			if (stream == null)
-				throw new ArgumentNullException(nameof(stream));
-
-			if (!stream.CanSeek)
-				throw new ArgumentException("The stream must support seeking. Try reading the data into a buffer first");
-
-			this._stream = new StreamIO(stream);
+			WriteMesh(File.Create(path), meshes, options, notification);
 		}
 
 		/// <summary>
-		/// Write a mesh into an STL ascii file
+		/// Writes the specified mesh to the provided stream in STL format.
 		/// </summary>
-		/// <param name="mesh"></param>
-		/// <remarks>
-		/// The mesh must be formed by triangles, quads are not accpeted for this format. <br/>
-		/// The mesh must also contain a <see cref="LayerElementNormal"/> set to <see cref="MappingMode.ByPolygon"/>
-		/// </remarks>
-		public void WriteAscii(Mesh mesh)
+		/// <param name="stream">The output stream to which the mesh data will be written. The stream must be writable.</param>
+		/// <param name="mesh">The mesh to write to the stream. Cannot be null.</param>
+		/// <param name="options">Optional settings that control how the mesh is written. If null, default options are used.</param>
+		/// <param name="notification">An optional event handler for receiving notifications or progress updates during the write operation. Can be null
+		/// if notifications are not required.</param>
+		public static void WriteMesh(Stream stream, Mesh mesh, StlWriterOptions options = null, NotificationEventHandler notification = null)
 		{
-			this.validate(mesh);
-
-			using (TextWriter tw = new StreamWriter(this._stream.Stream, new UTF8Encoding(false)))
-			{
-				tw.WriteLine($"solid {mesh.Name}");
-
-				LayerElementNormal normals = mesh.Layers.GetLayer<LayerElementNormal>();
-				for (int i = 0; i < mesh.Polygons.Count; i++)
-				{
-					XYZ normal = normals.Normals[i];
-
-					tw.WriteLine($"  facet normal {normal.X.ToString(this._nfi)} {normal.Y.ToString(this._nfi)} {normal.Z.ToString(this._nfi)}");
-
-					tw.WriteLine($"    outer loop");
-
-					foreach (int item in (Triangle)mesh.Polygons[i])
-					{
-						var v = mesh.Vertices[item];
-
-						tw.WriteLine($"      vertex {v.X.ToString(this._nfi)} {v.Y.ToString(this._nfi)} {v.Z.ToString(this._nfi)}");
-					}
-
-					tw.WriteLine($"    endloop");
-					tw.WriteLine($"  endfacet");
-				}
-
-				tw.WriteLine($"endsolid {mesh.Name}");
-			}
+			WriteMesh(stream, [mesh], options, notification);
 		}
 
 		/// <summary>
-		/// Write a mesh into an STL binary file
+		/// Writes one or more meshes to the specified stream in STL format using the provided options.
 		/// </summary>
-		/// <param name="mesh"></param>
-		/// <param name="header">Optional header parameter</param>
-		/// <remarks>
-		/// The mesh must be formed by triangles, quads are not accpeted for this format. <br/>
-		/// The mesh must also contain a <see cref="LayerElementNormal"/> set to <see cref="MappingMode.ByPolygon"/>
-		/// </remarks>
-		public void WriteBinary(Mesh mesh, string header = null)
+		/// <remarks>The method supports both binary and ASCII STL formats, as specified by the options. The caller is
+		/// responsible for managing the lifetime of the provided stream. If the stream is not writable, an exception may be
+		/// thrown by the underlying writer.</remarks>
+		/// <param name="stream">The output stream to which the STL data will be written. The stream must be writable and remain open for the
+		/// duration of the operation.</param>
+		/// <param name="meshes">A collection of meshes to write to the stream. Each mesh represents a 3D object to be exported.</param>
+		/// <param name="options">The options that control how the STL data is written, such as content type (binary or ASCII). If null, default
+		/// options are used.</param>
+		/// <param name="notification">An optional event handler that receives notifications about the writing process. Can be null if no notifications
+		/// are needed.</param>
+		public static void WriteMesh(Stream stream, IEnumerable<Mesh> meshes, StlWriterOptions options = null, NotificationEventHandler notification = null)
 		{
-			this.validate(mesh);
-
-			if (string.IsNullOrEmpty(header))
+			if (options == null)
 			{
-				header = "File created by MeshIO.STL";
-			}
-			else if (header.Length > 80)
-			{
-				throw new StlException("Header length must be 80 or less");
+				options = new StlWriterOptions();
 			}
 
-			header = header + new string('\0', 80 - header.Length);
-
-			this._stream.Write(header, Encoding.UTF8);
-			this._stream.Write(mesh.Polygons.Count);
-
-			LayerElementNormal normals = mesh.Layers.GetLayer<LayerElementNormal>();
-			for (int i = 0; i < mesh.Polygons.Count; i++)
+			IStlStreamWriter writer = null;
+			switch (options.ContentType)
 			{
-				XYZ normal = normals.Normals[i];
-
-				this._stream.Write((float)normal.X);
-				this._stream.Write((float)normal.Y);
-				this._stream.Write((float)normal.Z);
-
-				foreach (int item in (Triangle)mesh.Polygons[i])
-				{
-					var v = mesh.Vertices[item];
-
-					this._stream.Write((float)v.X);
-					this._stream.Write((float)v.Y);
-					this._stream.Write((float)v.Z);
-				}
-
-				ushort attByteCount = 0;
-				this._stream.Write(attByteCount);
+				case ContentType.Binary:
+					writer = new StlBinaryStreamWriter(stream, meshes);
+					break;
+				case ContentType.ASCII:
+					writer = new StlTextStreamWriter(stream, meshes, options);
+					break;
 			}
+
+			writer.OnNotification += notification;
+			writer.Write();
 		}
 
 		/// <inheritdoc/>
-		public void Dispose()
+		public override void Write()
 		{
-			this._stream.Dispose();
-		}
+			IStlStreamWriter writer = null;
+			switch (this.Options.ContentType)
+			{
+				case ContentType.Binary:
+					writer = new StlBinaryStreamWriter(_stream, _scene);
+					break;
+				case ContentType.ASCII:
+					writer = new StlTextStreamWriter(_stream, _scene, Options);
+					break;
+			}
 
-		private void validate(Mesh mesh)
-		{
-			if (mesh.Polygons.OfType<Quad>().Any())
-				throw new StlException("Quads are not accepted in stl format");
-
-			if (!mesh.Layers.TryGetLayer<LayerElementNormal>(out LayerElementNormal layer) ||
-				layer?.MappingMode != MappingMode.ByPolygon)
-				throw new StlException("LayerElementNormal must be set for the mesh with the mapping mode set to ByPolygon");
+			writer.OnNotification += this.onNotificationEvent;
+			writer.Write();
 		}
 	}
 }

@@ -1,8 +1,5 @@
 ﻿using CSMath;
-using CSUtilities.Extensions;
-using MeshIO.Core;
 using MeshIO.Entities.Geometries;
-using MeshIO.Formats;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -11,7 +8,7 @@ using System.Text.RegularExpressions;
 
 namespace MeshIO.Formats.Obj
 {
-	public class ObjReader : ReaderBase
+	public class ObjReader : SceneReader
 	{
 		private readonly Regex _matchNoneWhiteSpaces;
 		private readonly StreamReader _reader;
@@ -20,13 +17,15 @@ namespace MeshIO.Formats.Obj
 		/// Initializes a new instance of the <see cref="ObjReader"/> class for the specified file.
 		/// </summary>
 		/// <param name="path">The complete file path to read from</param>
-		public ObjReader(string path) : this(File.OpenRead(path)) { }
+		public ObjReader(string path, NotificationEventHandler notification = null)
+			: base(path) { }
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ObjReader"/> class for the specified stream.
 		/// </summary>
 		/// <param name="stream">The stream to read from</param>
-		public ObjReader(Stream stream) : base(stream)
+		public ObjReader(Stream stream, NotificationEventHandler notification = null)
+			: base(stream, notification)
 		{
 			_reader = new StreamReader(stream);
 			_matchNoneWhiteSpaces = new Regex(@"\s+", RegexOptions.Compiled);

@@ -87,7 +87,7 @@ public class FbxWriterTests : IOTestsBase
 		Scene scene = new Scene();
 
 		Node box = new Node("my_node");
-		Mesh mesh = new Box("my_box").CreateMesh();
+		Mesh mesh = new Box("my_box").ToMesh();
 		box.Entities.Add(mesh);
 
 		scene.RootNode.Nodes.Add(box);

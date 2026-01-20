@@ -26,7 +26,7 @@ namespace MeshIO.Entities.Primitives
 		/// Process this primitive into a mesh
 		/// </summary>
 		/// <returns></returns>
-		public abstract Mesh CreateMesh();
+		public abstract Mesh ToMesh();
 
 		public Primitive() : this(string.Empty) { }
 

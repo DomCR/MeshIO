@@ -9,7 +9,6 @@ using MeshIO.Entities.Geometries;
 using MeshIO.Shaders;
 using MeshIO.Entities;
 using MeshIO.Formats.Gltf.Exceptions;
-using MeshIO.Core;
 using MeshIO.Formats;
 
 namespace MeshIO.Formats.Gltf.Readers

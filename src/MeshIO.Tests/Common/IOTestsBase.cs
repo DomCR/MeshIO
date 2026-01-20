@@ -1,5 +1,4 @@
-﻿using MeshIO.Core;
-using MeshIO.Tests.TestModels;
+﻿using MeshIO.Tests.TestModels;
 using System.IO;
 using Xunit;
 using Xunit.Abstractions;

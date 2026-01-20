@@ -1,7 +1,10 @@
-﻿namespace MeshIO.Formats.Fbx
+﻿using System;
+
+namespace MeshIO.Formats.Fbx
 {
-	public class FbxWriterOptions
+	public class FbxWriterOptions : SceneWriterOptions
 	{
+		[Obsolete]
 		public bool IsBinaryFormat { get; set; } = false;
 
 		public FbxVersion Version { get; set; } = FbxVersion.v7400;
