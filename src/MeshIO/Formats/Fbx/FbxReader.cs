@@ -15,11 +15,11 @@ namespace MeshIO.Formats.Fbx
 	public class FbxReader : SceneReader<FbxReaderOptions>
 	{
 		/// <inheritdoc/>
-		public FbxReader(string path, FbxReaderOptions options, NotificationEventHandler notification = null)
+		public FbxReader(string path, FbxReaderOptions options = null, NotificationEventHandler notification = null)
 			: base(path, options, notification) { }
 
 		/// <inheritdoc/>
-		public FbxReader(Stream stream, FbxReaderOptions options, NotificationEventHandler notification = null)
+		public FbxReader(Stream stream, FbxReaderOptions options = null, NotificationEventHandler notification = null)
 			: base(stream, options, notification) { }
 
 		/// <summary>
