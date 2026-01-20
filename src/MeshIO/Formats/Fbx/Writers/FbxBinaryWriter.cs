@@ -106,8 +106,8 @@ namespace MeshIO.Formats.Fbx.Writers
 				{ typeof(float),  new WriterInfo('F', (sw, obj) => sw.Write((float)obj)) },
 				{ typeof(double), new WriterInfo('D', (sw, obj) => sw.Write((double)obj)) },
 				{ typeof(char),   new WriterInfo('C', (sw, obj) => sw.Write((byte)(char)obj)) },
-				{ typeof(byte[]), new WriterInfo('R', WriteRaw) },
-				{ typeof(string), new WriterInfo('S', WriteString) },
+				{ typeof(byte[]), new WriterInfo('R', writeRaw) },
+				{ typeof(string), new WriterInfo('S', writeString) },
 				// null elements indicate arrays - they are checked again with their element type
 				{ typeof(int[]),    new WriterInfo('i', null) },
 				{ typeof(long[]),   new WriterInfo('l', null) },
@@ -116,14 +116,14 @@ namespace MeshIO.Formats.Fbx.Writers
 				{ typeof(bool[]),   new WriterInfo('b', null) },
 			};
 
-		static void WriteRaw(BinaryWriter stream, object obj)
+		private static void writeRaw(BinaryWriter stream, object obj)
 		{
 			var bytes = (byte[])obj;
 			stream.Write(bytes.Length);
 			stream.Write(bytes);
 		}
 
-		static void WriteString(BinaryWriter stream, object obj)
+		private static void writeString(BinaryWriter stream, object obj)
 		{
 			var str = obj.ToString();
 			// Replace "::" with \0\1 and reverse the tokens
@@ -198,7 +198,7 @@ namespace MeshIO.Formats.Fbx.Writers
 			}
 		}
 
-		void WriteProperty(object obj, int id)
+		private void writeProperty(object obj, int id)
 		{
 			if (obj == null)
 			{
@@ -275,7 +275,7 @@ namespace MeshIO.Formats.Fbx.Writers
 				var propertyBegin = this.stream.BaseStream.Position;
 				for (int i = 0; i < node.Properties.Count; i++)
 				{
-					this.WriteProperty(node.Properties[i], i);
+					this.writeProperty(node.Properties[i], i);
 				}
 				var propertyEnd = this.stream.BaseStream.Position;
 				this.stream.BaseStream.Position = propertyLengthPos;

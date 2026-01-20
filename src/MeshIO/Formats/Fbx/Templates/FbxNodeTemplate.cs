@@ -42,23 +42,23 @@ namespace MeshIO.Formats.Fbx.Templates
 			node.Add(FbxFileToken.CullingOff, "CullingOff");
 		}
 
-		public override void ProcessChildren(FbxFileWriterBase fwriter)
+		public override void ProcessChildren(FbxFileWriterBase writer)
 		{
-			base.ProcessChildren(fwriter);
+			base.ProcessChildren(writer);
 
 			foreach (Node node in this._element.Nodes)
 			{
-				fwriter.CreateConnection(node, this);
+				writer.CreateConnection(node, this);
 			}
 
 			foreach (Material mat in this._element.Materials)
 			{
-				fwriter.CreateConnection(mat, this);
+				writer.CreateConnection(mat, this);
 			}
 
 			foreach (Entity entity in this._element.Entities)
 			{
-				fwriter.CreateConnection(entity, this);
+				writer.CreateConnection(entity, this);
 			}
 		}
 

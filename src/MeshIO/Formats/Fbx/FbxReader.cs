@@ -1,5 +1,5 @@
-﻿using MeshIO.Formats.Fbx.Readers;
-using MeshIO.Formats.Fbx.Readers.Parsers;
+﻿using MeshIO.Formats.Fbx.Parsers;
+using MeshIO.Formats.Fbx.Readers;
 using System.IO;
 
 namespace MeshIO.Formats.Fbx

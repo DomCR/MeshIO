@@ -5,7 +5,7 @@ namespace MeshIO.Formats.Fbx.Templates
 {
 	internal interface IFbxObjectTemplate
 	{
-		string Id { get; }
+		string Id { get; set; }
 
 		string Name { get; }
 

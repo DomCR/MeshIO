@@ -8,7 +8,7 @@ namespace MeshIO.Formats.Fbx.Templates
 	internal abstract class FbxObjectTemplate<T> : IFbxObjectTemplate
 		where T : Element3D
 	{
-		public string Id { get; }
+		public string Id { get; set; }
 
 		public string Name { get { return this._element.Name; } }
 
@@ -54,8 +54,15 @@ namespace MeshIO.Formats.Fbx.Templates
 		{
 			FbxPropertyTemplate template = builder.GetProperties(FbxObjectName);
 
-			_element.Id = Convert.ToUInt64(FbxNode.GetProperty<long>(0));
-			_element.Name = removePrefix(FbxNode.GetProperty<string>(1));
+			if (builder.Version < FbxVersion.v7000)
+			{
+				_element.Id = IdUtils.CreateId();
+				_element.Name = removePrefix(FbxNode.GetProperty<string>(1));
+			}
+			else
+			{
+				_element.Name = removePrefix(FbxNode.GetProperty<string>(1));
+			}
 
 			Dictionary<string, FbxProperty> nodeProp = builder.ReadProperties(FbxNode);
 			foreach (var t in template.Properties)

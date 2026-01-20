@@ -6,7 +6,7 @@ namespace MeshIO.Formats.Fbx.Templates
 {
 	internal class FbxGlobalSettingsTemplate : IFbxObjectTemplate
 	{
-		public string Id { get; }
+		public string Id { get; set; }
 
 		public string Name { get; }
 

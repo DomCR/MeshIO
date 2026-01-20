@@ -48,5 +48,10 @@ namespace MeshIO.Formats.Fbx.Connections
 					throw new System.ArgumentException($"Unknown Fbx connectin type: {type}", nameof(type));
 			}
 		}
+
+		public override string ToString()
+		{
+			return $"{ConnectionType} {ChildId} | {ParentId}";
+		}
 	}
 }

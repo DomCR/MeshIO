@@ -48,9 +48,10 @@ namespace MeshIO.Formats.Fbx.Readers
 				case FbxVersion.v4050:
 				case FbxVersion.v5000:
 				case FbxVersion.v5800:
+					throw new NotSupportedException($"Fbx version {root.Version} no supported for reader");
 				case FbxVersion.v6000:
 				case FbxVersion.v6100:
-					throw new NotSupportedException($"Fbx version {root.Version} no supported for reader");
+					return new FbxFileBuilder6000(root, options);
 				case FbxVersion.v7000:
 				case FbxVersion.v7100:
 				case FbxVersion.v7200:
@@ -80,6 +81,9 @@ namespace MeshIO.Formats.Fbx.Readers
 						break;
 					case FbxFileToken.Documents:
 						this.readDocuments(n);
+						break;
+					case FbxFileToken.Document:
+						this.readDocument(n);
 						break;
 					case FbxFileToken.References:
 						this.readReferences(n);
@@ -147,33 +151,49 @@ namespace MeshIO.Formats.Fbx.Readers
 			{
 				return children;
 			}
-			else
+
+			if (this.Version < FbxVersion.v7000)
 			{
-				return new List<FbxConnection>();
+				if (this._connections.TryGetValue($"Model::{id}", out children))
+				{
+					return children;
+				}
 			}
+
+			return new List<FbxConnection>();
 		}
 
 		protected FbxProperty readFbxProperty(FbxNode node)
 		{
 			string name = node.GetProperty<string>(0);
 			string type1 = node.GetProperty<string>(1);
-			string label = node.GetProperty<string>(2);
-			PropertyFlags flags = FbxProperty.ParseFlags(node.GetProperty<string>(3));
+			string label = string.Empty;
+			PropertyFlags flags;
+			if (this.Version < FbxVersion.v7000)
+			{
+				flags = FbxProperty.ParseFlags(node.GetProperty<string>(2));
+			}
+			else
+			{
+				label = node.GetProperty<string>(2);
+				flags = FbxProperty.ParseFlags(node.GetProperty<string>(3));
+			}
 
+			int valueIndex = this.Version < FbxVersion.v7000 ? 3 : 4;
 			object value = null;
 
-			if(node.Properties.Count == 4)
+			if (node.Properties.Count == valueIndex)
 			{
 				value = null;
 			}
-			else if (node.Properties.Count == 5)
+			else if (node.Properties.Count == valueIndex + 1)
 			{
-				value = node.Properties[4];
+				value = node.Properties[valueIndex];
 			}
 			else
 			{
 				value = new List<object>();
-				for (int i = 4; i < node.Properties.Count; i++)
+				for (int i = valueIndex; i < node.Properties.Count; i++)
 				{
 					(value as List<object>).Add(node.Properties[i]);
 				}
@@ -189,8 +209,6 @@ namespace MeshIO.Formats.Fbx.Readers
 
 		protected void readHeader(FbxNode node)
 		{
-			this.Notify("FBXHeaderExtension section not implemented", NotificationType.NotImplemented);
-
 			foreach (FbxNode n in node)
 			{
 				switch (n.Name)
@@ -228,15 +246,19 @@ namespace MeshIO.Formats.Fbx.Readers
 
 		protected void readDocument(FbxNode node)
 		{
-
+			foreach (FbxNode n in node)
+			{
+				switch (n.Name)
+				{
+					case "Name":
+						this._rootTemplate.Id = n.Value.ToString();
+						break;
+				}
+			}
 		}
 
 		protected void readReferences(FbxNode node)
 		{
-			if (!node.IsEmpty)
-			{
-				this.Notify("References section not implemented", NotificationType.NotImplemented);
-			}
 		}
 
 		protected void readDefinitions(FbxNode node)
@@ -252,7 +274,7 @@ namespace MeshIO.Formats.Fbx.Readers
 						this.readDefinition(n);
 						break;
 					default:
-						this.Notify($"{node.Name} | unknown node: {n.Name}", NotificationType.NotImplemented);
+						this.Notify($"[{node.Name}] unknown node: {n.Name}", NotificationType.NotImplemented);
 						break;
 				}
 			}
@@ -274,13 +296,11 @@ namespace MeshIO.Formats.Fbx.Readers
 			string name = string.Empty;
 			if (!node.TryGetNode("PropertyTemplate", out FbxNode tempalteNode))
 			{
-				this.Notify($"PropertyTemplate not found for {objectType}", NotificationType.Warning);
 				return;
 			}
 
 			if (!tempalteNode.TryGetProperty(0, out name))
 			{
-				this.Notify($"PropertyTemplate name not found for {objectType}", NotificationType.Warning);
 				return;
 			}
 
@@ -297,6 +317,9 @@ namespace MeshIO.Formats.Fbx.Readers
 
 				switch (n.Name)
 				{
+					case FbxFileToken.GlobalSettings:
+						this.readGlobalSettings(n);
+						continue; ;
 					case FbxFileToken.Model:
 						template = new FbxNodeTemplate(n);
 						break;
