@@ -1,5 +1,8 @@
 ﻿using MeshIO.Entities.Primitives;
 using MeshIO.Formats;
+using MeshIO.Tests.Common;
+using MeshIO.Tests.TestModels;
+using System.IO;
 using Xunit;
 using Xunit.Abstractions;
 
