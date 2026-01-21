@@ -1,7 +1,9 @@
-﻿using MeshIO.Formats.Fbx;
+﻿using MeshIO.Entities.Geometries;
+using MeshIO.Entities.Geometries.Layers;
+using MeshIO.Formats.Fbx;
 using MeshIO.Tests.Common;
 using MeshIO.Tests.TestModels;
-using System.IO;
+using System.Linq;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -20,50 +22,48 @@ public class FbxReaderTests : IOTestsBase
 	{
 	}
 
-	[Fact]
-	public void IOAsciiTest()
+	[Theory]
+	[MemberData(nameof(FbxFiles))]
+	public void ParseTest(FileModel test)
 	{
-		string inPath = Path.Combine(TestVariables.InputSamplesFolder, "fbx", "sample_basic_box_ascii.fbx");
-
-		Scene scene = null;
-		using (FbxReader reader = new FbxReader(File.OpenRead(inPath)))
+		FbxRootNode root = null;
+		using (FbxReader reader = new FbxReader(test.Path))
 		{
-			reader.OnNotification += this.onNotification;
-			scene = reader.Read();
-		}
-
-		using (FbxWriter writer = new FbxWriter(new MemoryStream(), scene))
-		{
-			writer.Write();
-		}
-	}
-
-	[Fact]
-	public void IOBinaryTest()
-	{
-		string inPath = Path.Combine(TestVariables.InputSamplesFolder, "fbx", "sample_basic_box_binary.fbx");
-
-		Scene scene = null;
-		using (FbxReader reader = new FbxReader(File.OpenRead(inPath)))
-		{
-			reader.OnNotification += this.onNotification;
-			scene = reader.Read();
-		}
-
-		using (FbxWriter writer = new FbxWriter(new MemoryStream(), scene))
-		{
-			writer.Write();
+			reader.OnNotification += onNotification;
+			root = reader.Parse();
 		}
 	}
 
 	[Theory]
 	[MemberData(nameof(FbxFiles))]
-	public void ParseTest(FileModel test)
+	public void ReadTest(FileModel test)
 	{
+		Scene scene = null;
+		FbxVersion version;
 		using (FbxReader reader = new FbxReader(test.Path))
 		{
-			reader.OnNotification += onNotification;
-			reader.Parse();
+			reader.OnNotification += this.onNotification;
+			scene = reader.Read();
+			version = reader.Version;
 		}
+
+		Assert.NotNull(scene.RootNode);
+		Assert.NotEmpty(scene.RootNode.Nodes);
+
+		var n = scene.RootNode.Nodes.FirstOrDefault(n => n.Name == "default_cube");
+		Mesh mesh = n.Entities.OfType<Mesh>().FirstOrDefault();
+		this.assertCube(mesh);
+	}
+
+	private void assertCube(Mesh mesh)
+	{
+		Assert.NotNull(mesh);
+		Assert.NotEmpty(mesh.Polygons);
+		Assert.NotEmpty(mesh.Vertices);
+		Assert.NotEmpty(mesh.Edges);
+		Assert.NotEmpty(mesh.Layers);
+		var normalLayer = mesh.Layers.GetLayer<LayerElementNormal>();
+		Assert.NotNull(normalLayer);
+		Assert.NotEmpty(normalLayer.Normals);
 	}
 }

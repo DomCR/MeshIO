@@ -14,6 +14,24 @@ namespace MeshIO.Formats.Fbx;
 /// </remarks>
 public class FbxReader : SceneReader<FbxReaderOptions>
 {
+	/// <summary>
+	/// Gets the FBX file format version associated with the current document.
+	/// </summary>
+	public FbxVersion Version
+	{
+		get
+		{
+			if (this._root == null)
+			{
+				return FbxVersion.Unknown;
+			}
+
+			return this._root.Version;
+		}
+	}
+
+	private FbxRootNode _root;
+
 	/// <inheritdoc/>
 	public FbxReader(string path, FbxReaderOptions options = null, NotificationEventHandler notification = null)
 		: base(path, options, notification) { }
@@ -81,20 +99,24 @@ public class FbxReader : SceneReader<FbxReaderOptions>
 	/// <returns>The root node of the parsed FBX document. The returned object represents the top-level structure of the FBX file.</returns>
 	public FbxRootNode Parse()
 	{
-		FbxRootNode root;
-		using (IFbxParser parser = getParser(this._stream.Stream, this.Options))
+		if (_root != null)
 		{
-			root = parser.Parse();
+			return _root;
 		}
 
-		return root;
+		using (IFbxParser parser = getParser(this._stream.Stream, this.Options))
+		{
+			_root = parser.Parse();
+		}
+
+		return _root;
 	}
 
 	/// <inheritdoc/>
 	public override Scene Read()
 	{
-		FbxRootNode root = this.Parse();
-		var builder = FbxFileBuilderBase.Create(root, this.Options);
+		this.Parse();
+		var builder = FbxFileBuilderBase.Create(_root, this.Options);
 		builder.OnNotification += this.onNotificationEvent;
 
 		return builder.Build();

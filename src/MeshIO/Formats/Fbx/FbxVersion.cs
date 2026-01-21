@@ -5,6 +5,7 @@
 /// </summary>
 public enum FbxVersion
 {
+	Unknown = 0,
 	/// <summary>
 	/// FBX version 2.0
 	/// </summary>

@@ -57,7 +57,7 @@ internal abstract class FbxObjectBuilder<T> : IFbxObjectBuilder
 		if (builder.Version < FbxVersion.v7000)
 		{
 			_element.Id = IdUtils.CreateId();
-			_element.Name = removePrefix(FbxNode.GetProperty<string>(1));
+			_element.Name = removePrefix(FbxNode.GetProperty<string>(0));
 		}
 		else
 		{
