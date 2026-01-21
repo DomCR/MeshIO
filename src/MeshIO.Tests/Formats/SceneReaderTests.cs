@@ -14,6 +14,7 @@ namespace MeshIO.Tests.Formats
 		{
 			loadSamples("stl", "stl", InputCases);
 			loadSamples("fbx", "fbx", InputCases);
+			loadSamples("glb", "glb", InputCases);
 		}
 
 		public SceneReaderTests(ITestOutputHelper output)
