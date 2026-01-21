@@ -1,9 +1,8 @@
-﻿namespace MeshIO.Formats.Gltf.Schema
+﻿namespace MeshIO.Formats.Gltf.Schema;
+
+internal class GlbHeader
 {
-	internal class GlbHeader
-	{
-		public uint Magic { get; set; }
-		public uint Version { get; set; }
-		public uint Length { get; set; }
-	}
+	public uint Magic { get; set; }
+	public uint Version { get; set; }
+	public uint Length { get; set; }
 }

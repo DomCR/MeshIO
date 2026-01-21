@@ -1,23 +1,22 @@
 ﻿using System;
 
-namespace MeshIO.Formats.Gltf.Exceptions
+namespace MeshIO.Formats.Gltf.Exceptions;
+
+[Serializable]
+public class GltfReaderException : Exception
 {
-	[Serializable]
-	public class GltfReaderException : Exception
-	{
-		public GltfReaderException(string message) : base(message) { }
+	public GltfReaderException(string message) : base(message) { }
 
-		/// <summary>
-		/// An error at a binary stream offset.
-		/// </summary>
-		/// <param name="message"></param>
-		/// <param name="position"></param>
-		public GltfReaderException(string message, long position) :
-			base($"{message}, near offset {position}")
-		{ }
+	/// <summary>
+	/// An error at a binary stream offset.
+	/// </summary>
+	/// <param name="message"></param>
+	/// <param name="position"></param>
+	public GltfReaderException(string message, long position) :
+		base($"{message}, near offset {position}")
+	{ }
 
-		public GltfReaderException(string message, int accIndex) :
-			base($"{message}, accessor index: {accIndex}")
-		{ }
-	}
+	public GltfReaderException(string message, int accIndex) :
+		base($"{message}, accessor index: {accIndex}")
+	{ }
 }

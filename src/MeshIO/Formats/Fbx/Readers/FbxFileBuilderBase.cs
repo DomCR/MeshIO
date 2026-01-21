@@ -1,364 +1,386 @@
-﻿using MeshIO.Formats.Fbx.Connections;
-using MeshIO.Formats.Fbx.Templates;
+﻿using MeshIO.Formats.Fbx.Builders;
+using MeshIO.Formats.Fbx.Connections;
 using System;
 using System.Collections.Generic;
 
-namespace MeshIO.Formats.Fbx.Readers
+namespace MeshIO.Formats.Fbx.Readers;
+
+internal abstract class FbxFileBuilderBase
 {
-	internal abstract class FbxFileBuilderBase
+	public event NotificationEventHandler OnNotification;
+
+	public FbxVersion Version { get { return this.Root.Version; } }
+
+	public FbxRootNode Root { get; }
+
+	public FbxReaderOptions Options { get; }
+
+	protected readonly Scene _scene;
+
+	protected readonly IFbxObjectBuilder _rootTemplate;
+
+	protected readonly Dictionary<string, FbxPropertyTemplate> _propertyTemplates = new();
+
+	protected readonly Dictionary<string, IFbxObjectBuilder> _objectTemplates = new();
+
+	protected readonly Dictionary<string, List<FbxConnection>> _connections = new();
+
+	protected FbxFileBuilderBase(FbxRootNode root, FbxReaderOptions options)
 	{
-		public event NotificationEventHandler OnNotification;
+		this.Root = root;
+		this.Options = options;
 
-		public FbxVersion Version { get { return this.Root.Version; } }
+		this._scene = new Scene();
+		this._scene.RootNode.Id = 0;
+		this._rootTemplate = new FbxRootNodeBuilder(this._scene.RootNode);
+	}
 
-		public FbxRootNode Root { get; }
-
-		public FbxReaderOptions Options { get; }
-
-		protected readonly Scene _scene;
-
-		protected readonly IFbxObjectTemplate _rootTemplate;
-
-		protected readonly Dictionary<string, FbxPropertyTemplate> _propertyTemplates = new();
-
-		protected readonly Dictionary<string, IFbxObjectTemplate> _objectTemplates = new();
-
-		protected readonly Dictionary<string, List<FbxConnection>> _connections = new();
-
-		protected FbxFileBuilderBase(FbxRootNode root, FbxReaderOptions options)
+	public static FbxFileBuilderBase Create(FbxRootNode root, FbxReaderOptions options)
+	{
+		switch (root.Version)
 		{
-			this.Root = root;
-			this.Options = options;
+			case FbxVersion.v2000:
+			case FbxVersion.v2001:
+			case FbxVersion.v3000:
+			case FbxVersion.v3001:
+			case FbxVersion.v4000:
+			case FbxVersion.v4001:
+			case FbxVersion.v4050:
+			case FbxVersion.v5000:
+			case FbxVersion.v5800:
+				throw new NotSupportedException($"Fbx version {root.Version} no supported for reader");
+			case FbxVersion.v6000:
+			case FbxVersion.v6100:
+				return new FbxFileBuilder6000(root, options);
+			case FbxVersion.v7000:
+			case FbxVersion.v7100:
+			case FbxVersion.v7200:
+			case FbxVersion.v7300:
+			case FbxVersion.v7400:
+			case FbxVersion.v7500:
+			case FbxVersion.v7600:
+			case FbxVersion.v7700:
+				return new FbxFileBuilder7000(root, options);
+			default:
+				throw new NotSupportedException($"Unknown Fbx version {root.Version} for writer");
 
-			this._scene = new Scene();
-			this._scene.RootNode.Id = 0;
-			this._rootTemplate = new FbxRootNodeTemplate(this._scene.RootNode);
 		}
+	}
 
-		public static FbxFileBuilderBase Create(FbxRootNode root, FbxReaderOptions options)
+	public Scene Build()
+	{
+		foreach (FbxNode n in Root)
 		{
-			switch (root.Version)
+			switch (n.Name)
 			{
-				case FbxVersion.v2000:
-				case FbxVersion.v2001:
-				case FbxVersion.v3000:
-				case FbxVersion.v3001:
-				case FbxVersion.v4000:
-				case FbxVersion.v4001:
-				case FbxVersion.v4050:
-				case FbxVersion.v5000:
-				case FbxVersion.v5800:
-				case FbxVersion.v6000:
-				case FbxVersion.v6100:
-					throw new NotSupportedException($"Fbx version {root.Version} no supported for reader");
-				case FbxVersion.v7000:
-				case FbxVersion.v7100:
-				case FbxVersion.v7200:
-				case FbxVersion.v7300:
-				case FbxVersion.v7400:
-				case FbxVersion.v7500:
-				case FbxVersion.v7600:
-				case FbxVersion.v7700:
-					return new FbxFileBuilder7000(root, options);
+				case FbxFileToken.FBXHeaderExtension:
+					this.readHeader(n);
+					break;
+				case FbxFileToken.GlobalSettings:
+					this.readGlobalSettings(n);
+					break;
+				case FbxFileToken.Documents:
+					this.readDocuments(n);
+					break;
+				case FbxFileToken.Document:
+					this.readDocument(n);
+					break;
+				case FbxFileToken.References:
+					this.readReferences(n);
+					break;
+				case FbxFileToken.Definitions:
+					this.readDefinitions(n);
+					break;
+				case FbxFileToken.Objects:
+					this.readObjects(n);
+					break;
+				case FbxFileToken.Connections:
+					this.readConnections(n);
+					break;
 				default:
-					throw new NotSupportedException($"Unknown Fbx version {root.Version} for writer");
-
+					this.Notify($"Unknown section: {n.Name}", NotificationType.Warning);
+					break;
 			}
 		}
 
-		public Scene Read()
+		this.buildScene();
+
+		return this._scene;
+	}
+
+	public Dictionary<string, FbxProperty> ReadProperties(FbxNode node)
+	{
+		Dictionary<string, FbxProperty> properties = new Dictionary<string, FbxProperty>();
+		if (!node.TryGetNode(FbxFileToken.GetPropertiesName(this.Version), out FbxNode propertiesNode))
 		{
-			foreach (FbxNode n in Root)
-			{
-				switch (n.Name)
-				{
-					case FbxFileToken.FBXHeaderExtension:
-						this.readHeader(n);
-						break;
-					case FbxFileToken.GlobalSettings:
-						this.readGlobalSettings(n);
-						break;
-					case FbxFileToken.Documents:
-						this.readDocuments(n);
-						break;
-					case FbxFileToken.References:
-						this.readReferences(n);
-						break;
-					case FbxFileToken.Definitions:
-						this.readDefinitions(n);
-						break;
-					case FbxFileToken.Objects:
-						this.readObjects(n);
-						break;
-					case FbxFileToken.Connections:
-						this.readConnections(n);
-						break;
-					default:
-						this.Notify($"Unknown section: {n.Name}", NotificationType.Warning);
-						break;
-				}
-			}
-
-			this.buildScene();
-
-			return this._scene;
-		}
-
-		public Dictionary<string, FbxProperty> ReadProperties(FbxNode node)
-		{
-			Dictionary<string, FbxProperty> properties = new Dictionary<string, FbxProperty>();
-			if (!node.TryGetNode(FbxFileToken.GetPropertiesName(this.Version), out FbxNode propertiesNode))
-			{
-				return properties;
-			}
-
-			foreach (FbxNode propNode in propertiesNode)
-			{
-				FbxProperty prop = this.readFbxProperty(propNode);
-				if (prop is null)
-					continue;
-
-				properties.Add(prop.Name, prop);
-			}
-
 			return properties;
 		}
 
-		public bool TryGetTemplate(string id, out IFbxObjectTemplate template)
+		foreach (FbxNode propNode in propertiesNode)
 		{
-			return this._objectTemplates.TryGetValue(id, out template);
+			FbxProperty prop = this.readFbxProperty(propNode);
+			if (prop is null)
+				continue;
+
+			properties.Add(prop.Name, prop);
 		}
 
-		public FbxPropertyTemplate GetProperties(string objName)
+		return properties;
+	}
+
+	public bool TryGetTemplate(string id, out IFbxObjectBuilder template)
+	{
+		return this._objectTemplates.TryGetValue(id, out template);
+	}
+
+	public FbxPropertyTemplate GetProperties(string objName)
+	{
+		if (this._propertyTemplates.TryGetValue(objName, out var properties))
 		{
-			if (this._propertyTemplates.TryGetValue(objName, out var properties))
-			{
-				return properties;
-			}
-			else
-			{
-				return new FbxPropertyTemplate();
-			}
+			return properties;
+		}
+		else
+		{
+			return new FbxPropertyTemplate();
+		}
+	}
+
+	public List<FbxConnection> GetChildren(string id)
+	{
+		if (this._connections.TryGetValue(id, out List<FbxConnection> children))
+		{
+			return children;
 		}
 
-		public List<FbxConnection> GetChildren(string id)
+		if (this.Version < FbxVersion.v7000)
 		{
-			if (this._connections.TryGetValue(id, out List<FbxConnection> children))
+			if (this._connections.TryGetValue($"Model::{id}", out children))
 			{
 				return children;
 			}
-			else
+		}
+
+		return new List<FbxConnection>();
+	}
+
+	protected FbxProperty readFbxProperty(FbxNode node)
+	{
+		string name = node.GetProperty<string>(0);
+		string type1 = node.GetProperty<string>(1);
+		string label = string.Empty;
+		PropertyFlags flags;
+		if (this.Version < FbxVersion.v7000)
+		{
+			flags = FbxProperty.ParseFlags(node.GetProperty<string>(2));
+		}
+		else
+		{
+			label = node.GetProperty<string>(2);
+			flags = FbxProperty.ParseFlags(node.GetProperty<string>(3));
+		}
+
+		int valueIndex = this.Version < FbxVersion.v7000 ? 3 : 4;
+		object value = null;
+
+		if (node.Properties.Count == valueIndex)
+		{
+			value = null;
+		}
+		else if (node.Properties.Count == valueIndex + 1)
+		{
+			value = node.Properties[valueIndex];
+		}
+		else
+		{
+			value = new List<object>();
+			for (int i = valueIndex; i < node.Properties.Count; i++)
 			{
-				return new List<FbxConnection>();
+				(value as List<object>).Add(node.Properties[i]);
 			}
 		}
 
-		protected FbxProperty readFbxProperty(FbxNode node)
+		return new FbxProperty(name, type1, label, flags, value);
+	}
+
+	protected void buildScene()
+	{
+		this._rootTemplate.Build(this);
+	}
+
+	protected void readHeader(FbxNode node)
+	{
+		foreach (FbxNode n in node)
 		{
-			string name = node.GetProperty<string>(0);
-			string type1 = node.GetProperty<string>(1);
-			string label = node.GetProperty<string>(2);
-			PropertyFlags flags = FbxProperty.ParseFlags(node.GetProperty<string>(3));
-
-			object value = null;
-
-			if(node.Properties.Count == 4)
+			switch (n.Name)
 			{
-				value = null;
-			}
-			else if (node.Properties.Count == 5)
-			{
-				value = node.Properties[4];
-			}
-			else
-			{
-				value = new List<object>();
-				for (int i = 4; i < node.Properties.Count; i++)
-				{
-					(value as List<object>).Add(node.Properties[i]);
-				}
-			}
-
-			return new FbxProperty(name, type1, label, flags, value);
-		}
-
-		protected void buildScene()
-		{
-			this._rootTemplate.Build(this);
-		}
-
-		protected void readHeader(FbxNode node)
-		{
-			this.Notify("FBXHeaderExtension section not implemented", NotificationType.NotImplemented);
-
-			foreach (FbxNode n in node)
-			{
-				switch (n.Name)
-				{
-					default:
-						break;
-				}
-			}
-		}
-
-		protected void readGlobalSettings(FbxNode node)
-		{
-			Dictionary<string, FbxProperty> properties = this.ReadProperties(node);
-			FbxPropertyTemplate globalSettings = new FbxPropertyTemplate(FbxFileToken.GlobalSettings, string.Empty, properties);
-			this._propertyTemplates.Add(FbxFileToken.GlobalSettings, globalSettings);
-		}
-
-		protected void readDocuments(FbxNode node)
-		{
-			foreach (FbxNode n in node)
-			{
-				switch (n.Name)
-				{
-					case FbxFileToken.Count:
-						break;
-					case FbxFileToken.Document:
-						this.readDocument(n);
-						break;
-					default:
-						this.Notify($"{node.Name} | unknown node: {n.Name}", NotificationType.NotImplemented);
-						break;
-				}
-			}
-		}
-
-		protected void readDocument(FbxNode node)
-		{
-
-		}
-
-		protected void readReferences(FbxNode node)
-		{
-			if (!node.IsEmpty)
-			{
-				this.Notify("References section not implemented", NotificationType.NotImplemented);
-			}
-		}
-
-		protected void readDefinitions(FbxNode node)
-		{
-			foreach (FbxNode n in node)
-			{
-				switch (n.Name)
-				{
-					case FbxFileToken.Count:
-					case FbxFileToken.Version:
-						break;
-					case FbxFileToken.ObjectType:
-						this.readDefinition(n);
-						break;
-					default:
-						this.Notify($"{node.Name} | unknown node: {n.Name}", NotificationType.NotImplemented);
-						break;
-				}
-			}
-		}
-
-		protected void readDefinition(FbxNode node)
-		{
-			if (!node.TryGetProperty(0, out string objectType))
-			{
-				this.Notify($"Undefined ObjectType", NotificationType.Warning);
-				return;
-			}
-
-			if (objectType == FbxFileToken.GlobalSettings)
-			{
-				return;
-			}
-
-			string name = string.Empty;
-			if (!node.TryGetNode("PropertyTemplate", out FbxNode tempalteNode))
-			{
-				this.Notify($"PropertyTemplate not found for {objectType}", NotificationType.Warning);
-				return;
-			}
-
-			if (!tempalteNode.TryGetProperty(0, out name))
-			{
-				this.Notify($"PropertyTemplate name not found for {objectType}", NotificationType.Warning);
-				return;
-			}
-
-			Dictionary<string, FbxProperty> properties = this.ReadProperties(tempalteNode);
-			FbxPropertyTemplate template = new FbxPropertyTemplate(objectType, name, properties);
-			this._propertyTemplates.Add(objectType, template);
-		}
-
-		protected void readObjects(FbxNode node)
-		{
-			foreach (FbxNode n in node)
-			{
-				IFbxObjectTemplate template = null;
-
-				switch (n.Name)
-				{
-					case FbxFileToken.Model:
-						template = new FbxNodeTemplate(n);
-						break;
-					case FbxFileToken.Geometry:
-						template = this.readGeometryNode(n);
-						break;
-				}
-
-				if (template == null)
-				{
-					this.Notify($"[{node.Name}] unknown node: {n}", NotificationType.NotImplemented);
-					continue;
-				}
-
-				if (string.IsNullOrEmpty(template.Id))
-				{
-					this.Notify($"[{node.Name}] Id not found for node {n}", NotificationType.Warning);
-					continue;
-				}
-
-				this._objectTemplates.Add(template.Id, template);
-			}
-		}
-
-		protected IFbxObjectTemplate readGeometryNode(FbxNode node)
-		{
-			string type = node.GetProperty<string>(2);
-
-			switch (type)
-			{
-				case FbxFileToken.Mesh:
-					return new FbxMeshTemplate(node);
 				default:
-					return null;
+					break;
 			}
 		}
+	}
 
-		protected void readConnections(FbxNode node)
+	protected void readGlobalSettings(FbxNode node)
+	{
+		Dictionary<string, FbxProperty> properties = this.ReadProperties(node);
+		FbxPropertyTemplate globalSettings = new FbxPropertyTemplate(FbxFileToken.GlobalSettings, string.Empty, properties);
+		this._propertyTemplates.Add(FbxFileToken.GlobalSettings, globalSettings);
+	}
+
+	protected void readDocuments(FbxNode node)
+	{
+		foreach (FbxNode n in node)
 		{
-			foreach (FbxNode n in node)
+			switch (n.Name)
 			{
-				FbxConnection connection;
-
-				FbxConnectionType type = FbxConnection.Parse(n.GetProperty<string>(0));
-				string child = n.GetProperty<object>(1).ToString();
-				string parent = n.GetProperty<object>(2).ToString();
-
-				connection = new FbxConnection(type, parent, child);
-
-				if (!this._connections.TryGetValue(parent, out List<FbxConnection> children))
-				{
-					children = new List<FbxConnection>();
-					this._connections.Add(parent, children);
-				}
-
-				children.Add(connection);
+				case FbxFileToken.Count:
+					break;
+				case FbxFileToken.Document:
+					this.readDocument(n);
+					break;
+				default:
+					this.Notify($"{node.Name} | unknown node: {n.Name}", NotificationType.NotImplemented);
+					break;
 			}
 		}
+	}
 
-		public void Notify(string message, NotificationType notificationType = NotificationType.Information, Exception ex = null)
+	protected void readDocument(FbxNode node)
+	{
+		foreach (FbxNode n in node)
 		{
-			this.OnNotification?.Invoke(this, new NotificationEventArgs(message, notificationType, ex));
+			switch (n.Name)
+			{
+				case "Name":
+					this._rootTemplate.Id = n.Value.ToString();
+					break;
+			}
 		}
+	}
+
+	protected void readReferences(FbxNode node)
+	{
+	}
+
+	protected void readDefinitions(FbxNode node)
+	{
+		foreach (FbxNode n in node)
+		{
+			switch (n.Name)
+			{
+				case FbxFileToken.Count:
+				case FbxFileToken.Version:
+					break;
+				case FbxFileToken.ObjectType:
+					this.readDefinition(n);
+					break;
+				default:
+					this.Notify($"[{node.Name}] unknown node: {n.Name}", NotificationType.NotImplemented);
+					break;
+			}
+		}
+	}
+
+	protected void readDefinition(FbxNode node)
+	{
+		if (!node.TryGetProperty(0, out string objectType))
+		{
+			this.Notify($"Undefined ObjectType", NotificationType.Warning);
+			return;
+		}
+
+		if (objectType == FbxFileToken.GlobalSettings)
+		{
+			return;
+		}
+
+		string name = string.Empty;
+		if (!node.TryGetNode("PropertyTemplate", out FbxNode tempalteNode))
+		{
+			return;
+		}
+
+		if (!tempalteNode.TryGetProperty(0, out name))
+		{
+			return;
+		}
+
+		Dictionary<string, FbxProperty> properties = this.ReadProperties(tempalteNode);
+		FbxPropertyTemplate template = new FbxPropertyTemplate(objectType, name, properties);
+		this._propertyTemplates.Add(objectType, template);
+	}
+
+	protected void readObjects(FbxNode node)
+	{
+		foreach (FbxNode n in node)
+		{
+			IFbxObjectBuilder template = null;
+
+			switch (n.Name)
+			{
+				case FbxFileToken.GlobalSettings:
+					this.readGlobalSettings(n);
+					continue; ;
+				case FbxFileToken.Model:
+					template = new FbxNodeBuilder(n);
+					break;
+				case FbxFileToken.Geometry:
+					template = this.readGeometryNode(n);
+					break;
+			}
+
+			if (template == null)
+			{
+				this.Notify($"[{node.Name}] unknown node: {n}", NotificationType.NotImplemented);
+				continue;
+			}
+
+			if (string.IsNullOrEmpty(template.Id))
+			{
+				this.Notify($"[{node.Name}] Id not found for node {n}", NotificationType.Warning);
+				continue;
+			}
+
+			this._objectTemplates.Add(template.Id, template);
+		}
+	}
+
+	protected IFbxObjectBuilder readGeometryNode(FbxNode node)
+	{
+		string type = node.GetProperty<string>(2);
+
+		switch (type)
+		{
+			case FbxFileToken.Mesh:
+				return new FbxMeshBuilder(node);
+			default:
+				return null;
+		}
+	}
+
+	protected void readConnections(FbxNode node)
+	{
+		foreach (FbxNode n in node)
+		{
+			FbxConnection connection;
+
+			FbxConnectionType type = FbxConnection.Parse(n.GetProperty<string>(0));
+			string child = n.GetProperty<object>(1).ToString();
+			string parent = n.GetProperty<object>(2).ToString();
+
+			connection = new FbxConnection(type, parent, child);
+
+			if (!this._connections.TryGetValue(parent, out List<FbxConnection> children))
+			{
+				children = new List<FbxConnection>();
+				this._connections.Add(parent, children);
+			}
+
+			children.Add(connection);
+		}
+	}
+
+	public void Notify(string message, NotificationType notificationType = NotificationType.Information, Exception ex = null)
+	{
+		this.OnNotification?.Invoke(this, new NotificationEventArgs(message, notificationType, ex));
 	}
 }

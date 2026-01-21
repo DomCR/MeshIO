@@ -1,50 +1,52 @@
 ﻿using MeshIO.Entities.Primitives;
 using MeshIO.Formats;
+using MeshIO.Tests.Common;
+using MeshIO.Tests.TestModels;
+using System.IO;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace MeshIO.Tests.Formats
+namespace MeshIO.Tests.Formats;
+
+public class SceneWriterTests
 {
-	public class SceneWriterTests
+	public static TheoryData<FormatTestCase> OutputCases { get; } = new();
+
+	private readonly ITestOutputHelper _output;
+
+	static SceneWriterTests()
 	{
-		public static TheoryData<FormatTestCase> OutputCases { get; } = new();
+		OutputCases.Add(new FormatTestCase("basic", FileFormatType.Stl, ContentType.ASCII));
+		OutputCases.Add(new FormatTestCase("basic", FileFormatType.Stl, ContentType.Binary));
+	}
 
-		private readonly ITestOutputHelper _output;
+	public SceneWriterTests(ITestOutputHelper output)
+	{
+		_output = output;
+	}
 
-		static SceneWriterTests()
+	[Theory]
+	[MemberData(nameof(OutputCases))]
+	public void WriteTest(FormatTestCase test)
+	{
+		Scene scene = this.createScene();
+		var options = FileFormat.GetWriterOptions(test.Format);
+		options.ContentType = test.Content;
+		using (ISceneWriter writer = FileFormat.GetWriter(test.Path, scene, options, onNotification))
 		{
-			OutputCases.Add(new FormatTestCase("basic", FileFormatType.Stl, ContentType.ASCII));
-			OutputCases.Add(new FormatTestCase("basic", FileFormatType.Stl, ContentType.Binary));
+			writer.Write();
 		}
+	}
 
-		public SceneWriterTests(ITestOutputHelper output)
-		{
-			_output = output;
-		}
+	private Scene createScene()
+	{
+		Scene scene = new();
+		scene.RootNode.Entities.Add(new Box("my_box"));
+		return scene;
+	}
 
-		[Theory]
-		[MemberData(nameof(OutputCases))]
-		public void WriteTest(FormatTestCase test)
-		{
-			Scene scene = this.createScene();
-			var options = FileFormat.GetWriterOptions(test.Format);
-			options.ContentType = test.Content;
-			using (ISceneWriter writer = FileFormat.GetWriter(test.Path, scene, options, onNotification))
-			{
-				writer.Write();
-			}
-		}
-
-		private Scene createScene()
-		{
-			Scene scene = new();
-			scene.RootNode.Entities.Add(new Box("my_box"));
-			return scene;
-		}
-
-		private void onNotification(object sender, MeshIO.NotificationEventArgs e)
-		{
-			this._output.WriteLine(e.Message);
-		}
+	private void onNotification(object sender, MeshIO.NotificationEventArgs e)
+	{
+		this._output.WriteLine(e.Message);
 	}
 }

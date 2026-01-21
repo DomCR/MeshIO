@@ -1,7 +1,6 @@
-﻿namespace MeshIO.Entities.Geometries.Layers
+﻿namespace MeshIO.Entities.Geometries.Layers;
+
+public class LayerElementMaterial : LayerElement
 {
-	public class LayerElementMaterial : LayerElement
-	{
-		public LayerElementMaterial() : base() { }
-	}
+	public LayerElementMaterial() : base() { }
 }

@@ -364,3 +364,4 @@ MigrationBackup/
 !src/Tests/inFiles/obj/*.obj
 !src/MeshIO/Formats/Obj
 !src/MeshIO.Tests/Formats/Obj
+/samples/in/fbx/old

@@ -1,7 +1,6 @@
-﻿namespace MeshIO.Formats.Fbx
+﻿namespace MeshIO.Formats.Fbx;
+
+public class FbxReaderOptions : SceneReaderOptions
 {
-	public class FbxReaderOptions
-	{
-		public ErrorLevel ErrorLevel { get; set; } = ErrorLevel.Permissive;
-	}
+	public ErrorLevel ErrorLevel { get; set; } = ErrorLevel.Permissive;
 }

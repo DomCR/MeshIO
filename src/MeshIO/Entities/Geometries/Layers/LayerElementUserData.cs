@@ -1,6 +1,5 @@
-﻿namespace MeshIO.Entities.Geometries.Layers
+﻿namespace MeshIO.Entities.Geometries.Layers;
+
+public class LayerElementUserData : LayerElement
 {
-	public class LayerElementUserData : LayerElement
-	{
-	}
 }

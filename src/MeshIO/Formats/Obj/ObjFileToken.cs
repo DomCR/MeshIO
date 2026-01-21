@@ -1,31 +1,30 @@
-﻿namespace MeshIO.Formats.Obj
+﻿namespace MeshIO.Formats.Obj;
+
+internal enum ObjFileToken
 {
-	internal enum ObjFileToken
-	{
-		Undefined = 0,
-		/// <summary>
-		/// o
-		/// </summary>
-		Object,
-		/// <summary>
-		/// v
-		/// </summary>
-		Vertice,
-		/// <summary>
-		/// vt
-		/// </summary>
-		TextureVertice,
-		/// <summary>
-		/// vn
-		/// </summary>
-		Normal,
-		/// <summary>
-		/// f
-		/// </summary>
-		Face,
-		/// <summary>
-		/// #
-		/// </summary>
-		Comment
-	}
+	Undefined = 0,
+	/// <summary>
+	/// o
+	/// </summary>
+	Object,
+	/// <summary>
+	/// v
+	/// </summary>
+	Vertice,
+	/// <summary>
+	/// vt
+	/// </summary>
+	TextureVertice,
+	/// <summary>
+	/// vn
+	/// </summary>
+	Normal,
+	/// <summary>
+	/// f
+	/// </summary>
+	Face,
+	/// <summary>
+	/// #
+	/// </summary>
+	Comment
 }

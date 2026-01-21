@@ -1,6 +1,5 @@
-﻿namespace MeshIO.Formats
+﻿namespace MeshIO.Formats;
+
+public abstract class SceneReaderOptions
 {
-	public abstract class SceneReaderOptions
-	{
-	}
 }

@@ -1,14 +1,13 @@
 ﻿using System;
 
-namespace MeshIO.Formats.Fbx
+namespace MeshIO.Formats.Fbx;
+
+public class FbxWriterOptions : SceneWriterOptions
 {
-	public class FbxWriterOptions : SceneWriterOptions
-	{
-		[Obsolete]
-		public bool IsBinaryFormat { get; set; } = false;
+	[Obsolete]
+	public bool IsBinaryFormat { get; set; } = false;
 
-		public FbxVersion Version { get; set; } = FbxVersion.v7400;
+	public FbxVersion Version { get; set; } = FbxVersion.v7400;
 
-		public FbxGlobalSettings GlobalSettings { get; set; }
-	}
+	public FbxGlobalSettings GlobalSettings { get; set; }
 }

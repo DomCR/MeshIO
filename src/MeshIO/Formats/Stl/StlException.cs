@@ -1,10 +1,9 @@
 ﻿using System;
 
-namespace MeshIO.Formats.Stl
+namespace MeshIO.Formats.Stl;
+
+[Serializable]
+public class StlException : Exception
 {
-	[Serializable]
-	public class StlException : Exception
-	{
-		public StlException(string message) : base(message) { }
-	}
+	public StlException(string message) : base(message) { }
 }

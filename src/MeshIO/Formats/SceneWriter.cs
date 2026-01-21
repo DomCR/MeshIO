@@ -16,6 +16,9 @@ public abstract class SceneWriter<T> : ISceneWriter
 	/// <inheritdoc/>
 	public event NotificationEventHandler OnNotification;
 
+	/// <summary>
+	/// Gets or sets the options used to configure the scene writer.
+	/// </summary>
 	public T Options
 	{
 		get => this._options;
@@ -74,7 +77,7 @@ public abstract class SceneWriter<T> : ISceneWriter
 	{
 	}
 
-		/// <inheritdoc/>
+	/// <inheritdoc/>
 	public virtual void Dispose()
 	{
 		this._stream.Dispose();

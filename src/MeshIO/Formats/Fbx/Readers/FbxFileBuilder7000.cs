@@ -1,7 +1,6 @@
-﻿namespace MeshIO.Formats.Fbx.Readers
+﻿namespace MeshIO.Formats.Fbx.Readers;
+
+internal class FbxFileBuilder7000 : FbxFileBuilderBase
 {
-	internal class FbxFileBuilder7000 : FbxFileBuilderBase
-	{
-		public FbxFileBuilder7000(FbxRootNode root, FbxReaderOptions options) : base(root, options) { }
-	}
+	public FbxFileBuilder7000(FbxRootNode root, FbxReaderOptions options) : base(root, options) { }
 }

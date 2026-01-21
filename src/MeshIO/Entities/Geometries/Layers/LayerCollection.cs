@@ -3,8 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace MeshIO.Entities.Geometries.Layers
-{
+namespace MeshIO.Entities.Geometries.Layers;
+
     public class LayerCollection : IEnumerable<LayerElement>   //TODO: Organize and create different layers for a geometry element
     {
         public Geometry Owner { get; }
@@ -51,4 +51,3 @@ namespace MeshIO.Entities.Geometries.Layers
             return this._list.GetEnumerator();
         }
     }
-}

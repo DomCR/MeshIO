@@ -1,57 +1,56 @@
 ﻿using System;
 
-namespace MeshIO
+namespace MeshIO;
+
+/// <summary>
+/// Base class for all the elements contained in the 3D environment
+/// </summary>
+public abstract class Element3D
 {
 	/// <summary>
-	/// Base class for all the elements contained in the 3D environment
+	/// Unique id to identify this element
 	/// </summary>
-	public abstract class Element3D
+	public ulong? Id { get; internal set; } = null;
+
+	/// <summary>
+	/// Name of the element
+	/// </summary>
+	public string Name { get; set; }
+
+	/// <summary>
+	/// Properties of this element
+	/// </summary>
+	public PropertyCollection Properties { get; }
+
+	/// <summary>
+	/// Default constructor
+	/// </summary>
+	public Element3D() : this(string.Empty) { }
+
+	public Element3D(string name)
 	{
-		/// <summary>
-		/// Unique id to identify this element
-		/// </summary>
-		public ulong? Id { get; internal set; } = null;
+		this.Name = name;
+		this.Id = IdUtils.CreateId();
+		this.Properties = new PropertyCollection(this);
+	}
 
-		/// <summary>
-		/// Name of the element
-		/// </summary>
-		public string Name { get; set; }
-
-		/// <summary>
-		/// Properties of this element
-		/// </summary>
-		public PropertyCollection Properties { get; }
-
-		/// <summary>
-		/// Default constructor
-		/// </summary>
-		public Element3D() : this(string.Empty) { }
-
-		public Element3D(string name)
+	/// <summary>
+	/// Gets the Id of the object, if is null it sets a value
+	/// </summary>
+	/// <returns></returns>
+	public long GetIdOrDefault()
+	{
+		if (!Id.HasValue)
 		{
-			this.Name = name;
 			this.Id = IdUtils.CreateId();
-			this.Properties = new PropertyCollection(this);
 		}
 
-		/// <summary>
-		/// Gets the Id of the object, if is null it sets a value
-		/// </summary>
-		/// <returns></returns>
-		public long GetIdOrDefault()
-		{
-			if (!Id.HasValue)
-			{
-				this.Id = IdUtils.CreateId();
-			}
+		return Math.Abs((long)Id.Value);
+	}
 
-			return Math.Abs((long)Id.Value);
-		}
-
-		/// <inheritdoc/>
-		public override string ToString()
-		{
-			return $"{this.GetType().Name}:{this.Name}";
-		}
+	/// <inheritdoc/>
+	public override string ToString()
+	{
+		return $"{this.GetType().Name}:{this.Name}";
 	}
 }
