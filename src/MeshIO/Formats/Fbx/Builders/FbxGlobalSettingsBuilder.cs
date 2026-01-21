@@ -45,7 +45,7 @@ internal class FbxGlobalSettingsBuilder : IFbxObjectBuilder
 		throw new System.InvalidOperationException();
 	}
 
-	public void ApplyTemplate(FbxPropertyTemplate template)
+	public void ApplyTemplate(FbxPropertyBuilder template)
 	{
 		throw new System.InvalidOperationException();
 	}

@@ -1,6 +1,5 @@
 ﻿using CSUtilities.Converters;
 using CSUtilities.IO;
-using MeshIO.Formats;
 using MeshIO.Formats.Gltf.Readers;
 using MeshIO.Formats.Gltf.Schema;
 using MeshIO.Formats.Gltf.Exceptions;

@@ -21,5 +21,5 @@ internal interface IFbxObjectBuilder
 
 	void ProcessChildren(FbxFileWriterBase fbxFileWriterBase);
 
-	void ApplyTemplate(FbxPropertyTemplate template);
+	void ApplyTemplate(FbxPropertyBuilder template);
 }

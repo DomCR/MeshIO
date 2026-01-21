@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MeshIO;
+namespace MeshIO.Formats;
 
 public delegate void NotificationEventHandler(object sender, NotificationEventArgs e);
 

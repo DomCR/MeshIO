@@ -52,7 +52,7 @@ internal abstract class FbxObjectBuilder<T> : IFbxObjectBuilder
 
 	public virtual void Build(FbxFileBuilderBase builder)
 	{
-		FbxPropertyTemplate template = builder.GetProperties(FbxObjectName);
+		FbxPropertyBuilder template = builder.GetProperties(FbxObjectName);
 
 		if (builder.Version < FbxVersion.v7000)
 		{
@@ -82,7 +82,7 @@ internal abstract class FbxObjectBuilder<T> : IFbxObjectBuilder
 	{
 	}
 
-	public virtual void ApplyTemplate(FbxPropertyTemplate template)
+	public virtual void ApplyTemplate(FbxPropertyBuilder template)
 	{
 		foreach (Property item in this._element.Properties)
 		{

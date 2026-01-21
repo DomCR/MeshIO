@@ -10,21 +10,21 @@ namespace MeshIO.Formats.Fbx.Writers;
 
 internal abstract class FbxFileWriterBase
 {
-	public FbxVersion Version { get { return this.Options.Version; } }
-
 	public FbxWriterOptions Options { get; }
-
-	public Scene Scene { get; }
 
 	public Node RootNode { get { return this.Scene.RootNode; } }
 
-	protected readonly Dictionary<string, FbxPropertyTemplate> _tempaltes = new();
+	public Scene Scene { get; }
+
+	public FbxVersion Version { get { return this.Options.Version; } }
+
+	protected readonly List<FbxConnection> _connections = new();
 
 	protected readonly Dictionary<string, List<IFbxObjectBuilder>> _definedObjects = new();
 
 	protected readonly Dictionary<ulong, IFbxObjectBuilder> _objectTemplates = new();
 
-	protected readonly List<FbxConnection> _connections = new();
+	protected readonly Dictionary<string, FbxPropertyBuilder> templates = new();
 
 	private readonly FbxRootNode fbxRoot;
 
@@ -71,41 +71,7 @@ internal abstract class FbxFileWriterBase
 				return new FbxFileWriter7000(scene, options);
 			default:
 				throw new NotSupportedException($"Unknown Fbx version {version} for writer");
-
 		}
-	}
-
-	public FbxRootNode ToNodeStructure()
-	{
-		this.initializeRoot();
-
-		this.fbxRoot.Nodes.Add(this.nodeFBXHeaderExtension());
-
-		if (this.Options.IsBinaryFormat)
-		{
-			byte[] id = new byte[16];
-			Random random = new Random();
-			random.NextBytes(id);
-			this.fbxRoot.Add("FileId", id);
-
-			this.fbxRoot.Add("CreationTime", DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss:fff", CultureInfo.InvariantCulture));
-
-			this.fbxRoot.Add("Creator", $"MeshIO.FBX {this.MeshIOVersion}");
-		}
-
-		this.fbxRoot.Nodes.Add(this.nodeGlobalSettings());
-		this.fbxRoot.Nodes.Add(this.nodeDocuments());
-		this.fbxRoot.Nodes.Add(this.nodeReferences());
-		this.fbxRoot.Nodes.Add(this.nodeDefinitions());
-		this.fbxRoot.Nodes.Add(this.nodeObjects());
-		this.fbxRoot.Nodes.Add(this.nodeConnections());
-
-		return this.fbxRoot;
-	}
-
-	public bool TryGetPropertyTemplate(string fbxName, out FbxPropertyTemplate template)
-	{
-		return this._tempaltes.TryGetValue(fbxName, out template);
 	}
 
 	public void CreateConnection(Element3D child, IFbxObjectBuilder parent)
@@ -130,6 +96,59 @@ internal abstract class FbxFileWriterBase
 		lst.Add(objwriter);
 	}
 
+	public FbxNode PropertiesToNode(IEnumerable<Property> properties)
+	{
+		if (!properties.Any())
+		{
+			return null;
+		}
+
+		FbxNode node = new FbxNode(FbxFileToken.GetPropertiesName(this.Version));
+
+		foreach (Property p in properties)
+		{
+			if (p is not FbxProperty fbxProp)
+			{
+				fbxProp = FbxProperty.CreateFrom(p);
+			}
+
+			node.Nodes.Add(fbxProp.ToNode());
+		}
+
+		return node;
+	}
+
+	public FbxRootNode ToNodeStructure()
+	{
+		this.initializeRoot();
+
+		this.fbxRoot.Nodes.Add(this.nodeFBXHeaderExtension());
+
+		if (this.Options.ContentType == ContentType.Binary)
+		{
+			byte[] id = new byte[16];
+			Random random = new Random();
+			random.NextBytes(id);
+			this.fbxRoot.Add("FileId", id);
+			this.fbxRoot.Add("CreationTime", DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss:fff", CultureInfo.InvariantCulture));
+			this.fbxRoot.Add("Creator", $"MeshIO.FBX {this.MeshIOVersion}");
+		}
+
+		this.fbxRoot.Nodes.Add(this.nodeGlobalSettings());
+		this.fbxRoot.Nodes.Add(this.nodeDocuments());
+		this.fbxRoot.Nodes.Add(this.nodeReferences());
+		this.fbxRoot.Nodes.Add(this.nodeDefinitions());
+		this.fbxRoot.Nodes.Add(this.nodeObjects());
+		this.fbxRoot.Nodes.Add(this.nodeConnections());
+
+		return this.fbxRoot;
+	}
+
+	public bool TryGetPropertyTemplate(string fbxName, out FbxPropertyBuilder template)
+	{
+		return this.templates.TryGetValue(fbxName, out template);
+	}
+
 	protected void initializeRoot()
 	{
 		//Root node should be processed to create the connections but it is not writen in the file
@@ -140,6 +159,74 @@ internal abstract class FbxFileWriterBase
 		root.ProcessChildren(this);
 	}
 
+	private FbxNode nodeConnections()
+	{
+		FbxNode connections = new FbxNode(FbxFileToken.Connections);
+
+		foreach (FbxConnection c in this._connections)
+		{
+			FbxNode con = connections.Add("C");
+
+			switch (c.ConnectionType)
+			{
+				case FbxConnectionType.ObjectObject:
+					con.Properties.Add("OO");
+					break;
+				default:
+					throw new NotImplementedException();
+			}
+
+			con.Properties.Add(long.Parse(c.Child.Id));
+			con.Properties.Add(long.Parse(c.Parent.Id));
+		}
+
+		return connections;
+	}
+
+	private FbxNode nodeDefinitions()
+	{
+		FbxNode definitions = new FbxNode(FbxFileToken.Definitions);
+
+		definitions.Nodes.Add(new FbxNode(FbxFileToken.Version, 100));
+		definitions.Nodes.Add(new FbxNode(FbxFileToken.Count, this._definedObjects.Sum(o => o.Value.Count)));
+
+		foreach (var item in this._definedObjects)
+		{
+			FbxNode d = new FbxNode(FbxFileToken.ObjectType, item.Key);
+			d.Nodes.Add(new FbxNode(FbxFileToken.Count, item.Value.Count));
+
+			if (item.Key == FbxFileToken.GlobalSettings)
+			{
+				definitions.Nodes.Add(d);
+				continue;
+			}
+
+			FbxPropertyBuilder template = FbxPropertyBuilder.Create(item.Key);
+
+			this.templates.Add(item.Key, template);
+
+			var t = new FbxNode("PropertyTemplate", template.Name);
+			t.Nodes.Add(this.PropertiesToNode(template.Properties.Values));
+
+			d.Nodes.Add(t);
+
+			definitions.Nodes.Add(d);
+		}
+
+		return definitions;
+	}
+
+	private FbxNode nodeDocuments()
+	{
+		FbxNode documents = new FbxNode(FbxFileToken.Documents);
+
+		documents.Nodes.Add(new FbxNode(FbxFileToken.Count, this.Scene.SubScenes.Count + 1));
+
+		var doc = documents.Add(FbxFileToken.Document, this.Scene.GetIdOrDefault(), this.Scene.Name, FbxFileToken.Scene);
+		doc.Add(FbxFileToken.RootNode, Convert.ToInt64(this.RootNode.Id));
+
+		return documents;
+	}
 
 	private FbxNode nodeFBXHeaderExtension()
 	{
@@ -148,7 +235,7 @@ internal abstract class FbxFileWriterBase
 		header.Nodes.Add(new FbxNode(FbxFileToken.FBXHeaderVersion, 1003));
 		header.Nodes.Add(new FbxNode("FBXVersion", (int)this.Version));
 
-		if (this.Options.IsBinaryFormat)
+		if (this.Options.ContentType == ContentType.Binary)
 		{
 			header.Add("EncryptionType", 0);
 		}
@@ -187,69 +274,15 @@ internal abstract class FbxFileWriterBase
 		return settings;
 	}
 
-	private FbxNode nodeDocuments()
-	{
-		FbxNode documents = new FbxNode(FbxFileToken.Documents);
-
-		documents.Nodes.Add(new FbxNode(FbxFileToken.Count, this.Scene.SubScenes.Count + 1));
-
-		var doc = documents.Add(FbxFileToken.Document, this.Scene.GetIdOrDefault(), this.Scene.Name, FbxFileToken.Scene);
-		doc.Add(FbxFileToken.RootNode, Convert.ToInt64(this.RootNode.Id));
-
-		return documents;
-	}
-
-	private FbxNode nodeReferences()
-	{
-		FbxNode references = new FbxNode(FbxFileToken.References);
-
-		references.Nodes.Add(null);
-
-		return references;
-	}
-
-	private FbxNode nodeDefinitions()
-	{
-		FbxNode definitions = new FbxNode(FbxFileToken.Definitions);
-
-		definitions.Nodes.Add(new FbxNode(FbxFileToken.Version, 100));
-		definitions.Nodes.Add(new FbxNode(FbxFileToken.Count, this._definedObjects.Sum(o => o.Value.Count)));
-
-		foreach (var item in this._definedObjects)
-		{
-			FbxNode d = new FbxNode(FbxFileToken.ObjectType, item.Key);
-			d.Nodes.Add(new FbxNode(FbxFileToken.Count, item.Value.Count));
-
-			if (item.Key == FbxFileToken.GlobalSettings)
-			{
-				definitions.Nodes.Add(d);
-				continue;
-			}
-
-			FbxPropertyTemplate template = FbxPropertyTemplate.Create(item.Key);
-
-			this._tempaltes.Add(item.Key, template);
-
-			var t = new FbxNode("PropertyTemplate", template.Name);
-			t.Nodes.Add(this.PropertiesToNode(template.Properties.Values));
-
-			d.Nodes.Add(t);
-
-			definitions.Nodes.Add(d);
-		}
-
-		return definitions;
-	}
-
 	private FbxNode nodeObjects()
 	{
 		FbxNode objects = new FbxNode(FbxFileToken.Objects);
 
 		foreach (IFbxObjectBuilder obj in this._objectTemplates.Values)
 		{
-			if (!this._tempaltes.TryGetValue(obj.FbxObjectName, out FbxPropertyTemplate template))
+			if (!this.templates.TryGetValue(obj.FbxObjectName, out FbxPropertyBuilder template))
 			{
-				template = new FbxPropertyTemplate();
+				template = new FbxPropertyBuilder();
 			}
 
 			obj.ApplyTemplate(template);
@@ -260,49 +293,12 @@ internal abstract class FbxFileWriterBase
 		return objects;
 	}
 
-	private FbxNode nodeConnections()
+	private FbxNode nodeReferences()
 	{
-		FbxNode connections = new FbxNode(FbxFileToken.Connections);
+		FbxNode references = new FbxNode(FbxFileToken.References);
 
-		foreach (FbxConnection c in this._connections)
-		{
-			FbxNode con = connections.Add("C");
+		references.Nodes.Add(null);
 
-			switch (c.ConnectionType)
-			{
-				case FbxConnectionType.ObjectObject:
-					con.Properties.Add("OO");
-					break;
-				default:
-					throw new NotImplementedException();
-			}
-
-			con.Properties.Add(long.Parse(c.Child.Id));
-			con.Properties.Add(long.Parse(c.Parent.Id));
-		}
-
-		return connections;
-	}
-
-	public FbxNode PropertiesToNode(IEnumerable<Property> properties)
-	{
-		if (!properties.Any())
-		{
-			return null;
-		}
-
-		FbxNode node = new FbxNode(FbxFileToken.GetPropertiesName(this.Version));
-
-		foreach (Property p in properties)
-		{
-			if (p is not FbxProperty fbxProp)
-			{
-				fbxProp = FbxProperty.CreateFrom(p);
-			}
-
-			node.Nodes.Add(fbxProp.ToNode());
-		}
-
-		return node;
+		return references;
 	}
 }

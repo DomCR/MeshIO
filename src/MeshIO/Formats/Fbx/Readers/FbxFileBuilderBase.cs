@@ -19,7 +19,7 @@ internal abstract class FbxFileBuilderBase
 
 	protected readonly IFbxObjectBuilder _rootTemplate;
 
-	protected readonly Dictionary<string, FbxPropertyTemplate> _propertyTemplates = new();
+	protected readonly Dictionary<string, FbxPropertyBuilder> _propertyTemplates = new();
 
 	protected readonly Dictionary<string, IFbxObjectBuilder> _objectTemplates = new();
 
@@ -133,7 +133,7 @@ internal abstract class FbxFileBuilderBase
 		return this._objectTemplates.TryGetValue(id, out template);
 	}
 
-	public FbxPropertyTemplate GetProperties(string objName)
+	public FbxPropertyBuilder GetProperties(string objName)
 	{
 		if (this._propertyTemplates.TryGetValue(objName, out var properties))
 		{
@@ -141,7 +141,7 @@ internal abstract class FbxFileBuilderBase
 		}
 		else
 		{
-			return new FbxPropertyTemplate();
+			return new FbxPropertyBuilder();
 		}
 	}
 
@@ -222,7 +222,7 @@ internal abstract class FbxFileBuilderBase
 	protected void readGlobalSettings(FbxNode node)
 	{
 		Dictionary<string, FbxProperty> properties = this.ReadProperties(node);
-		FbxPropertyTemplate globalSettings = new FbxPropertyTemplate(FbxFileToken.GlobalSettings, string.Empty, properties);
+		FbxPropertyBuilder globalSettings = new FbxPropertyBuilder(FbxFileToken.GlobalSettings, string.Empty, properties);
 		this._propertyTemplates.Add(FbxFileToken.GlobalSettings, globalSettings);
 	}
 
@@ -305,7 +305,7 @@ internal abstract class FbxFileBuilderBase
 		}
 
 		Dictionary<string, FbxProperty> properties = this.ReadProperties(tempalteNode);
-		FbxPropertyTemplate template = new FbxPropertyTemplate(objectType, name, properties);
+		FbxPropertyBuilder template = new FbxPropertyBuilder(objectType, name, properties);
 		this._propertyTemplates.Add(objectType, template);
 	}
 

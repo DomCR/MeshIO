@@ -1,4 +1,4 @@
-﻿namespace MeshIO;
+﻿namespace MeshIO.Formats;
 
 public enum NotificationType
 {

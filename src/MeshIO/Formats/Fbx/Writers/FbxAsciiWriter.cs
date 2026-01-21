@@ -9,7 +9,7 @@ namespace MeshIO.Formats.Fbx.Writers;
 /// <summary>
 /// Writes an FBX document in a text format
 /// </summary>
-internal class FbxAsciiWriter : IDisposable, IFbxWriter
+internal class FbxAsciiWriter : IDisposable, IFbxStreamWriter
 {
 	public FbxRootNode Root { get; }
 

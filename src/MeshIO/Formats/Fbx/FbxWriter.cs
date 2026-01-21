@@ -18,9 +18,11 @@ public class FbxWriter : SceneWriter<FbxWriterOptions>
 		set { this.Options.Version = value; }
 	}
 
+	/// <inheritdoc/>
 	public FbxWriter(string path, Scene scene, FbxWriterOptions options = null, NotificationEventHandler notification = null)
 		: base(path, scene, options, notification) { }
-
+	
+	/// <inheritdoc/>
 	public FbxWriter(Stream stream, Scene scene, FbxWriterOptions options = null, NotificationEventHandler notification = null)
 		: base(stream, scene, options, notification)
 	{
@@ -56,33 +58,24 @@ public class FbxWriter : SceneWriter<FbxWriterOptions>
 		}
 	}
 
-	/// <summary>
-	/// Write a <see cref="MeshIO.Scene"/>
-	/// </summary>
-	public override void Write()
-	{
-		this.Write(this.Options);
-	}
-
-	/// <summary>
-	/// Write a <see cref="MeshIO.Scene"/>
-	/// </summary>
-	/// <param name="options">Options to apply during the write operation</param>
-	public void Write(FbxWriterOptions options)
-	{
-		FbxFileWriterBase fwriter = FbxFileWriterBase.Create(this._scene, options);
-
-		FbxRootNode n = fwriter.ToNodeStructure();
-
-		using (IFbxWriter sw = FbxWriterFactory.Create(this.Options, n, this._stream))
-		{
-			sw.Write();
-		}
-	}
-
 	/// <inheritdoc/>
 	public override void Dispose()
 	{
 		_stream.Dispose();
+	}
+
+	/// <summary>
+	/// Writes the current content using the configured options.
+	/// </summary>
+	public override void Write()
+	{
+		FbxFileWriterBase fwriter = FbxFileWriterBase.Create(this._scene, this.Options);
+
+		FbxRootNode n = fwriter.ToNodeStructure();
+
+		using (IFbxStreamWriter sw = FbxStreamWriterFactory.Create(this.Options, n, this._stream))
+		{
+			sw.Write();
+		}
 	}
 }

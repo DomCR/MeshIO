@@ -5,9 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace MeshIO.Formats.Fbx;
+namespace MeshIO.Formats.Fbx.Builders;
 
-public class FbxPropertyTemplate
+public class FbxPropertyBuilder
 {
 	public string ObjectTypeName { get; }
 
@@ -15,41 +15,41 @@ public class FbxPropertyTemplate
 
 	public Dictionary<string, FbxProperty> Properties { get; } = new();
 
-	public FbxPropertyTemplate() : this(string.Empty, string.Empty, []) { }
+	public FbxPropertyBuilder() : this(string.Empty, string.Empty, []) { }
 
-	public FbxPropertyTemplate(string objectTypeName, string name, Dictionary<string, FbxProperty> properties)
+	public FbxPropertyBuilder(string objectTypeName, string name, Dictionary<string, FbxProperty> properties)
 	{
 		this.ObjectTypeName = objectTypeName;
 		this.Name = name;
 		this.Properties = properties;
 	}
 
-	public static FbxPropertyTemplate Create(string fbxObjectType)
+	public static FbxPropertyBuilder Create(string fbxObjectType)
 	{
 		switch (fbxObjectType)
 		{
 			case FbxFileToken.Model:
-				return new FbxPropertyTemplate("Model", "FbxNode", getFbxNodeTemplate());
+				return new FbxPropertyBuilder("Model", "FbxNode", getFbxNodeTemplate());
 			case FbxFileToken.Geometry:
-				return new FbxPropertyTemplate("Geometry", "FbxMesh", getFbxGeometryTemplate());
+				return new FbxPropertyBuilder("Geometry", "FbxMesh", getFbxGeometryTemplate());
 			case FbxFileToken.Material:
-				return new FbxPropertyTemplate("Material", "FbxSurfaceMaterial", getFbxMaterialTemplate());
+				return new FbxPropertyBuilder("Material", "FbxSurfaceMaterial", getFbxMaterialTemplate());
 			default:
 				throw new ArgumentException($"Unknown fbx ObjectType name {fbxObjectType}");
 		}
 	}
 
-	public static FbxPropertyTemplate Create<T>(T element)
+	public static FbxPropertyBuilder Create<T>(T element)
 		where T : SceneElement
 	{
 		switch (element)
 		{
 			case Node:
-				return new FbxPropertyTemplate("Model", "FbxNode", getFbxNodeTemplate());
+				return new FbxPropertyBuilder("Model", "FbxNode", getFbxNodeTemplate());
 			case Geometry:
-				return new FbxPropertyTemplate("Geometry", "FbxMesh", getFbxGeometryTemplate());
+				return new FbxPropertyBuilder("Geometry", "FbxMesh", getFbxGeometryTemplate());
 			case Material:
-				return new FbxPropertyTemplate("Material", "FbxSurfaceMaterial", getFbxMaterialTemplate());
+				return new FbxPropertyBuilder("Material", "FbxSurfaceMaterial", getFbxMaterialTemplate());
 			default:
 				throw new ArgumentException();
 		}
