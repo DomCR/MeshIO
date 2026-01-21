@@ -25,8 +25,9 @@ namespace MeshIO.Formats.Fbx.Templates
 		{
 			base.Build(builder);
 
-			readPolygons();
-			readEdges();
+			readVertices(builder.Version);
+			readPolygons(builder.Version);
+			readEdges(builder.Version);
 		}
 
 		protected override void addObjectBody(FbxNode node, FbxFileWriterBase writer)
@@ -119,19 +120,27 @@ namespace MeshIO.Formats.Fbx.Templates
 			return node;
 		}
 
-		private void readEdges()
+		private void readVertices(FbxVersion version)
 		{
-			if (FbxNode.TryGetNode("Edges", out FbxNode edges))
+			if (FbxNode.TryGetNode("Vertices", out FbxNode vertices))
 			{
-				_element.Edges.AddRange(toArr<int>(edges.Value as IEnumerable));
+				_element.Vertices.AddRange(arrToXYZ(arrToDoubleArray(getArrayValue(version, vertices))));
 			}
 		}
 
-		private void readPolygons()
+		private void readEdges(FbxVersion version)
+		{
+			if (FbxNode.TryGetNode("Edges", out FbxNode edges))
+			{
+				_element.Edges.AddRange(toArr<int>(getArrayValue(version, edges)));
+			}
+		}
+
+		private void readPolygons(FbxVersion version)
 		{
 			if (FbxNode.TryGetNode("PolygonVertexIndex", out FbxNode polygons))
 			{
-				_element.Polygons = mapPolygons(polygons.Value as int[]);
+				_element.Polygons = mapPolygons(toArr<int>(getArrayValue(version, polygons)).ToArray());
 			}
 		}
 

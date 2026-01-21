@@ -75,7 +75,7 @@ namespace MeshIO.Formats.Fbx.Templates
 				nodeProp.Add(t.Key, t.Value);
 			}
 
-			addProperties(nodeProp);
+			processProperties(nodeProp);
 		}
 
 		public virtual void ProcessChildren(FbxFileWriterBase fbxFileWriterBase)
@@ -120,7 +120,7 @@ namespace MeshIO.Formats.Fbx.Templates
 			return fullname;
 		}
 
-		protected virtual void addProperties(Dictionary<string, FbxProperty> properties)
+		protected virtual void processProperties(Dictionary<string, FbxProperty> properties)
 		{
 			foreach (var prop in properties)
 			{

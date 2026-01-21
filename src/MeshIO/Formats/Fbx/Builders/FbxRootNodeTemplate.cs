@@ -1,8 +1,9 @@
-﻿using MeshIO.Formats.Fbx.Readers;
+﻿using MeshIO.Formats.Fbx.Builders;
+using MeshIO.Formats.Fbx.Readers;
 
 namespace MeshIO.Formats.Fbx.Templates
 {
-	internal class FbxRootNodeTemplate : FbxNodeTemplate
+	internal class FbxRootNodeTemplate : FbxNodeBuilder
 	{
 		public FbxRootNodeTemplate(Node root) : base(root)
 		{

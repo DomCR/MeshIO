@@ -1,4 +1,5 @@
-﻿using MeshIO.Formats.Fbx.Connections;
+﻿using MeshIO.Formats.Fbx.Builders;
+using MeshIO.Formats.Fbx.Connections;
 using MeshIO.Formats.Fbx.Templates;
 using System;
 using System.Collections.Generic;
@@ -321,7 +322,7 @@ namespace MeshIO.Formats.Fbx.Readers
 						this.readGlobalSettings(n);
 						continue; ;
 					case FbxFileToken.Model:
-						template = new FbxNodeTemplate(n);
+						template = new FbxNodeBuilder(n);
 						break;
 					case FbxFileToken.Geometry:
 						template = this.readGeometryNode(n);

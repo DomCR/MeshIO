@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
+using MeshIO.Formats.Fbx.Builders;
 using MeshIO.Formats.Fbx.Connections;
 using MeshIO.Formats.Fbx.Templates;
 
