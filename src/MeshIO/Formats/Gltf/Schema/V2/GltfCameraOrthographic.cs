@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace MeshIO.Formats.Gltf.Schema.V2 {
+namespace MeshIO.Formats.Gltf.Schema.V2; 
     using System.Linq;
     using System.Runtime.Serialization;
     
@@ -143,4 +143,3 @@ namespace MeshIO.Formats.Gltf.Schema.V2 {
                         == false);
         }
     }
-}

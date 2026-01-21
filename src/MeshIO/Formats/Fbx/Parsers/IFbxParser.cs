@@ -1,9 +1,8 @@
 ﻿using System;
 
-namespace MeshIO.Formats.Fbx.Parsers
+namespace MeshIO.Formats.Fbx.Parsers;
+
+internal interface IFbxParser : IDisposable
 {
-	internal interface IFbxParser : IDisposable
-	{
-		FbxRootNode Parse();
-	}
+	FbxRootNode Parse();
 }

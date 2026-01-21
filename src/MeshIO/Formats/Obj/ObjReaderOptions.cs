@@ -1,7 +1,6 @@
-﻿namespace MeshIO.Formats.Obj
-{
-	public class ObjReaderOptions : SceneReaderOptions
-	{
+﻿namespace MeshIO.Formats.Obj;
 
-	}
+public class ObjReaderOptions : SceneReaderOptions
+{
+
 }

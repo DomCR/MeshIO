@@ -1,21 +1,20 @@
 ﻿using MeshIO.Entities.Geometries;
 using System;
 
-namespace MeshIO.Formats.Fbx.Extensions
+namespace MeshIO.Formats.Fbx.Extensions;
+
+internal static class Element3DExtensions
 {
-	internal static class Element3DExtensions
+	public static string GetFbxName(this Element3D element)
 	{
-		public static string GetFbxName(this Element3D element)
+		switch (element)
 		{
-			switch (element)
-			{
-				case Node:
-					return FbxFileToken.Model;
-				case Geometry:
-					return FbxFileToken.Geometry;
-				default:
-					throw new NotImplementedException($"Unknown Element3D : {element.GetType().FullName}");
-			}
+			case Node:
+				return FbxFileToken.Model;
+			case Geometry:
+				return FbxFileToken.Geometry;
+			default:
+				throw new NotImplementedException($"Unknown Element3D : {element.GetType().FullName}");
 		}
 	}
 }

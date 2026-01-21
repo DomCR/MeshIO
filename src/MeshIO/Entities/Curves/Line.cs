@@ -1,6 +1,5 @@
-﻿namespace MeshIO.Entities.Curves
-{
+﻿namespace MeshIO.Entities.Curves;
+
     public class Line : Curve
     {
     }
-}

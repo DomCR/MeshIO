@@ -8,11 +8,10 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace MeshIO.Formats.Gltf.Schema.V2 {
+namespace MeshIO.Formats.Gltf.Schema.V2; 
     using System.Linq;
     using System.Runtime.Serialization;
     
     
     public class GltfExtras {
     }
-}

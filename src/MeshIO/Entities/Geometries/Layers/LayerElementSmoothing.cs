@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
 
-namespace MeshIO.Entities.Geometries.Layers
-{
-    public class LayerElementSmoothing : LayerElement
-	{
-		public List<int> Smoothing { get; set; } = new List<int>();
+namespace MeshIO.Entities.Geometries.Layers;
 
-		public LayerElementSmoothing() : base() { }
-	}
+    public class LayerElementSmoothing : LayerElement
+{
+	public List<int> Smoothing { get; set; } = new List<int>();
+
+	public LayerElementSmoothing() : base() { }
 }

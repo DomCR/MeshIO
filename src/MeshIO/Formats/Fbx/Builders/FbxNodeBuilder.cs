@@ -6,14 +6,13 @@ using CSMath;
 using MeshIO.Entities;
 using MeshIO.Formats.Fbx.Connections;
 using MeshIO.Formats.Fbx.Readers;
-using MeshIO.Formats.Fbx.Templates;
 using MeshIO.Formats.Fbx.Writers;
 using MeshIO.Shaders;
 using System.Collections.Generic;
 
 namespace MeshIO.Formats.Fbx.Builders;
 
-internal class FbxNodeBuilder : FbxObjectTemplate<Node>
+internal class FbxNodeBuilder : FbxObjectBuilder<Node>
 {
 	public override string FbxObjectName { get { return FbxFileToken.Model; } }
 
@@ -35,7 +34,7 @@ internal class FbxNodeBuilder : FbxObjectTemplate<Node>
 			&& this.FbxNode.TryGetNode("NodeAttributeName", out var nameNode)
 			&& nameNode.Value.ToString().StartsWith("Geometry::"))
 		{
-			FbxMeshTemplate mesh = new FbxMeshTemplate(this.FbxNode);
+			FbxMeshBuilder mesh = new FbxMeshBuilder(this.FbxNode);
 			addChild(mesh.GetElement());
 			mesh.Build(builder);
 		}
@@ -115,7 +114,7 @@ internal class FbxNodeBuilder : FbxObjectTemplate<Node>
 	{
 		foreach (FbxConnection c in builder.GetChildren(Id))
 		{
-			if (!builder.TryGetTemplate(c.ChildId, out IFbxObjectTemplate template))
+			if (!builder.TryGetTemplate(c.ChildId, out IFbxObjectBuilder template))
 			{
 				builder.Notify($"[{_element.GetType().FullName}] child object not found {c.ChildId}", NotificationType.Warning);
 				continue;

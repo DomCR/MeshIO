@@ -4,33 +4,32 @@ using MeshIO.Tests.TestModels;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace MeshIO.Tests.Formats
+namespace MeshIO.Tests.Formats;
+
+public class SceneReaderTests : IOTestsBase
 {
-	public class SceneReaderTests : IOTestsBase
+	public static TheoryData<FileModel> InputCases { get; } = new();
+
+	static SceneReaderTests()
 	{
-		public static TheoryData<FileModel> InputCases { get; } = new();
+		loadSamples("stl", "stl", InputCases);
+		loadSamples("fbx", "fbx", InputCases);
+		loadSamples("glb", "glb", InputCases);
+	}
 
-		static SceneReaderTests()
-		{
-			loadSamples("stl", "stl", InputCases);
-			loadSamples("fbx", "fbx", InputCases);
-			loadSamples("glb", "glb", InputCases);
-		}
+	public SceneReaderTests(ITestOutputHelper output)
+		: base(output)
+	{
+	}
 
-		public SceneReaderTests(ITestOutputHelper output)
-			: base(output)
+	[Theory]
+	[MemberData(nameof(InputCases))]
+	public void ReadTest(FileModel test)
+	{
+		Scene scene;
+		using (ISceneReader reader = FileFormat.GetReader(test.Path, onNotification))
 		{
-		}
-
-		[Theory]
-		[MemberData(nameof(InputCases))]
-		public void ReadTest(FileModel test)
-		{
-			Scene scene;
-			using (ISceneReader reader = FileFormat.GetReader(test.Path, onNotification))
-			{
-				scene = reader.Read();
-			}
+			scene = reader.Read();
 		}
 	}
 }

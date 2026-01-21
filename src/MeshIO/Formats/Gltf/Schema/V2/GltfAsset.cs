@@ -8,176 +8,175 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace MeshIO.Formats.Gltf.Schema.V2
+namespace MeshIO.Formats.Gltf.Schema.V2;
+
+using System.Linq;
+using System.Runtime.Serialization;
+
+
+public class GltfAsset
 {
-	using System.Linq;
-	using System.Runtime.Serialization;
 
+	/// <summary>
+	/// Backing field for Copyright.
+	/// </summary>
+	private string _copyright;
 
-	public class GltfAsset
+	/// <summary>
+	/// Backing field for Generator.
+	/// </summary>
+	private string _generator;
+
+	/// <summary>
+	/// Backing field for Version.
+	/// </summary>
+	private string _version;
+
+	/// <summary>
+	/// Backing field for MinVersion.
+	/// </summary>
+	private string _minVersion;
+
+	/// <summary>
+	/// Backing field for Extensions.
+	/// </summary>
+	private System.Collections.Generic.Dictionary<string, object> _extensions;
+
+	/// <summary>
+	/// Backing field for Extras.
+	/// </summary>
+	private GltfExtras _extras;
+
+	/// <summary>
+	/// A copyright message suitable for display to credit the content creator.
+	/// </summary>
+	[Newtonsoft.Json.JsonPropertyAttribute("copyright")]
+	public string Copyright
 	{
-
-		/// <summary>
-		/// Backing field for Copyright.
-		/// </summary>
-		private string _copyright;
-
-		/// <summary>
-		/// Backing field for Generator.
-		/// </summary>
-		private string _generator;
-
-		/// <summary>
-		/// Backing field for Version.
-		/// </summary>
-		private string _version;
-
-		/// <summary>
-		/// Backing field for MinVersion.
-		/// </summary>
-		private string _minVersion;
-
-		/// <summary>
-		/// Backing field for Extensions.
-		/// </summary>
-		private System.Collections.Generic.Dictionary<string, object> _extensions;
-
-		/// <summary>
-		/// Backing field for Extras.
-		/// </summary>
-		private GltfExtras _extras;
-
-		/// <summary>
-		/// A copyright message suitable for display to credit the content creator.
-		/// </summary>
-		[Newtonsoft.Json.JsonPropertyAttribute("copyright")]
-		public string Copyright
+		get
 		{
-			get
-			{
-				return this._copyright;
-			}
-			set
-			{
-				this._copyright = value;
-			}
+			return this._copyright;
 		}
-
-		/// <summary>
-		/// Tool that generated this glTF model.  Useful for debugging.
-		/// </summary>
-		[Newtonsoft.Json.JsonPropertyAttribute("generator")]
-		public string Generator
+		set
 		{
-			get
-			{
-				return this._generator;
-			}
-			set
-			{
-				this._generator = value;
-			}
+			this._copyright = value;
 		}
+	}
 
-		/// <summary>
-		/// The glTF version that this asset targets.
-		/// </summary>
-		[Newtonsoft.Json.JsonRequiredAttribute()]
-		[Newtonsoft.Json.JsonPropertyAttribute("version")]
-		public string Version
+	/// <summary>
+	/// Tool that generated this glTF model.  Useful for debugging.
+	/// </summary>
+	[Newtonsoft.Json.JsonPropertyAttribute("generator")]
+	public string Generator
+	{
+		get
 		{
-			get
-			{
-				return this._version;
-			}
-			set
-			{
-				this._version = value;
-			}
+			return this._generator;
 		}
+		set
+		{
+			this._generator = value;
+		}
+	}
 
-		/// <summary>
-		/// The minimum glTF version that this asset targets.
-		/// </summary>
-		[Newtonsoft.Json.JsonPropertyAttribute("minVersion")]
-		public string MinVersion
+	/// <summary>
+	/// The glTF version that this asset targets.
+	/// </summary>
+	[Newtonsoft.Json.JsonRequiredAttribute()]
+	[Newtonsoft.Json.JsonPropertyAttribute("version")]
+	public string Version
+	{
+		get
 		{
-			get
-			{
-				return this._minVersion;
-			}
-			set
-			{
-				this._minVersion = value;
-			}
+			return this._version;
 		}
+		set
+		{
+			this._version = value;
+		}
+	}
 
-		/// <summary>
-		/// Dictionary object with extension-specific objects.
-		/// </summary>
-		[Newtonsoft.Json.JsonPropertyAttribute("extensions")]
-		public System.Collections.Generic.Dictionary<string, object> Extensions
+	/// <summary>
+	/// The minimum glTF version that this asset targets.
+	/// </summary>
+	[Newtonsoft.Json.JsonPropertyAttribute("minVersion")]
+	public string MinVersion
+	{
+		get
 		{
-			get
-			{
-				return this._extensions;
-			}
-			set
-			{
-				this._extensions = value;
-			}
+			return this._minVersion;
 		}
+		set
+		{
+			this._minVersion = value;
+		}
+	}
 
-		/// <summary>
-		/// Application-specific data.
-		/// </summary>
-		[Newtonsoft.Json.JsonPropertyAttribute("extras")]
-		public GltfExtras Extras
+	/// <summary>
+	/// Dictionary object with extension-specific objects.
+	/// </summary>
+	[Newtonsoft.Json.JsonPropertyAttribute("extensions")]
+	public System.Collections.Generic.Dictionary<string, object> Extensions
+	{
+		get
 		{
-			get
-			{
-				return this._extras;
-			}
-			set
-			{
-				this._extras = value;
-			}
+			return this._extensions;
 		}
+		set
+		{
+			this._extensions = value;
+		}
+	}
 
-		public bool ShouldSerializeCopyright()
+	/// <summary>
+	/// Application-specific data.
+	/// </summary>
+	[Newtonsoft.Json.JsonPropertyAttribute("extras")]
+	public GltfExtras Extras
+	{
+		get
 		{
-			return ((_copyright == null)
-						== false);
+			return this._extras;
 		}
+		set
+		{
+			this._extras = value;
+		}
+	}
 
-		public bool ShouldSerializeGenerator()
-		{
-			return ((_generator == null)
-						== false);
-		}
+	public bool ShouldSerializeCopyright()
+	{
+		return ((_copyright == null)
+					== false);
+	}
 
-		public bool ShouldSerializeVersion()
-		{
-			return ((_version == null)
-						== false);
-		}
+	public bool ShouldSerializeGenerator()
+	{
+		return ((_generator == null)
+					== false);
+	}
 
-		public bool ShouldSerializeMinVersion()
-		{
-			return ((_minVersion == null)
-						== false);
-		}
+	public bool ShouldSerializeVersion()
+	{
+		return ((_version == null)
+					== false);
+	}
 
-		public bool ShouldSerializeExtensions()
-		{
-			return ((_extensions == null)
-						== false);
-		}
+	public bool ShouldSerializeMinVersion()
+	{
+		return ((_minVersion == null)
+					== false);
+	}
 
-		public bool ShouldSerializeExtras()
-		{
-			return ((_extras == null)
-						== false);
-		}
+	public bool ShouldSerializeExtensions()
+	{
+		return ((_extensions == null)
+					== false);
+	}
+
+	public bool ShouldSerializeExtras()
+	{
+		return ((_extras == null)
+					== false);
 	}
 }

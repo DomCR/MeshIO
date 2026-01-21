@@ -1,6 +1,5 @@
-﻿namespace MeshIO.Formats.Stl
+﻿namespace MeshIO.Formats.Stl;
+
+public class StlReaderOptions : SceneReaderOptions
 {
-	public class StlReaderOptions : SceneReaderOptions
-	{
-	}
 }

@@ -1,4 +1,3 @@
-﻿namespace MeshIO.Formats.Gltf
-{
-	public class GltfReaderOptions: SceneReaderOptions { }
-}
+﻿namespace MeshIO.Formats.Gltf;
+
+public class GltfReaderOptions: SceneReaderOptions { }

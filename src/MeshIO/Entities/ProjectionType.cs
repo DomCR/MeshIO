@@ -1,18 +1,17 @@
-﻿namespace MeshIO.Entities
+﻿namespace MeshIO.Entities;
+
+/// <summary>
+/// Camera's projection types
+/// </summary>
+public enum ProjectionType
 {
 	/// <summary>
-	/// Camera's projection types
+	/// The camera uses perspective projection
 	/// </summary>
-	public enum ProjectionType
-	{
-		/// <summary>
-		/// The camera uses perspective projection
-		/// </summary>
-		Perspective,
+	Perspective,
 
-		/// <summary>
-		/// The camera uses orthographic projection
-		/// </summary>
-		Orthographic,
-	}
+	/// <summary>
+	/// The camera uses orthographic projection
+	/// </summary>
+	Orthographic,
 }

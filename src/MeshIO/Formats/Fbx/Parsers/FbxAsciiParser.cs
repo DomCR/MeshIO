@@ -4,8 +4,8 @@ using System.IO;
 using System.Text.RegularExpressions;
 using MeshIO.Formats.Fbx.Exceptions;
 
-namespace MeshIO.Formats.Fbx.Parsers
-{
+namespace MeshIO.Formats.Fbx.Parsers;
+
     /// <summary>
     /// Reads FBX nodes from a text stream
     /// </summary>
@@ -42,16 +42,16 @@ namespace MeshIO.Formats.Fbx.Parsers
             _errorLevel = errorLevel;
         }
 
-		/// <inheritdoc/>
-		public void Dispose()
-		{
-			_stream.Dispose();
-		}
+	/// <inheritdoc/>
+	public void Dispose()
+	{
+		_stream.Dispose();
+	}
 
-		// We read bytes a lot, so we should make a more efficient method here
-		// (The normal one makes a new byte array each time)
+	// We read bytes a lot, so we should make a more efficient method here
+	// (The normal one makes a new byte array each time)
 
-		readonly byte[] singleChar = new byte[1];
+	readonly byte[] singleChar = new byte[1];
         private char? prevChar;
         private bool endStream;
         private bool wasCr;
@@ -564,4 +564,3 @@ namespace MeshIO.Formats.Fbx.Parsers
             return ret;
         }
     }
-}
