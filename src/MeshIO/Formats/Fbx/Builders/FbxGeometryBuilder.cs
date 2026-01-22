@@ -29,7 +29,7 @@ internal abstract class FbxGeometryBuilder<T> : FbxObjectBuilder<T>
 		readLayers(builder.Version);
 	}
 
-	protected override void processProperties(Dictionary<string, FbxProperty> properties)
+	protected override void buildProperties(Dictionary<string, FbxProperty> properties)
 	{
 		if (properties.Remove("Primary Visibility", out FbxProperty isVisible))
 		{
@@ -46,7 +46,7 @@ internal abstract class FbxGeometryBuilder<T> : FbxObjectBuilder<T>
 			_element.ReceiveShadows = (bool)receiveShadows.ToProperty().Value;
 		}
 
-		base.processProperties(properties);
+		base.buildProperties(properties);
 	}
 
 	protected void readLayers(FbxVersion version)

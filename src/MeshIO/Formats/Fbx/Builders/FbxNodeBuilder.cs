@@ -6,7 +6,6 @@ using CSMath;
 using MeshIO.Entities;
 using MeshIO.Formats.Fbx.Connections;
 using MeshIO.Formats.Fbx.Readers;
-using MeshIO.Formats.Fbx.Writers;
 using MeshIO.Shaders;
 using System.Collections.Generic;
 
@@ -39,7 +38,7 @@ internal class FbxNodeBuilder : FbxObjectBuilder<Node>
 			mesh.Build(builder);
 		}
 
-		processChildren(builder);
+		buildChildren(builder);
 	}
 
 	protected void addChild(Element3D element)
@@ -60,17 +59,7 @@ internal class FbxNodeBuilder : FbxObjectBuilder<Node>
 		}
 	}
 
-	protected override void addObjectBody(FbxNode node, FbxFileWriterBase writer)
-	{
-		node.Add(FbxFileToken.Version, 232);
-
-		base.addObjectBody(node, writer);
-
-		node.Add(FbxFileToken.Shading, 'T');
-		node.Add(FbxFileToken.CullingOff, "CullingOff");
-	}
-
-	protected override void processProperties(Dictionary<string, FbxProperty> properties)
+	protected override void buildProperties(Dictionary<string, FbxProperty> properties)
 	{
 		if (properties.Remove("Lcl Translation", out FbxProperty translation))
 		{
@@ -87,10 +76,10 @@ internal class FbxNodeBuilder : FbxObjectBuilder<Node>
 			_element.Transform.Translation = (XYZ)scaling.ToProperty().Value;
 		}
 
-		base.processProperties(properties);
+		base.buildProperties(properties);
 	}
 
-	protected void processChildren(FbxFileBuilderBase builder)
+	protected void buildChildren(FbxFileBuilderBase builder)
 	{
 		foreach (FbxConnection c in builder.GetChildren(Id))
 		{
