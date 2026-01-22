@@ -1,4 +1,5 @@
 ﻿using CSUtilities.Extensions;
+using MeshIO.Formats.Fbx.Connections;
 using System;
 
 namespace MeshIO.Formats.Fbx.Writers
@@ -22,10 +23,26 @@ namespace MeshIO.Formats.Fbx.Writers
 		{
 			FbxNode documents = new FbxNode(FbxFileToken.Document);
 
-			string name = this.Scene.Name.IsNullOrEmpty() ? "Scene" : this.Scene.Name;
-			documents.Nodes.Add(new FbxNode("Name", name));
+			//Ensure name is not null or empty
+			rootTemplate.GetIdByVersion(Version);
+			documents.Nodes.Add(new FbxNode("Name", rootTemplate.Name));
 
 			return documents;
+		}
+
+		protected override FbxNode nodeDefinitions()
+		{
+			FbxNode definitions = new FbxNode(FbxFileToken.Definitions);
+
+			definitions.Nodes.Add(new FbxNode(FbxFileToken.Version, 100));
+
+			return definitions;
+		}
+
+		protected override void setConnectionIds(FbxNode con, FbxConnection c)
+		{
+			con.Properties.Add(c.Child.GetIdByVersion(this.Version));
+			con.Properties.Add(c.Parent.GetIdByVersion(this.Version));
 		}
 	}
 }

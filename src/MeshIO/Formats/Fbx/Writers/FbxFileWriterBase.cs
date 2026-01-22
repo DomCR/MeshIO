@@ -22,13 +22,15 @@ internal abstract class FbxFileWriterBase
 
 	protected readonly Dictionary<string, List<IFbxObjectTemplate>> _definedObjects = new();
 
-	protected readonly Dictionary<ulong, IFbxObjectTemplate> _objectTemplates = new();
-
-	protected readonly Dictionary<string, FbxPropertyTemplate> templates = new();
+	protected readonly Dictionary<string, IFbxObjectTemplate> _objectTemplates = new();
 
 	protected readonly FbxRootNode fbxRoot;
 
-	private readonly string MeshIOVersion;
+	protected readonly Dictionary<string, FbxPropertyTemplate> templates = new();
+
+	protected IFbxObjectTemplate rootTemplate;
+
+	private readonly string _meshIOVersion;
 
 	protected FbxFileWriterBase(Scene scene, FbxWriterOptions options)
 	{
@@ -40,7 +42,7 @@ internal abstract class FbxFileWriterBase
 			Version = this.Options.Version
 		};
 
-		this.MeshIOVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+		_meshIOVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString(3);
 	}
 
 	public static FbxFileWriterBase Create(Scene scene, FbxWriterOptions options)
@@ -89,7 +91,8 @@ internal abstract class FbxFileWriterBase
 
 		objwriter.ProcessChildren(this);
 
-		this._objectTemplates.Add(child.Id.Value, objwriter);
+		this._objectTemplates.Add(objwriter.GetIdByVersion(this.Version), objwriter);
+
 		if (!this._definedObjects.TryGetValue(objwriter.FbxObjectName, out List<IFbxObjectTemplate> lst))
 		{
 			this._definedObjects.Add(objwriter.FbxObjectName, lst = new List<IFbxObjectTemplate>());
@@ -132,7 +135,7 @@ internal abstract class FbxFileWriterBase
 			random.NextBytes(id);
 			this.fbxRoot.Add("FileId", id);
 			this.fbxRoot.Add("CreationTime", DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss:fff", CultureInfo.InvariantCulture));
-			this.fbxRoot.Add("Creator", $"MeshIO.FBX {this.MeshIOVersion}");
+			this.fbxRoot.Add("Creator", $"MeshIO.FBX {this._meshIOVersion}");
 		}
 
 		this.addFileSections();
@@ -140,21 +143,21 @@ internal abstract class FbxFileWriterBase
 		return this.fbxRoot;
 	}
 
-	protected abstract void addFileSections();
-
 	public bool TryGetPropertyTemplate(string fbxName, out FbxPropertyTemplate template)
 	{
 		return this.templates.TryGetValue(fbxName, out template);
 	}
+
+	protected abstract void addFileSections();
 
 	protected void initializeRoot()
 	{
 		//Root node should be processed to create the connections but it is not writen in the file
 		this.RootNode.Id = 0;
 
-		IFbxObjectTemplate root = FbxTemplateFactory.Create(this.RootNode);
+		rootTemplate = FbxTemplateFactory.Create(this.RootNode);
 
-		root.ProcessChildren(this);
+		rootTemplate.ProcessChildren(this);
 	}
 
 	protected FbxNode nodeConnections()
@@ -174,14 +177,13 @@ internal abstract class FbxFileWriterBase
 					throw new NotImplementedException();
 			}
 
-			con.Properties.Add(long.Parse(c.Child.Id));
-			con.Properties.Add(long.Parse(c.Parent.Id));
+			setConnectionIds(con, c);
 		}
 
 		return connections;
 	}
 
-	protected FbxNode nodeDefinitions()
+	protected virtual FbxNode nodeDefinitions()
 	{
 		FbxNode definitions = new FbxNode(FbxFileToken.Definitions);
 
@@ -250,7 +252,7 @@ internal abstract class FbxFileWriterBase
 		tiemespan.Nodes.Add(new FbxNode(nameof(now.Millisecond), now.Millisecond));
 		header.Nodes.Add(tiemespan);
 
-		header.Add(FbxFileToken.Creator, $"MeshIO.FBX {this.MeshIOVersion}");
+		header.Add(FbxFileToken.Creator, $"MeshIO.FBX {this._meshIOVersion}");
 
 		return header;
 
@@ -299,4 +301,6 @@ internal abstract class FbxFileWriterBase
 
 		return references;
 	}
+
+	protected abstract void setConnectionIds(FbxNode con, FbxConnection c);
 }

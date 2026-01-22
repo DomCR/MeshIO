@@ -4,19 +4,21 @@ namespace MeshIO.Formats.Fbx.Templates;
 
 internal interface IFbxObjectTemplate
 {
-	string Id { get; set; }
-
-	string Name { get; }
-
 	string FbxObjectName { get; }
 
 	string FbxTypeName { get; }
 
+	string Id { get; set; }
+
+	string Name { get; }
+
+	void ApplyTemplate(FbxPropertyTemplate template);
+
 	Element3D GetElement();
 
-	FbxNode ToFbxNode(FbxFileWriterBase writer);
+	string GetIdByVersion(FbxVersion version);
 
 	void ProcessChildren(FbxFileWriterBase fbxFileWriterBase);
 
-	void ApplyTemplate(FbxPropertyTemplate template);
+	FbxNode ToFbxNode(FbxFileWriterBase writer);
 }

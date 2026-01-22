@@ -8,50 +8,32 @@ namespace MeshIO.Formats.Fbx.Templates;
 internal abstract class FbxObjectTemplate<T> : IFbxObjectTemplate
 	where T : Element3D
 {
-	public string Id { get; set; }
+	public Dictionary<string, FbxProperty> FbxInstanceProperties { get; } = new();
 
-	public string Name { get { return this._element.Name; } }
+	public FbxNode FbxNode { get; }
 
 	public abstract string FbxObjectName { get; }
 
 	public abstract string FbxTypeName { get; }
 
-	public string Prefix { get { return $"{FbxObjectName}::"; } }
+	public string Id { get; set; }
 
-	public Dictionary<string, FbxProperty> FbxInstanceProperties { get; } = new();
+	public string Name { get { return this._element.Name; } }
 
-	public FbxNode FbxNode { get; }
+	public string Prefix { get { return $"{this.FbxObjectName}::"; } }
 
 	protected readonly T _element;
 
 	protected FbxObjectTemplate(T element)
 	{
-		_element = element;
-		Id = element.Id.ToString();
+		this._element = element;
+		this.Id = element.Id.ToString();
 	}
 
 	protected FbxObjectTemplate(FbxNode node, T element) : this(element)
 	{
-		FbxNode = node;
-		Id = node?.GetProperty<object>(0).ToString();
-	}
-
-	public Element3D GetElement()
-	{
-		return _element;
-	}
-
-	public FbxNode ToFbxNode(FbxFileWriterBase writer)
-	{
-		FbxNode n = this.nodeHeader();
-
-		this.addObjectBody(n, writer);
-
-		return n;
-	}
-
-	public virtual void ProcessChildren(FbxFileWriterBase fbxFileWriterBase)
-	{
+		this.FbxNode = node;
+		this.Id = node?.GetProperty<object>(0).ToString();
 	}
 
 	public virtual void ApplyTemplate(FbxPropertyTemplate template)
@@ -68,14 +50,64 @@ internal abstract class FbxObjectTemplate<T> : IFbxObjectTemplate
 		}
 	}
 
-	protected FbxNode nodeHeader()
+	public Element3D GetElement()
 	{
-		return new FbxNode(this.FbxObjectName, this.getId(), $"{this.FbxObjectName}::{_element.Name}", this.FbxTypeName);
+		return this._element;
+	}
+
+	public string GetIdByVersion(FbxVersion version)
+	{
+		if (version < FbxVersion.v7000)
+		{
+			if (string.IsNullOrEmpty(this._element.Name))
+			{
+				this._element.Name = $"id_{this._element.GetIdOrDefault().ToString()}";
+			}
+
+			return $"{this.FbxObjectName}::{this._element.Name}";
+		}
+		else
+		{
+			return this._element.GetIdOrDefault().ToString();
+		}
+	}
+
+	public virtual void ProcessChildren(FbxFileWriterBase fbxFileWriterBase)
+	{
+	}
+
+	public FbxNode ToFbxNode(FbxFileWriterBase writer)
+	{
+		FbxNode n = this.nodeHeader(writer.Version);
+
+		this.addObjectBody(n, writer);
+
+		return n;
 	}
 
 	protected virtual void addObjectBody(FbxNode node, FbxFileWriterBase writer)
 	{
 		node.Nodes.Add(writer.PropertiesToNode(this.FbxInstanceProperties.Values));
+	}
+
+	protected FbxNode nodeHeader(FbxVersion version)
+	{
+		if (version < FbxVersion.v7000)
+		{
+			return new FbxNode(this.FbxObjectName, $"{this.FbxObjectName}::{this._element.Name}", this.FbxTypeName);
+		}
+		else
+		{
+			return new FbxNode(this.FbxObjectName, this.getId(), $"{this.FbxObjectName}::{this._element.Name}", this.FbxTypeName);
+		}
+	}
+
+	protected virtual void processProperties(Dictionary<string, FbxProperty> properties)
+	{
+		foreach (var prop in properties)
+		{
+			this._element.Properties.Add(prop.Value.ToProperty());
+		}
 	}
 
 	protected string removePrefix(string fullname)
@@ -84,29 +116,21 @@ internal abstract class FbxObjectTemplate<T> : IFbxObjectTemplate
 		{
 			return string.Empty;
 		}
-		else if (fullname.StartsWith(Prefix))
+		else if (fullname.StartsWith(this.Prefix))
 		{
-			return fullname.Remove(0, Prefix.Length);
+			return fullname.Remove(0, this.Prefix.Length);
 		}
 
 		return fullname;
 	}
 
-	protected virtual void processProperties(Dictionary<string, FbxProperty> properties)
-	{
-		foreach (var prop in properties)
-		{
-			_element.Properties.Add(prop.Value.ToProperty());
-		}
-	}
-
 	private long getId()
 	{
-		if (!_element.Id.HasValue)
+		if (!this._element.Id.HasValue)
 		{
-			_element.Id = IdUtils.CreateId();
+			this._element.Id = IdUtils.CreateId();
 		}
 
-		return Math.Abs((long)_element.Id.Value);
+		return Math.Abs((long)this._element.Id.Value);
 	}
 }
