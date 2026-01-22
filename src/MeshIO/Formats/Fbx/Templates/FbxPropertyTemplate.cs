@@ -1,6 +1,4 @@
 ﻿using CSMath;
-using MeshIO.Entities.Geometries;
-using MeshIO.Shaders;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,44 +34,6 @@ public class FbxPropertyTemplate
 				return new FbxPropertyTemplate("Material", "FbxSurfaceMaterial", getFbxMaterialTemplate());
 			default:
 				throw new ArgumentException($"Unknown fbx ObjectType name {fbxObjectType}");
-		}
-	}
-
-	public static FbxPropertyTemplate Create<T>(T element)
-		where T : SceneElement
-	{
-		switch (element)
-		{
-			case Node:
-				return new FbxPropertyTemplate("Model", "FbxNode", getFbxNodeTemplate());
-			case Geometry:
-				return new FbxPropertyTemplate("Geometry", "FbxMesh", getFbxGeometryTemplate());
-			case Material:
-				return new FbxPropertyTemplate("Material", "FbxSurfaceMaterial", getFbxMaterialTemplate());
-			default:
-				throw new ArgumentException();
-		}
-	}
-
-	/// <summary>
-	/// 
-	/// </summary>
-	/// <param name="name"></param>
-	/// <param name="value"></param>
-	/// <param name="fbxProperty"></param>
-	/// <returns>True if the property has been updated</returns>
-	public bool GetUpdated(string name, object value, out FbxProperty fbxProperty)
-	{
-		if (this.Properties.TryGetValue(name, out FbxProperty existing)
-			&& !value.Equals(existing.Value))
-		{
-			fbxProperty = new FbxProperty(existing, value);
-			return true;
-		}
-		else
-		{
-			fbxProperty = null;
-			return false;
 		}
 	}
 

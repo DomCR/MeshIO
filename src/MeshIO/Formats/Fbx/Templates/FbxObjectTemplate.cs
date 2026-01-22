@@ -9,8 +9,6 @@ internal abstract class FbxObjectTemplate<T> : IFbxObjectTemplate
 {
 	public Dictionary<string, FbxProperty> FbxInstanceProperties { get; } = new();
 
-	public FbxNode FbxNode { get; }
-
 	public abstract string FbxObjectName { get; }
 
 	public abstract string FbxTypeName { get; }
@@ -20,8 +18,6 @@ internal abstract class FbxObjectTemplate<T> : IFbxObjectTemplate
 	public bool Is6000Fbx { get { return this.Version < FbxVersion.v7000; } }
 
 	public string Name { get { return this._element.Name; } }
-
-	public string Prefix { get { return $"{this.FbxObjectName}::"; } }
 
 	public FbxVersion Version { get; }
 
@@ -97,14 +93,6 @@ internal abstract class FbxObjectTemplate<T> : IFbxObjectTemplate
 		else
 		{
 			return new FbxNode(this.FbxObjectName, this.getId(), $"{this.FbxObjectName}::{this._element.Name}", this.FbxTypeName);
-		}
-	}
-
-	protected virtual void processProperties(Dictionary<string, FbxProperty> properties)
-	{
-		foreach (var prop in properties)
-		{
-			this._element.Properties.Add(prop.Value.ToProperty());
 		}
 	}
 

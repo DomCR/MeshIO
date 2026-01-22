@@ -2,11 +2,9 @@
 using CSUtilities.Extensions;
 #endif
 
-using CSMath;
 using MeshIO.Entities;
 using MeshIO.Formats.Fbx.Writers;
 using MeshIO.Shaders;
-using System.Collections.Generic;
 
 namespace MeshIO.Formats.Fbx.Templates;
 
@@ -40,24 +38,6 @@ internal class FbxNodeTemplate : FbxObjectTemplate<Node>
 		}
 	}
 
-	protected void addChild(Element3D element)
-	{
-		switch (element)
-		{
-			case Node node:
-				_element.Nodes.Add(node);
-				break;
-			case Material mat:
-				_element.Materials.Add(mat);
-				break;
-			case Entity entity:
-				_element.Entities.Add(entity);
-				break;
-			default:
-				break;
-		}
-	}
-
 	protected override void addObjectBody(FbxNode node, FbxFileWriterBase writer)
 	{
 		node.Add(FbxFileToken.Version, 232);
@@ -66,25 +46,5 @@ internal class FbxNodeTemplate : FbxObjectTemplate<Node>
 
 		node.Add(FbxFileToken.Shading, 'T');
 		node.Add(FbxFileToken.CullingOff, "CullingOff");
-	}
-
-	protected override void processProperties(Dictionary<string, FbxProperty> properties)
-	{
-		if (properties.Remove("Lcl Translation", out FbxProperty translation))
-		{
-			_element.Transform.Translation = (XYZ)translation.ToProperty().Value;
-		}
-
-		if (properties.Remove("Lcl Rotation", out FbxProperty rotation))
-		{
-			_element.Transform.Translation = (XYZ)rotation.ToProperty().Value;
-		}
-
-		if (properties.Remove("Lcl Scaling", out FbxProperty scaling))
-		{
-			_element.Transform.Translation = (XYZ)scaling.ToProperty().Value;
-		}
-
-		base.processProperties(properties);
 	}
 }
