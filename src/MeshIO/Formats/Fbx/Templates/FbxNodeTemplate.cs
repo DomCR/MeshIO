@@ -4,42 +4,44 @@ using CSUtilities.Extensions;
 
 using CSMath;
 using MeshIO.Entities;
-using MeshIO.Formats.Fbx.Connections;
-using MeshIO.Formats.Fbx.Readers;
 using MeshIO.Formats.Fbx.Writers;
 using MeshIO.Shaders;
 using System.Collections.Generic;
 
-namespace MeshIO.Formats.Fbx.Builders;
+namespace MeshIO.Formats.Fbx.Templates;
 
-internal class FbxNodeBuilder : FbxObjectBuilder<Node>
+internal class FbxNodeTemplate : FbxObjectTemplate<Node>
 {
 	public override string FbxObjectName { get { return FbxFileToken.Model; } }
 
 	public override string FbxTypeName { get { return FbxFileToken.Mesh; } }
 
-	public FbxNodeBuilder(FbxNode node) : base(node, new Node())
+	public FbxNodeTemplate(FbxNode node) : base(node, new Node())
 	{
 	}
 
-	public FbxNodeBuilder(Node root) : base(root)
+	public FbxNodeTemplate(Node root) : base(root)
 	{
 	}
 
-	public override void Build(FbxFileBuilderBase builder)
+	public override void ProcessChildren(FbxFileWriterBase writer)
 	{
-		base.Build(builder);
+		base.ProcessChildren(writer);
 
-		if (builder.Version < FbxVersion.v7000 
-			&& this.FbxNode.TryGetNode("NodeAttributeName", out var nameNode)
-			&& nameNode.Value.ToString().StartsWith("Geometry::"))
+		foreach (Node node in this._element.Nodes)
 		{
-			FbxMeshBuilder mesh = new FbxMeshBuilder(this.FbxNode);
-			addChild(mesh.GetElement());
-			mesh.Build(builder);
+			writer.CreateConnection(node, this);
 		}
 
-		processChildren(builder);
+		foreach (Material mat in this._element.Materials)
+		{
+			writer.CreateConnection(mat, this);
+		}
+
+		foreach (Entity entity in this._element.Entities)
+		{
+			writer.CreateConnection(entity, this);
+		}
 	}
 
 	protected void addChild(Element3D element)
@@ -88,21 +90,5 @@ internal class FbxNodeBuilder : FbxObjectBuilder<Node>
 		}
 
 		base.processProperties(properties);
-	}
-
-	protected void processChildren(FbxFileBuilderBase builder)
-	{
-		foreach (FbxConnection c in builder.GetChildren(Id))
-		{
-			if (!builder.TryGetTemplate(c.ChildId, out IFbxObjectBuilder template))
-			{
-				builder.Notify($"[{_element.GetType().FullName}] child object not found {c.ChildId}", NotificationType.Warning);
-				continue;
-			}
-
-			addChild(template.GetElement());
-
-			template.Build(builder);
-		}
 	}
 }

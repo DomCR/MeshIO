@@ -2,9 +2,9 @@
 using MeshIO.Formats.Fbx.Writers;
 using System.Collections.Generic;
 
-namespace MeshIO.Formats.Fbx.Builders;
+namespace MeshIO.Formats.Fbx.Templates;
 
-internal class FbxGlobalSettingsBuilder : IFbxObjectBuilder
+internal class FbxGlobalSettingsTemplate : IFbxObjectTemplate
 {
 	public string Id { get; set; }
 
@@ -16,7 +16,7 @@ internal class FbxGlobalSettingsBuilder : IFbxObjectBuilder
 
 	public List<FbxProperty> FbxProperties { get; } = new();
 
-	public FbxGlobalSettingsBuilder()
+	public FbxGlobalSettingsTemplate()
 	{
 		FbxProperties.Add(new("UpAxis", "int", "Integer", PropertyFlags.None, 1));
 		FbxProperties.Add(new("UpAxisSign", "int", "Integer", PropertyFlags.None, 1));
@@ -45,7 +45,7 @@ internal class FbxGlobalSettingsBuilder : IFbxObjectBuilder
 		throw new System.InvalidOperationException();
 	}
 
-	public void ApplyTemplate(FbxPropertyBuilder template)
+	public void ApplyTemplate(FbxPropertyTemplate template)
 	{
 		throw new System.InvalidOperationException();
 	}

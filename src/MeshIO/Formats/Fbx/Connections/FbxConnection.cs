@@ -1,4 +1,5 @@
 ﻿using MeshIO.Formats.Fbx.Builders;
+using MeshIO.Formats.Fbx.Templates;
 
 namespace MeshIO.Formats.Fbx.Connections;
 
@@ -10,11 +11,11 @@ internal class FbxConnection
 
 	public string ChildId { get; }
 
-	public IFbxObjectBuilder Child { get; }
+	public IFbxObjectTemplate Child { get; }
 
-	public IFbxObjectBuilder Parent { get; }
+	public IFbxObjectTemplate Parent { get; }
 
-	public FbxConnection(IFbxObjectBuilder child, IFbxObjectBuilder parent)
+	public FbxConnection(IFbxObjectTemplate child, IFbxObjectTemplate parent)
 	{
 		Child = child;
 		Parent = parent;
@@ -29,7 +30,14 @@ internal class FbxConnection
 
 	public string GetComment()
 	{
-		return $"{Child.FbxObjectName}::{Child.Name}, {Parent.FbxObjectName}::{Parent.Name}";
+		if (Child != null && Parent != null)
+		{
+			return $"{Child.FbxObjectName}::{Child.Name}, {Parent.FbxObjectName}::{Parent.Name}";
+		}
+		else
+		{
+			return $"{ConnectionType}:{ChildId} | {ParentId}";
+		}
 	}
 
 	public static FbxConnectionType Parse(string type)

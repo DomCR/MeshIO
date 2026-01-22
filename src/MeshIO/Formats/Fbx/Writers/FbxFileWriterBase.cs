@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using MeshIO.Formats.Fbx.Builders;
 using MeshIO.Formats.Fbx.Connections;
+using MeshIO.Formats.Fbx.Templates;
 
 namespace MeshIO.Formats.Fbx.Writers;
 
@@ -20,11 +21,11 @@ internal abstract class FbxFileWriterBase
 
 	protected readonly List<FbxConnection> _connections = new();
 
-	protected readonly Dictionary<string, List<IFbxObjectBuilder>> _definedObjects = new();
+	protected readonly Dictionary<string, List<IFbxObjectTemplate>> _definedObjects = new();
 
-	protected readonly Dictionary<ulong, IFbxObjectBuilder> _objectTemplates = new();
+	protected readonly Dictionary<ulong, IFbxObjectTemplate> _objectTemplates = new();
 
-	protected readonly Dictionary<string, FbxPropertyBuilder> templates = new();
+	protected readonly Dictionary<string, FbxPropertyTemplate> templates = new();
 
 	private readonly FbxRootNode fbxRoot;
 
@@ -74,9 +75,9 @@ internal abstract class FbxFileWriterBase
 		}
 	}
 
-	public void CreateConnection(Element3D child, IFbxObjectBuilder parent)
+	public void CreateConnection(Element3D child, IFbxObjectTemplate parent)
 	{
-		IFbxObjectBuilder objwriter = FbxBuilderFactory.Create(child);
+		IFbxObjectTemplate objwriter = FbxTemplateFactory.Create(child);
 		if (objwriter is null)
 		{
 			return;
@@ -89,9 +90,9 @@ internal abstract class FbxFileWriterBase
 		objwriter.ProcessChildren(this);
 
 		this._objectTemplates.Add(child.Id.Value, objwriter);
-		if (!this._definedObjects.TryGetValue(objwriter.FbxObjectName, out List<IFbxObjectBuilder> lst))
+		if (!this._definedObjects.TryGetValue(objwriter.FbxObjectName, out List<IFbxObjectTemplate> lst))
 		{
-			this._definedObjects.Add(objwriter.FbxObjectName, lst = new List<IFbxObjectBuilder>());
+			this._definedObjects.Add(objwriter.FbxObjectName, lst = new List<IFbxObjectTemplate>());
 		}
 		lst.Add(objwriter);
 	}
@@ -144,7 +145,7 @@ internal abstract class FbxFileWriterBase
 		return this.fbxRoot;
 	}
 
-	public bool TryGetPropertyTemplate(string fbxName, out FbxPropertyBuilder template)
+	public bool TryGetPropertyTemplate(string fbxName, out FbxPropertyTemplate template)
 	{
 		return this.templates.TryGetValue(fbxName, out template);
 	}
@@ -154,7 +155,7 @@ internal abstract class FbxFileWriterBase
 		//Root node should be processed to create the connections but it is not writen in the file
 		this.RootNode.Id = 0;
 
-		IFbxObjectBuilder root = FbxBuilderFactory.Create(this.RootNode);
+		IFbxObjectTemplate root = FbxTemplateFactory.Create(this.RootNode);
 
 		root.ProcessChildren(this);
 	}
@@ -201,7 +202,7 @@ internal abstract class FbxFileWriterBase
 				continue;
 			}
 
-			FbxPropertyBuilder template = FbxPropertyBuilder.Create(item.Key);
+			FbxPropertyTemplate template = FbxPropertyTemplate.Create(item.Key);
 
 			this.templates.Add(item.Key, template);
 
@@ -261,7 +262,7 @@ internal abstract class FbxFileWriterBase
 
 	private FbxNode nodeGlobalSettings()
 	{
-		FbxGlobalSettingsBuilder globalSettings = new FbxGlobalSettingsBuilder();
+		FbxGlobalSettingsTemplate globalSettings = new ();
 
 		FbxNode settings = new FbxNode(FbxFileToken.GlobalSettings);
 
@@ -269,7 +270,7 @@ internal abstract class FbxFileWriterBase
 
 		settings.Nodes.Add(this.PropertiesToNode(globalSettings.FbxProperties));
 
-		this._definedObjects.Add(FbxFileToken.GlobalSettings, new List<IFbxObjectBuilder> { globalSettings });
+		this._definedObjects.Add(FbxFileToken.GlobalSettings, new List<IFbxObjectTemplate> { globalSettings });
 
 		return settings;
 	}
@@ -278,11 +279,11 @@ internal abstract class FbxFileWriterBase
 	{
 		FbxNode objects = new FbxNode(FbxFileToken.Objects);
 
-		foreach (IFbxObjectBuilder obj in this._objectTemplates.Values)
+		foreach (IFbxObjectTemplate obj in this._objectTemplates.Values)
 		{
-			if (!this.templates.TryGetValue(obj.FbxObjectName, out FbxPropertyBuilder template))
+			if (!this.templates.TryGetValue(obj.FbxObjectName, out FbxPropertyTemplate template))
 			{
-				template = new FbxPropertyBuilder();
+				template = new FbxPropertyTemplate();
 			}
 
 			obj.ApplyTemplate(template);

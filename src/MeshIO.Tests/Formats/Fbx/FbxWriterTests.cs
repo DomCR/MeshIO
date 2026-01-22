@@ -27,7 +27,7 @@ public class FbxWriterTests : IOTestsBase
 		using (FbxWriter writer = new FbxWriter(new MemoryStream(), new Scene(), options))
 		{
 			writer.OnNotification += this.onNotification;
-			writer.Write(new FbxWriterOptions() { IsBinaryFormat = false });
+			writer.Write();
 		}
 	}
 
@@ -61,7 +61,7 @@ public class FbxWriterTests : IOTestsBase
 		using (FbxWriter writer = new FbxWriter(new MemoryStream(), new Scene()))
 		{
 			writer.OnNotification += this.onNotification;
-			writer.Write(new FbxWriterOptions() { IsBinaryFormat = true });
+			writer.Write();
 		}
 	}
 
@@ -100,7 +100,7 @@ public class FbxWriterTests : IOTestsBase
 		using (FbxWriter writer = new FbxWriter(path, scene, options))
 		{
 			writer.OnNotification += this.onNotification;
-			writer.Write(options);
+			writer.Write();
 		}
 	}
 }

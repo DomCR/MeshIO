@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using MeshIO.Formats.Fbx.Readers;
 using MeshIO.Formats.Fbx.Writers;
 
-namespace MeshIO.Formats.Fbx.Builders;
+namespace MeshIO.Formats.Fbx.Templates;
 
-internal abstract class FbxObjectBuilder<T> : IFbxObjectBuilder
+internal abstract class FbxObjectTemplate<T> : IFbxObjectTemplate
 	where T : Element3D
 {
 	public string Id { get; set; }
@@ -24,13 +24,13 @@ internal abstract class FbxObjectBuilder<T> : IFbxObjectBuilder
 
 	protected readonly T _element;
 
-	protected FbxObjectBuilder(T element)
+	protected FbxObjectTemplate(T element)
 	{
 		_element = element;
 		Id = element.Id.ToString();
 	}
 
-	protected FbxObjectBuilder(FbxNode node, T element) : this(element)
+	protected FbxObjectTemplate(FbxNode node, T element) : this(element)
 	{
 		FbxNode = node;
 		Id = node?.GetProperty<object>(0).ToString();
@@ -50,35 +50,11 @@ internal abstract class FbxObjectBuilder<T> : IFbxObjectBuilder
 		return n;
 	}
 
-	public virtual void Build(FbxFileBuilderBase builder)
+	public virtual void ProcessChildren(FbxFileWriterBase fbxFileWriterBase)
 	{
-		FbxPropertyBuilder template = builder.GetProperties(FbxObjectName);
-
-		if (builder.Version < FbxVersion.v7000)
-		{
-			_element.Id = IdUtils.CreateId();
-			_element.Name = removePrefix(FbxNode.GetProperty<string>(0));
-		}
-		else
-		{
-			_element.Name = removePrefix(FbxNode.GetProperty<string>(1));
-		}
-
-		Dictionary<string, FbxProperty> nodeProp = builder.ReadProperties(FbxNode);
-		foreach (var t in template.Properties)
-		{
-			if (nodeProp.ContainsKey(t.Key))
-			{
-				continue;
-			}
-
-			nodeProp.Add(t.Key, t.Value);
-		}
-
-		processProperties(nodeProp);
 	}
 
-	public virtual void ApplyTemplate(FbxPropertyBuilder template)
+	public virtual void ApplyTemplate(FbxPropertyTemplate template)
 	{
 		foreach (Property item in this._element.Properties)
 		{
