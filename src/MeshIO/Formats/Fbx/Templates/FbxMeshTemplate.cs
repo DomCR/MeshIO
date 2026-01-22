@@ -21,6 +21,11 @@ internal class FbxMeshTemplate : FbxGeometryTemplate<Mesh>
 
 		base.addObjectBody(node, writer);
 
+		if (this.Is6000Fbx)
+		{
+			this.write6000FbxMesh(node, writer);
+		}
+
 		if (this._element.Vertices.Any())
 		{
 			double[] arr = _element.Vertices.SelectMany(x => x.ToEnumerable()).ToArray();
@@ -34,6 +39,14 @@ internal class FbxMeshTemplate : FbxGeometryTemplate<Mesh>
 		}
 
 		this.writeLayers(node);
+	}
+
+	private void write6000FbxMesh(FbxNode node, FbxFileWriterBase writer)
+	{
+		node.Add("Version", 232);
+		node.Add("MultiLayer", 0);
+		node.Add("MultiTake", 0);
+		node.Add("Culling", "CullingOff");
 	}
 
 	private void writeLayers(FbxNode node)
