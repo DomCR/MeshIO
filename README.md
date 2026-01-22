@@ -16,12 +16,12 @@ MeshIO allows to read or create 3D files using .Net and also extract or modify e
 
 |      | Read-ASCII | Read-Binary | Write-ASCII | Write-Binary |
 ------ | :-------: | :-------: | :-------: | :-------: |
-FBX6000 |    :heavy_check_mark:    |   :heavy_check_mark:     |    :construction:    |    :construction:    |
+FBX6000 |    :heavy_check_mark:    |   :heavy_check_mark:     |    :heavy_check_mark:    |    :heavy_check_mark:    |
 FBX7000 |    :heavy_check_mark:    |   :heavy_check_mark:     |    :heavy_check_mark:    |    :heavy_check_mark:    |
-STL |    :heavy_check_mark:    |   :heavy_check_mark:     |    :heavy_check_mark:    |    :heavy_check_mark:    |
-GLB |        |   :heavy_check_mark:     |        |    :construction:    |
-GLTF |    :construction:    |        |    :construction:    |        |
-OBJ |    :construction:    |        |    :x:    |        |
+STL     |    :heavy_check_mark:    |   :heavy_check_mark:     |    :heavy_check_mark:    |    :heavy_check_mark:    |
+GLB     |                          |   :heavy_check_mark:     |        |    :construction:    |
+GLTF    |    :construction:    |        |    :construction:    |        |
+OBJ     |    :construction:    |        |    :x:    |        |
 
 The goal of this project is to give full support for all the formats in the table.
 

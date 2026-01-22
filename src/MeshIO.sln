@@ -11,15 +11,6 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "CSMath", "CSUtilities\CSMat
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "CSUtilities", "CSUtilities\CSUtilities\CSUtilities.shproj", "{AD858F2B-04A1-41DD-BB3B-DDE4804CD2E6}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "repo", "repo", "{F37B65A4-9A24-41EA-9A72-D3439074C3D2}"
-	ProjectSection(SolutionItems) = preProject
-		..\.editorconfig = ..\.editorconfig
-		..\.gitignore = ..\.gitignore
-		..\.gitmodules = ..\.gitmodules
-		Directory.Build.props = Directory.Build.props
-		..\README.md = ..\README.md
-	EndProjectSection
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MeshIO.Tests", "MeshIO.Tests\MeshIO.Tests.csproj", "{94C45D19-8231-437F-AB4D-02FA072A923C}"
 EndProject
 Global
