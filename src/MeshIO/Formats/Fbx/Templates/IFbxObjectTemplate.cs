@@ -12,6 +12,8 @@ internal interface IFbxObjectTemplate
 
 	string Name { get; }
 
+	FbxVersion Version { get; }
+
 	void ApplyTemplate(FbxPropertyTemplate template);
 
 	Element3D GetElement();

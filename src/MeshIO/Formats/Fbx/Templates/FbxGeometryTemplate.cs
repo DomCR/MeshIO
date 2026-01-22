@@ -14,11 +14,22 @@ namespace MeshIO.Formats.Fbx.Templates;
 internal abstract class FbxGeometryTemplate<T> : FbxObjectTemplate<T>
 	where T : Geometry
 {
-	public override string FbxObjectName { get { return FbxFileToken.Geometry; } }
+	public override string FbxObjectName
+	{
+		get
+		{
+			if (Is6000Fbx)
+			{
+				return FbxFileToken.Model;
+			}
+			else
+			{
+				return FbxFileToken.Geometry;
+			}
+		}
+	}
 
-	protected FbxGeometryTemplate(T geometry) : base(geometry) { }
-
-	protected FbxGeometryTemplate(FbxNode node, T geometry) : base(node, geometry) { }
+	protected FbxGeometryTemplate(FbxVersion version, T geometry) : base(version, geometry) { }
 
 	protected override void processProperties(Dictionary<string, FbxProperty> properties)
 	{

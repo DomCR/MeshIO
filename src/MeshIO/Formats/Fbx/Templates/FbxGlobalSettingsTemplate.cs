@@ -5,15 +5,17 @@ namespace MeshIO.Formats.Fbx.Templates;
 
 internal class FbxGlobalSettingsTemplate : IFbxObjectTemplate
 {
+	public string FbxObjectName { get; } = FbxFileToken.GlobalSettings;
+
+	public List<FbxProperty> FbxProperties { get; } = new();
+
+	public string FbxTypeName { get; }
+
 	public string Id { get; set; }
 
 	public string Name { get; }
 
-	public string FbxObjectName { get; } = FbxFileToken.GlobalSettings;
-
-	public string FbxTypeName { get; }
-
-	public List<FbxProperty> FbxProperties { get; } = new();
+	public FbxVersion Version { get; }
 
 	public FbxGlobalSettingsTemplate()
 	{
@@ -39,11 +41,6 @@ internal class FbxGlobalSettingsTemplate : IFbxObjectTemplate
 		FbxProperties.Add(new("CurrentTimeMarker", "int", "Integer", PropertyFlags.None, -1));
 	}
 
-	public void ProcessChildren(FbxFileWriterBase fbxFileWriterBase)
-	{
-		throw new System.InvalidOperationException();
-	}
-
 	public void ApplyTemplate(FbxPropertyTemplate template)
 	{
 		throw new System.InvalidOperationException();
@@ -54,13 +51,18 @@ internal class FbxGlobalSettingsTemplate : IFbxObjectTemplate
 		throw new System.InvalidOperationException();
 	}
 
-	public FbxNode ToFbxNode(FbxFileWriterBase writer)
+	public string GetIdByVersion(FbxVersion version)
+	{
+		throw new System.NotImplementedException();
+	}
+
+	public void ProcessChildren(FbxFileWriterBase fbxFileWriterBase)
 	{
 		throw new System.InvalidOperationException();
 	}
 
-	public string GetIdByVersion(FbxVersion version)
+	public FbxNode ToFbxNode(FbxFileWriterBase writer)
 	{
-		throw new System.NotImplementedException();
+		throw new System.InvalidOperationException();
 	}
 }

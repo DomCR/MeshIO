@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using MeshIO.Formats.Fbx.Readers;
 using MeshIO.Formats.Fbx.Writers;
 
 namespace MeshIO.Formats.Fbx.Templates;
@@ -18,22 +17,21 @@ internal abstract class FbxObjectTemplate<T> : IFbxObjectTemplate
 
 	public string Id { get; set; }
 
+	public bool Is6000Fbx { get { return this.Version < FbxVersion.v7000; } }
+
 	public string Name { get { return this._element.Name; } }
 
 	public string Prefix { get { return $"{this.FbxObjectName}::"; } }
 
+	public FbxVersion Version { get; }
+
 	protected readonly T _element;
 
-	protected FbxObjectTemplate(T element)
+	protected FbxObjectTemplate(FbxVersion version, T element)
 	{
+		this.Version = version;
 		this._element = element;
 		this.Id = element.Id.ToString();
-	}
-
-	protected FbxObjectTemplate(FbxNode node, T element) : this(element)
-	{
-		this.FbxNode = node;
-		this.Id = node?.GetProperty<object>(0).ToString();
 	}
 
 	public virtual void ApplyTemplate(FbxPropertyTemplate template)
@@ -108,20 +106,6 @@ internal abstract class FbxObjectTemplate<T> : IFbxObjectTemplate
 		{
 			this._element.Properties.Add(prop.Value.ToProperty());
 		}
-	}
-
-	protected string removePrefix(string fullname)
-	{
-		if (string.IsNullOrEmpty(fullname))
-		{
-			return string.Empty;
-		}
-		else if (fullname.StartsWith(this.Prefix))
-		{
-			return fullname.Remove(0, this.Prefix.Length);
-		}
-
-		return fullname;
 	}
 
 	private long getId()

@@ -13,11 +13,7 @@ internal class FbxMeshTemplate : FbxGeometryTemplate<Mesh>
 {
 	public override string FbxTypeName { get { return FbxFileToken.Mesh; } }
 
-	public FbxMeshTemplate(Mesh mesh) : base(mesh) { }
-
-	public FbxMeshTemplate(FbxNode node) : base(node, new Mesh())
-	{
-	}
+	public FbxMeshTemplate(FbxVersion version, Mesh mesh) : base(version, mesh) { }
 
 	protected override void addObjectBody(FbxNode node, FbxFileWriterBase writer)
 	{

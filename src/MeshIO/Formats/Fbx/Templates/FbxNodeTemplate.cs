@@ -16,11 +16,7 @@ internal class FbxNodeTemplate : FbxObjectTemplate<Node>
 
 	public override string FbxTypeName { get { return FbxFileToken.Mesh; } }
 
-	public FbxNodeTemplate(FbxNode node) : base(node, new Node())
-	{
-	}
-
-	public FbxNodeTemplate(Node root) : base(root)
+	public FbxNodeTemplate(FbxVersion version,Node root) : base(version,root)
 	{
 	}
 

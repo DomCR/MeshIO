@@ -1,6 +1,4 @@
-﻿using CSUtilities.Extensions;
-using MeshIO.Formats.Fbx.Connections;
-using System;
+﻿using MeshIO.Formats.Fbx.Connections;
 
 namespace MeshIO.Formats.Fbx.Writers
 {

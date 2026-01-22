@@ -79,7 +79,7 @@ internal abstract class FbxFileWriterBase
 
 	public void CreateConnection(Element3D child, IFbxObjectTemplate parent)
 	{
-		IFbxObjectTemplate objwriter = FbxTemplateFactory.Create(child);
+		IFbxObjectTemplate objwriter = FbxTemplateFactory.Create(this.Version, child);
 		if (objwriter is null)
 		{
 			return;
@@ -155,7 +155,7 @@ internal abstract class FbxFileWriterBase
 		//Root node should be processed to create the connections but it is not writen in the file
 		this.RootNode.Id = 0;
 
-		rootTemplate = FbxTemplateFactory.Create(this.RootNode);
+		rootTemplate = FbxTemplateFactory.Create(this.Version, this.RootNode);
 
 		rootTemplate.ProcessChildren(this);
 	}
