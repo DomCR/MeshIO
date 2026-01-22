@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
-using MeshIO.Formats.Fbx.Builders;
 using MeshIO.Formats.Fbx.Connections;
 using MeshIO.Formats.Fbx.Templates;
 
@@ -27,7 +26,7 @@ internal abstract class FbxFileWriterBase
 
 	protected readonly Dictionary<string, FbxPropertyTemplate> templates = new();
 
-	private readonly FbxRootNode fbxRoot;
+	protected readonly FbxRootNode fbxRoot;
 
 	private readonly string MeshIOVersion;
 
@@ -58,9 +57,10 @@ internal abstract class FbxFileWriterBase
 			case FbxVersion.v4050:
 			case FbxVersion.v5000:
 			case FbxVersion.v5800:
+				throw new NotSupportedException($"Fbx version {version} no supported for writer");
 			case FbxVersion.v6000:
 			case FbxVersion.v6100:
-				throw new NotSupportedException($"Fbx version {version} no supported for writer");
+				return new FbxFileWriter6000(scene, options);
 			case FbxVersion.v7000:
 			case FbxVersion.v7100:
 			case FbxVersion.v7200:
@@ -135,15 +135,12 @@ internal abstract class FbxFileWriterBase
 			this.fbxRoot.Add("Creator", $"MeshIO.FBX {this.MeshIOVersion}");
 		}
 
-		this.fbxRoot.Nodes.Add(this.nodeGlobalSettings());
-		this.fbxRoot.Nodes.Add(this.nodeDocuments());
-		this.fbxRoot.Nodes.Add(this.nodeReferences());
-		this.fbxRoot.Nodes.Add(this.nodeDefinitions());
-		this.fbxRoot.Nodes.Add(this.nodeObjects());
-		this.fbxRoot.Nodes.Add(this.nodeConnections());
+		this.addFileSections();
 
 		return this.fbxRoot;
 	}
+
+	protected abstract void addFileSections();
 
 	public bool TryGetPropertyTemplate(string fbxName, out FbxPropertyTemplate template)
 	{
@@ -160,7 +157,7 @@ internal abstract class FbxFileWriterBase
 		root.ProcessChildren(this);
 	}
 
-	private FbxNode nodeConnections()
+	protected FbxNode nodeConnections()
 	{
 		FbxNode connections = new FbxNode(FbxFileToken.Connections);
 
@@ -184,7 +181,7 @@ internal abstract class FbxFileWriterBase
 		return connections;
 	}
 
-	private FbxNode nodeDefinitions()
+	protected FbxNode nodeDefinitions()
 	{
 		FbxNode definitions = new FbxNode(FbxFileToken.Definitions);
 
@@ -217,7 +214,7 @@ internal abstract class FbxFileWriterBase
 		return definitions;
 	}
 
-	private FbxNode nodeDocuments()
+	protected FbxNode nodeDocuments()
 	{
 		FbxNode documents = new FbxNode(FbxFileToken.Documents);
 
@@ -229,7 +226,7 @@ internal abstract class FbxFileWriterBase
 		return documents;
 	}
 
-	private FbxNode nodeFBXHeaderExtension()
+	protected FbxNode nodeFBXHeaderExtension()
 	{
 		FbxNode header = new FbxNode(FbxFileToken.FBXHeaderExtension);
 
@@ -260,9 +257,9 @@ internal abstract class FbxFileWriterBase
 		throw new NotImplementedException();
 	}
 
-	private FbxNode nodeGlobalSettings()
+	protected FbxNode nodeGlobalSettings()
 	{
-		FbxGlobalSettingsTemplate globalSettings = new ();
+		FbxGlobalSettingsTemplate globalSettings = new();
 
 		FbxNode settings = new FbxNode(FbxFileToken.GlobalSettings);
 
@@ -275,7 +272,7 @@ internal abstract class FbxFileWriterBase
 		return settings;
 	}
 
-	private FbxNode nodeObjects()
+	protected FbxNode nodeObjects()
 	{
 		FbxNode objects = new FbxNode(FbxFileToken.Objects);
 
@@ -294,7 +291,7 @@ internal abstract class FbxFileWriterBase
 		return objects;
 	}
 
-	private FbxNode nodeReferences()
+	protected FbxNode nodeReferences()
 	{
 		FbxNode references = new FbxNode(FbxFileToken.References);
 

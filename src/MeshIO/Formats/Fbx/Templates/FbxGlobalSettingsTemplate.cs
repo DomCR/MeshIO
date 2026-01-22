@@ -1,5 +1,4 @@
-﻿using MeshIO.Formats.Fbx.Readers;
-using MeshIO.Formats.Fbx.Writers;
+﻿using MeshIO.Formats.Fbx.Writers;
 using System.Collections.Generic;
 
 namespace MeshIO.Formats.Fbx.Templates;
@@ -51,11 +50,6 @@ internal class FbxGlobalSettingsTemplate : IFbxObjectTemplate
 	}
 
 	public Element3D GetElement()
-	{
-		throw new System.InvalidOperationException();
-	}
-
-	public void Build(FbxFileBuilderBase builder)
 	{
 		throw new System.InvalidOperationException();
 	}
