@@ -22,7 +22,7 @@ namespace MeshIO.Formats.Fbx.Writers
 			FbxNode documents = new FbxNode(FbxFileToken.Document);
 
 			//Ensure name is not null or empty
-			rootTemplate.GetIdByVersion(Version);
+			rootTemplate.GetId();
 			documents.Nodes.Add(new FbxNode("Name", rootTemplate.Name));
 
 			return documents;
@@ -39,8 +39,8 @@ namespace MeshIO.Formats.Fbx.Writers
 
 		protected override void setConnectionIds(FbxNode con, FbxConnection c)
 		{
-			con.Properties.Add(c.Child.GetIdByVersion(this.Version));
-			con.Properties.Add(c.Parent.GetIdByVersion(this.Version));
+			con.Properties.Add(c.Child.GetId());
+			con.Properties.Add(c.Parent.GetId());
 		}
 	}
 }

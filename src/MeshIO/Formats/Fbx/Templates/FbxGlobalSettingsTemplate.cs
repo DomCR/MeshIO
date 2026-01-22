@@ -51,7 +51,7 @@ internal class FbxGlobalSettingsTemplate : IFbxObjectTemplate
 		throw new System.InvalidOperationException();
 	}
 
-	public string GetIdByVersion(FbxVersion version)
+	public string GetId()
 	{
 		throw new System.NotImplementedException();
 	}

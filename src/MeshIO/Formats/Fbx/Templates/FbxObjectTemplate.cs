@@ -53,9 +53,9 @@ internal abstract class FbxObjectTemplate<T> : IFbxObjectTemplate
 		return this._element;
 	}
 
-	public string GetIdByVersion(FbxVersion version)
+	public string GetId()
 	{
-		if (version < FbxVersion.v7000)
+		if (this.Is6000Fbx)
 		{
 			if (string.IsNullOrEmpty(this._element.Name))
 			{
@@ -76,7 +76,7 @@ internal abstract class FbxObjectTemplate<T> : IFbxObjectTemplate
 
 	public FbxNode ToFbxNode(FbxFileWriterBase writer)
 	{
-		FbxNode n = this.nodeHeader(writer.Version);
+		FbxNode n = this.nodeHeader();
 
 		this.addObjectBody(n, writer);
 
@@ -88,9 +88,9 @@ internal abstract class FbxObjectTemplate<T> : IFbxObjectTemplate
 		node.Nodes.Add(writer.PropertiesToNode(this.FbxInstanceProperties.Values));
 	}
 
-	protected FbxNode nodeHeader(FbxVersion version)
+	protected FbxNode nodeHeader()
 	{
-		if (version < FbxVersion.v7000)
+		if (this.Is6000Fbx)
 		{
 			return new FbxNode(this.FbxObjectName, $"{this.FbxObjectName}::{this._element.Name}", this.FbxTypeName);
 		}

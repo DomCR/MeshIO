@@ -18,7 +18,7 @@ internal interface IFbxObjectTemplate
 
 	Element3D GetElement();
 
-	string GetIdByVersion(FbxVersion version);
+	string GetId();
 
 	void ProcessChildren(FbxFileWriterBase fbxFileWriterBase);
 

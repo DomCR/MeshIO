@@ -91,7 +91,7 @@ internal abstract class FbxFileWriterBase
 
 		objwriter.ProcessChildren(this);
 
-		this._objectTemplates.Add(objwriter.GetIdByVersion(this.Version), objwriter);
+		this._objectTemplates.Add(objwriter.GetId(), objwriter);
 
 		if (!this._definedObjects.TryGetValue(objwriter.FbxObjectName, out List<IFbxObjectTemplate> lst))
 		{
