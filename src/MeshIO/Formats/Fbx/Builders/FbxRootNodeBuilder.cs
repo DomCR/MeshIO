@@ -11,6 +11,6 @@ internal class FbxRootNodeBuilder : FbxNodeBuilder
 	public override void Build(FbxFileBuilderBase builder)
 	{
 		//TODO: Set properties from GlobalSettings
-		processChildren(builder);
+		buildChildren(builder);
 	}
 }

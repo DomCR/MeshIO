@@ -45,7 +45,7 @@ public class SceneWriterTests
 		return scene;
 	}
 
-	private void onNotification(object sender, MeshIO.NotificationEventArgs e)
+	private void onNotification(object sender, MeshIO.Formats.NotificationEventArgs e)
 	{
 		this._output.WriteLine(e.Message);
 	}

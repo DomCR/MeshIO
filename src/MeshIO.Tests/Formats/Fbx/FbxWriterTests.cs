@@ -1,7 +1,10 @@
 ﻿using MeshIO.Entities.Geometries;
 using MeshIO.Entities.Primitives;
+using MeshIO.Formats;
 using MeshIO.Formats.Fbx;
 using MeshIO.Tests.Common;
+using MeshIO.Tests.TestModels;
+using System;
 using System.IO;
 using Xunit;
 using Xunit.Abstractions;
@@ -10,76 +13,37 @@ namespace MeshIO.Tests.Formats.Fbx;
 
 public class FbxWriterTests : IOTestsBase
 {
+	public static TheoryData<FbxFileModel> TestCases { get; } = new();
+
 	public static readonly TheoryData<FbxVersion> Versions = FbxTestCasesData.Versions;
 
-	public FbxWriterTests(ITestOutputHelper output) : base(output) { }
-
-	[Theory]
-	[MemberData(nameof(Versions))]
-	public void WriteEmptyAsciiStream(FbxVersion version)
+	static FbxWriterTests()
 	{
-		FbxWriterOptions options = new FbxWriterOptions
-		{
-			IsBinaryFormat = false,
-			Version = version,
-		};
+		string folder = Path.Combine(TestVariables.OutputSamplesFolder, "fbx");
+		Directory.CreateDirectory(folder);
 
-		using (FbxWriter writer = new FbxWriter(new MemoryStream(), new Scene(), options))
-		{
-			writer.OnNotification += this.onNotification;
-			writer.Write(new FbxWriterOptions() { IsBinaryFormat = false });
-		}
+		TestCases.Add(new FbxFileModel(folder, FbxVersion.v6100, ContentType.ASCII));
+		TestCases.Add(new FbxFileModel(folder, FbxVersion.v6100, ContentType.Binary));
+		TestCases.Add(new FbxFileModel(folder, FbxVersion.v7700, ContentType.ASCII));
+		TestCases.Add(new FbxFileModel(folder, FbxVersion.v7700, ContentType.Binary));
+	}
+
+	public FbxWriterTests(ITestOutputHelper output) : base(output)
+	{
 	}
 
 	[Theory]
-	[MemberData(nameof(Versions))]
-	public void WriteAsciiFbxWithMesh(FbxVersion version)
+	[MemberData(nameof(TestCases))]
+	public void WriteTest(FbxFileModel test)
 	{
 		FbxWriterOptions options = new FbxWriterOptions
 		{
-			IsBinaryFormat = false,
-			Version = version,
+			ContentType = test.Content,
+			Version = test.Version,
 		};
-
-		string path = Path.Combine(FolderPath.OutFilesFbx, $"box_{version}_ascii.fbx");
 
 		Scene scene = this.createScene();
-
-		this.writeFile(path, scene, options);
-	}
-
-	[Theory]
-	[MemberData(nameof(Versions))]
-	public void WriteEmptyBinaryStream(FbxVersion version)
-	{
-		FbxWriterOptions options = new FbxWriterOptions
-		{
-			IsBinaryFormat = true,
-			Version = version,
-		};
-
-		using (FbxWriter writer = new FbxWriter(new MemoryStream(), new Scene()))
-		{
-			writer.OnNotification += this.onNotification;
-			writer.Write(new FbxWriterOptions() { IsBinaryFormat = true });
-		}
-	}
-
-	[Theory]
-	[MemberData(nameof(Versions))]
-	public void WriteBinaryFbxWithMesh(FbxVersion version)
-	{
-		FbxWriterOptions options = new FbxWriterOptions
-		{
-			IsBinaryFormat = true,
-			Version = version,
-		};
-
-		string path = Path.Combine(FolderPath.OutFilesFbx, $"box_{version}_binary.fbx");
-
-		Scene scene = this.createScene();
-
-		this.writeFile(path, scene, options);
+		this.writeFile(test.Path, scene, options);
 	}
 
 	private Scene createScene()
@@ -100,7 +64,7 @@ public class FbxWriterTests : IOTestsBase
 		using (FbxWriter writer = new FbxWriter(path, scene, options))
 		{
 			writer.OnNotification += this.onNotification;
-			writer.Write(options);
+			writer.Write();
 		}
 	}
 }

@@ -1,22 +1,23 @@
-﻿using MeshIO.Formats.Fbx.Readers;
-using MeshIO.Formats.Fbx.Writers;
+﻿using MeshIO.Formats.Fbx.Writers;
 using System.Collections.Generic;
 
-namespace MeshIO.Formats.Fbx.Builders;
+namespace MeshIO.Formats.Fbx.Templates;
 
-internal class FbxGlobalSettingsBuilder : IFbxObjectBuilder
+internal class FbxGlobalSettingsTemplate : IFbxObjectTemplate
 {
+	public string FbxObjectName { get; } = FbxFileToken.GlobalSettings;
+
+	public List<FbxProperty> FbxProperties { get; } = new();
+
+	public string FbxTypeName { get; }
+
 	public string Id { get; set; }
 
 	public string Name { get; }
 
-	public string FbxObjectName { get; } = FbxFileToken.GlobalSettings;
+	public FbxVersion Version { get; }
 
-	public string FbxTypeName { get; }
-
-	public List<FbxProperty> FbxProperties { get; } = new();
-
-	public FbxGlobalSettingsBuilder()
+	public FbxGlobalSettingsTemplate()
 	{
 		FbxProperties.Add(new("UpAxis", "int", "Integer", PropertyFlags.None, 1));
 		FbxProperties.Add(new("UpAxisSign", "int", "Integer", PropertyFlags.None, 1));
@@ -40,11 +41,6 @@ internal class FbxGlobalSettingsBuilder : IFbxObjectBuilder
 		FbxProperties.Add(new("CurrentTimeMarker", "int", "Integer", PropertyFlags.None, -1));
 	}
 
-	public void ProcessChildren(FbxFileWriterBase fbxFileWriterBase)
-	{
-		throw new System.InvalidOperationException();
-	}
-
 	public void ApplyTemplate(FbxPropertyTemplate template)
 	{
 		throw new System.InvalidOperationException();
@@ -55,7 +51,12 @@ internal class FbxGlobalSettingsBuilder : IFbxObjectBuilder
 		throw new System.InvalidOperationException();
 	}
 
-	public void Build(FbxFileBuilderBase builder)
+	public string GetId()
+	{
+		throw new System.NotImplementedException();
+	}
+
+	public void ProcessChildren(FbxFileWriterBase fbxFileWriterBase)
 	{
 		throw new System.InvalidOperationException();
 	}

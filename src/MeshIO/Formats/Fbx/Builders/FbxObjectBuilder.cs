@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using MeshIO.Formats.Fbx.Readers;
-using MeshIO.Formats.Fbx.Writers;
 
 namespace MeshIO.Formats.Fbx.Builders;
 
@@ -41,18 +39,9 @@ internal abstract class FbxObjectBuilder<T> : IFbxObjectBuilder
 		return _element;
 	}
 
-	public FbxNode ToFbxNode(FbxFileWriterBase writer)
-	{
-		FbxNode n = this.nodeHeader();
-
-		this.addObjectBody(n, writer);
-
-		return n;
-	}
-
 	public virtual void Build(FbxFileBuilderBase builder)
 	{
-		FbxPropertyTemplate template = builder.GetProperties(FbxObjectName);
+		FbxPropertyBuilder template = builder.GetProperties(FbxObjectName);
 
 		if (builder.Version < FbxVersion.v7000)
 		{
@@ -75,35 +64,7 @@ internal abstract class FbxObjectBuilder<T> : IFbxObjectBuilder
 			nodeProp.Add(t.Key, t.Value);
 		}
 
-		processProperties(nodeProp);
-	}
-
-	public virtual void ProcessChildren(FbxFileWriterBase fbxFileWriterBase)
-	{
-	}
-
-	public virtual void ApplyTemplate(FbxPropertyTemplate template)
-	{
-		foreach (Property item in this._element.Properties)
-		{
-			if (template.Properties.TryGetValue(item.Name, out FbxProperty property)
-				&& item.Value == property.Value)
-			{
-				continue;
-			}
-
-			this.FbxInstanceProperties.Add(item.Name, FbxProperty.CreateFrom(item));
-		}
-	}
-
-	protected FbxNode nodeHeader()
-	{
-		return new FbxNode(this.FbxObjectName, this.getId(), $"{this.FbxObjectName}::{_element.Name}", this.FbxTypeName);
-	}
-
-	protected virtual void addObjectBody(FbxNode node, FbxFileWriterBase writer)
-	{
-		node.Nodes.Add(writer.PropertiesToNode(this.FbxInstanceProperties.Values));
+		buildProperties(nodeProp);
 	}
 
 	protected string removePrefix(string fullname)
@@ -120,21 +81,11 @@ internal abstract class FbxObjectBuilder<T> : IFbxObjectBuilder
 		return fullname;
 	}
 
-	protected virtual void processProperties(Dictionary<string, FbxProperty> properties)
+	protected virtual void buildProperties(Dictionary<string, FbxProperty> properties)
 	{
 		foreach (var prop in properties)
 		{
 			_element.Properties.Add(prop.Value.ToProperty());
 		}
-	}
-
-	private long getId()
-	{
-		if (!_element.Id.HasValue)
-		{
-			_element.Id = IdUtils.CreateId();
-		}
-
-		return Math.Abs((long)_element.Id.Value);
 	}
 }

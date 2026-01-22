@@ -83,7 +83,9 @@ public abstract class SceneWriter<T> : ISceneWriter
 		this._stream.Dispose();
 	}
 
-	/// <inheritdoc/>
+	/// <summary>
+	/// Writes data to the underlying output target. The specific behavior is defined by the derived class.
+	/// </summary>
 	public abstract void Write();
 
 	protected void onNotificationEvent(object sender, NotificationEventArgs e)
