@@ -46,7 +46,7 @@ public class GltfReaderLocalTest : IOTestsBase
 		if (string.IsNullOrEmpty(path))
 			return;
 
-		using (GltfReader reader = new GltfReader(path))
+		using (GlbReader reader = new GlbReader(path))
 		{
 			reader.OnNotification += this.onNotification;
 			Assert.Throws<NotSupportedException>(reader.Read);
@@ -60,7 +60,7 @@ public class GltfReaderLocalTest : IOTestsBase
 		if (string.IsNullOrEmpty(path))
 			return;
 
-		using (GltfReader reader = new GltfReader(path))
+		using (GlbReader reader = new GlbReader(path))
 		{
 			reader.OnNotification += this.onNotification;
 			reader.Read();
