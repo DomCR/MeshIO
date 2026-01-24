@@ -9,7 +9,7 @@ using System.IO;
 
 namespace MeshIO.Formats.Gltf;
 
-public class GltfReader : SceneReader<GltfReaderOptions>
+public class GlbReader : SceneReader<GltfReaderOptions>
 {
 	private StreamIO _binaryStream;
 
@@ -18,18 +18,18 @@ public class GltfReader : SceneReader<GltfReaderOptions>
 	private GltfRoot _root;
 
 	/// <inheritdoc/>
-	public GltfReader(string path, GltfReaderOptions options = null, NotificationEventHandler notification = null)
+	public GlbReader(string path, GltfReaderOptions options = null, NotificationEventHandler notification = null)
 		: base(path, options, notification) { }
 
 	/// <inheritdoc/>
-	public GltfReader(Stream stream, GltfReaderOptions options = null, NotificationEventHandler notification = null)
+	public GlbReader(Stream stream, GltfReaderOptions options = null, NotificationEventHandler notification = null)
 		: base(stream, options, notification)
 	{
 	}
 
 	public static Scene Read(string path, NotificationEventHandler notificationHandler = null)
 	{
-		using (GltfReader reader = new GltfReader(path))
+		using (GlbReader reader = new GlbReader(path))
 		{
 			reader.OnNotification += notificationHandler;
 			return reader.Read();
@@ -39,14 +39,29 @@ public class GltfReader : SceneReader<GltfReaderOptions>
 	/// <inheritdoc/>
 	public override void Dispose()
 	{
+		base.Dispose();
 		this._binaryStream?.Dispose();
 	}
 
-	/// <summary>
-	/// Read the GLTF file
-	/// </summary>
+	/// <inheritdoc/>
 	public override Scene Read()
 	{
+		GlbHeader header = GlbHeader.Read(_stream.Stream);
+
+		IGlbFileBuilder reader;
+		switch (header.Version)
+		{
+			case 2:
+				reader = new GlbV2FileBuilder(header);
+				break;
+			case 1:
+			default:
+				throw new NotSupportedException($"Version {this._header.Version} not supported.");
+
+		}
+
+		return reader.Build();
+
 		//The 12-byte header consists of three 4-byte entries:
 		this._header = new GlbHeader();
 		//magic equals 0x46546C67. It is ASCII string glTF, and can be used to identify data as Binary glTF.
@@ -84,9 +99,10 @@ public class GltfReader : SceneReader<GltfReaderOptions>
 		byte[] binChunk = this._stream.ReadBytes((int)binChunkLength);
 		this._binaryStream = new StreamIO(binChunk);
 
-		var reader = GltfBinaryReaderBase.GetBynaryReader((int)this._header.Version, this._root, binChunk);
-		reader.OnNotification += onNotificationEvent;
+		//var reader = GltfBinaryReaderBase.GetBynaryReader((int)this._header.Version, this._root, binChunk);
+		//reader.OnNotification += onNotificationEvent;
 
-		return reader.Read();
+		//return reader.Read();
+		return null;
 	}
 }

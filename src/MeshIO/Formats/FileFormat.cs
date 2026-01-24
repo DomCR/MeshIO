@@ -98,7 +98,7 @@ public static class FileFormat
 				return new FbxReader(path, null, notification);
 			case FileFormatType.Glb:
 			case FileFormatType.Gltf:
-				return new GltfReader(path, null, notification);
+				return new GlbReader(path, null, notification);
 			case FileFormatType.Obj:
 				return new Obj.ObjReader(path, null, notification);
 			case FileFormatType.Stl:
@@ -128,7 +128,7 @@ public static class FileFormat
 				return new FbxReader(stream, null, notification);
 			case FileFormatType.Glb:
 			case FileFormatType.Gltf:
-				return new GltfReader(stream, null, notification);
+				return new GlbReader(stream, null, notification);
 			case FileFormatType.Obj:
 				return new ObjReader(stream, null, notification);
 			case FileFormatType.Stl:

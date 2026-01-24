@@ -14,8 +14,8 @@ public class GltfReaderTests : IOTestsBase
 
 	static GltfReaderTests()
 	{
-		loadSamples("glb-gltf", "glb", GlbFiles);
-		loadSamples("glb-gltf", "gltf", GltfFiles);
+		loadSamples("glb", "glb", GlbFiles);
+		loadSamples("gltf", "gltf", GltfFiles);
 	}
 
 	public GltfReaderTests(ITestOutputHelper output) : base(output)

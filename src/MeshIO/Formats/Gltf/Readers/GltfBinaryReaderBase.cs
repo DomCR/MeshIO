@@ -57,13 +57,14 @@ internal abstract class GltfBinaryReaderBase : IDisposable
 			throw new GltfReaderException("Scene not found");
 
 		Scene scene = new Scene(rootScene.Name);
-
 		foreach (int nodeIndex in rootScene.Nodes)
 		{
 			Node n = readNode(nodeIndex);
 
 			if (n != null)
+			{
 				scene.RootNode.Nodes.Add(n);
+			}
 		}
 
 		return scene;
