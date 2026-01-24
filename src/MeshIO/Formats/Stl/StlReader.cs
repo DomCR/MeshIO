@@ -72,7 +72,7 @@ public class StlReader : SceneReader<StlReaderOptions>
 	/// <param name="notification">An optional event handler for receiving notifications or progress updates during the read operation. May be null
 	/// if notifications are not required.</param>
 	/// <returns>A Scene object representing the contents of the STL data read from the stream.</returns>
-	public static Scene Read(Stream stream, StlReaderOptions options, NotificationEventHandler notification = null)
+	public static Scene Read(Stream stream, StlReaderOptions options = null, NotificationEventHandler notification = null)
 	{
 		using (StlReader reader = new StlReader(stream, options, notification))
 		{
@@ -88,7 +88,7 @@ public class StlReader : SceneReader<StlReaderOptions>
 	/// <param name="notification">An optional event handler for receiving notifications during the read operation. If null, no notifications are
 	/// raised.</param>
 	/// <returns>A Scene object representing the contents of the STL file.</returns>
-	public static Scene Read(string path, StlReaderOptions options, NotificationEventHandler notification = null)
+	public static Scene Read(string path, StlReaderOptions options = null, NotificationEventHandler notification = null)
 	{
 		using (StlReader reader = new StlReader(path, options, notification))
 		{

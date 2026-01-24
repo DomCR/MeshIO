@@ -1,7 +1,6 @@
-﻿//Execute this test only if is in local and debug
-#if DEBUG
-using MeshIO.Formats.Gltf;
+﻿using MeshIO.Formats.Gltf;
 using MeshIO.Tests.Common;
+using MeshIO.Tests.TestModels;
 using System;
 using System.IO;
 using Xunit;
@@ -11,9 +10,9 @@ namespace MeshIO.Tests.Formats.Gltf;
 
 public class GltfReaderLocalTest : IOTestsBase
 {
-	public static readonly TheoryData<string> V1Files = new();
+	public static readonly TheoryData<FileModel> V1Files = new();
 
-	public static readonly TheoryData<string, string> V2Files = new();
+	public static readonly TheoryData<FileModel> V2Files = new();
 
 	private const string _samplesFolder = "..\\..\\..\\..\\..\\..\\glTF-Sample-Models";
 
@@ -21,19 +20,20 @@ public class GltfReaderLocalTest : IOTestsBase
 	{
 		if (!Directory.Exists(_samplesFolder))
 		{
-			V1Files.Add(string.Empty);
-			V2Files.Add(string.Empty, string.Empty);
+			V1Files.Add(new FileModel());
+			V2Files.Add(new FileModel());
 			return;
 		}
 
 		foreach (string file in Directory.GetFiles(Path.Combine(_samplesFolder, "1.0"), "*.glb", SearchOption.AllDirectories))
 		{
-			V1Files.Add(file);
+			FileModel model = new FileModel(file);
+			V1Files.Add(model);
 		}
 
 		foreach (string file in Directory.GetFiles(Path.Combine(_samplesFolder, "2.0"), "*.glb", SearchOption.AllDirectories))
 		{
-			V2Files.Add(Path.GetFileName(file), file);
+			V2Files.Add(new FileModel(file));
 		}
 	}
 
@@ -41,12 +41,12 @@ public class GltfReaderLocalTest : IOTestsBase
 
 	[Theory]
 	[MemberData(nameof(V1Files))]
-	public void ReadGlbV1(string path)
+	public void ReadGlbV1(FileModel test)
 	{
-		if (string.IsNullOrEmpty(path))
+		if (string.IsNullOrEmpty(test.Path))
 			return;
 
-		using (GlbReader reader = new GlbReader(path))
+		using (GlbReader reader = new GlbReader(test.Path))
 		{
 			reader.OnNotification += this.onNotification;
 			Assert.Throws<NotSupportedException>(reader.Read);
@@ -55,16 +55,15 @@ public class GltfReaderLocalTest : IOTestsBase
 
 	[Theory]
 	[MemberData(nameof(V2Files))]
-	public void ReadGlbV2(string file, string path)
+	public void ReadGlbV2(FileModel test)
 	{
-		if (string.IsNullOrEmpty(path))
+		if (string.IsNullOrEmpty(test.Path))
 			return;
 
-		using (GlbReader reader = new GlbReader(path))
+		using (GlbReader reader = new GlbReader(test.Path))
 		{
 			reader.OnNotification += this.onNotification;
 			reader.Read();
 		}
 	}
 }
-#endif

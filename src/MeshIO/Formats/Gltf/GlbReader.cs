@@ -1,21 +1,20 @@
-﻿using CSUtilities.Converters;
-using CSUtilities.IO;
-using MeshIO.Formats.Gltf.Readers;
+﻿using MeshIO.Formats.Gltf.Readers;
 using MeshIO.Formats.Gltf.Schema;
-using MeshIO.Formats.Gltf.Exceptions;
-using MeshIO.Formats.Gltf.Schema.V2;
 using System;
 using System.IO;
 
 namespace MeshIO.Formats.Gltf;
 
+/// <summary>
+/// Provides functionality for reading 3D scenes from GLB (GL Transmission Format Binary) files.
+/// </summary>
+/// <remarks>The GlbReader class enables loading and parsing of GLB files, which are binary containers for glTF
+/// assets. It supports reading from both file paths and streams, and can be used to obtain a Scene object representing
+/// the contents of the GLB file. Notification handlers can be attached to receive progress or warning messages during
+/// the reading process.</remarks>
 public class GlbReader : SceneReader<GltfReaderOptions>
 {
-	private StreamIO _binaryStream;
-
 	private GlbHeader _header;
-
-	private GltfRoot _root;
 
 	/// <inheritdoc/>
 	public GlbReader(string path, GltfReaderOptions options = null, NotificationEventHandler notification = null)
@@ -27,11 +26,35 @@ public class GlbReader : SceneReader<GltfReaderOptions>
 	{
 	}
 
-	public static Scene Read(string path, NotificationEventHandler notificationHandler = null)
+	/// <summary>
+	/// Reads a glTF or GLB file from the specified path and returns the parsed scene.
+	/// </summary>
+	/// <param name="path">The file system path to the glTF or GLB file to read. Cannot be null or empty.</param>
+	/// <param name="options">Optional settings that control how the file is read and parsed. If null, default options are used.</param>
+	/// <param name="notification">An optional event handler for receiving notifications or warnings during the reading process. If null,
+	/// notifications are ignored.</param>
+	/// <returns>A Scene object representing the contents of the glTF or GLB file.</returns>
+	public static Scene Read(string path, GltfReaderOptions options = null, NotificationEventHandler notification = null)
 	{
-		using (GlbReader reader = new GlbReader(path))
+		using (GlbReader reader = new GlbReader(path, options, notification))
 		{
-			reader.OnNotification += notificationHandler;
+			return reader.Read();
+		}
+	}
+
+	/// <summary>
+	/// Reads a glTF scene from the specified stream using the provided options and notification handler.
+	/// </summary>
+	/// <param name="stream">The input stream containing the glTF or GLB data to read. The stream must be readable and positioned at the start
+	/// of the glTF or GLB content.</param>
+	/// <param name="options">An optional set of reader options that control parsing behavior. If null, default options are used.</param>
+	/// <param name="notification">An optional event handler for receiving notifications or warnings during the reading process. If null,
+	/// notifications are ignored.</param>
+	/// <returns>A Scene object representing the parsed glTF scene from the input stream.</returns>
+	public static Scene Read(Stream stream, GltfReaderOptions options = null, NotificationEventHandler notification = null)
+	{
+		using (GlbReader reader = new GlbReader(stream, options, notification))
+		{
 			return reader.Read();
 		}
 	}
@@ -40,7 +63,6 @@ public class GlbReader : SceneReader<GltfReaderOptions>
 	public override void Dispose()
 	{
 		base.Dispose();
-		this._binaryStream?.Dispose();
 	}
 
 	/// <inheritdoc/>
@@ -57,52 +79,9 @@ public class GlbReader : SceneReader<GltfReaderOptions>
 			case 1:
 			default:
 				throw new NotSupportedException($"Version {this._header.Version} not supported.");
-
 		}
 
+		reader.OnNotification += this.onNotificationEvent;
 		return reader.Build();
-
-		//The 12-byte header consists of three 4-byte entries:
-		this._header = new GlbHeader();
-		//magic equals 0x46546C67. It is ASCII string glTF, and can be used to identify data as Binary glTF.
-		this._header.Magic = this._stream.ReadUInt<LittleEndianConverter>();
-		//version indicates the version of the Binary glTF container format. This specification defines version 2.
-		this._header.Version = this._stream.ReadUInt<LittleEndianConverter>();
-		//length is the total length of the Binary glTF, including Header and all Chunks, in bytes.
-		this._header.Length = this._stream.ReadUInt<LittleEndianConverter>();
-
-		if (this._header.Version != 2)
-			throw new NotSupportedException($"Version {this._header.Version} not supported");
-
-		//Chunk 0 Json
-		uint jsonChunkLength = this._stream.ReadUInt<LittleEndianConverter>();
-		string jsonChunkType = this._stream.ReadString(4);
-
-		if (jsonChunkType != "JSON")
-			throw new GltfReaderException("Chunk type does not match", this._stream.Position);
-
-		string json = this._stream.ReadString((int)jsonChunkLength);
-#if NET5_0_OR_GREATER
-		//this._root = System.Text.Json.JsonSerializer.Deserialize<GltfRoot>(json);
-#else
-		//this._root = Newtonsoft.Json.JsonConvert.DeserializeObject<GltfRoot>(json);
-#endif
-		this._root = Newtonsoft.Json.JsonConvert.DeserializeObject<GltfRoot>(json);
-		//Chunk 1 bin
-		uint binChunkLength = this._stream.ReadUInt<LittleEndianConverter>();
-		string binChunkType = this._stream.ReadString(4);
-
-		//Check the chunk type
-		if (binChunkType != "BIN\0")
-			throw new GltfReaderException("Chunk type does not match", this._stream.Position);
-
-		byte[] binChunk = this._stream.ReadBytes((int)binChunkLength);
-		this._binaryStream = new StreamIO(binChunk);
-
-		//var reader = GltfBinaryReaderBase.GetBynaryReader((int)this._header.Version, this._root, binChunk);
-		//reader.OnNotification += onNotificationEvent;
-
-		//return reader.Read();
-		return null;
 	}
 }

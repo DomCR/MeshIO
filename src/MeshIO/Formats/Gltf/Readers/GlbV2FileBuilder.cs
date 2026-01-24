@@ -122,8 +122,13 @@ internal class GlbV2FileBuilder : IGlbFileBuilder
 		return value;
 	}
 
+	public void Notify(string message, NotificationType notificationType = NotificationType.Information, Exception ex = null)
+	{
+		this.OnNotification?.Invoke(this, new NotificationEventArgs(message, notificationType, ex));
+	}
+
 	private void createBuilders<Builder, Gltf>(Dictionary<int, Builder> collection, Gltf[] gltfArray)
-			where Builder : GltfObjectBuilder<Gltf>, new()
+				where Builder : GltfObjectBuilder<Gltf>, new()
 	{
 		if (gltfArray == null)
 		{
