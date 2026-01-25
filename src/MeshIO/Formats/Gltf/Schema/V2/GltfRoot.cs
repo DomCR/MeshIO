@@ -8,9 +8,14 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
 namespace MeshIO.Formats.Gltf.Schema.V2;
 
-public class GltfRoot
+internal class GltfRoot
 {
 
 	/// <summary>
