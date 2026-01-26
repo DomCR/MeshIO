@@ -13,7 +13,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 
 
-public class GltfAnimation : INamedObject
+public class GltfAnimation : IGltfNamedObject
 {
 
 	/// <summary>

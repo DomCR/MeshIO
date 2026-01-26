@@ -13,7 +13,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 
 
-public class GltfCamera : INamedObject
+public class GltfCamera : IGltfNamedObject
 {
 
 	/// <summary>

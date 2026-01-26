@@ -14,7 +14,7 @@ using System.Linq;
 using System.Text;
 
 namespace MeshIO.Formats.Gltf.Schema.V2;
-internal interface INamedObject
+internal interface IGltfNamedObject
 {
 	public string Name { get; set; }
 }
@@ -128,15 +128,6 @@ internal class GltfRoot
 		}
 		set
 		{
-			if ((value == null))
-			{
-				this._extensionsUsed = value;
-				return;
-			}
-			if ((value.Length < 1u))
-			{
-				throw new System.ArgumentException("Array not long enough");
-			}
 			this._extensionsUsed = value;
 		}
 	}
@@ -574,7 +565,7 @@ internal class GltfRoot
 					setMap(item.Value, ref this._accessors);
 					break;
 				case "animations":
-					setMap(item.Value, ref this._animations);
+					//setMap(item.Value, ref this._animations);
 					break;
 				case "asset":
 					Asset = Newtonsoft.Json.JsonConvert.DeserializeObject<GltfAsset>(item.Value.ToString());
@@ -653,7 +644,7 @@ internal class GltfRoot
 	}
 
 	private void setMap<T>(object obj, ref T[] arr)
-		where T : INamedObject
+		where T : IGltfNamedObject
 	{
 		var map = this.getMap(obj.ToString());
 		arr = new T[map.Count];

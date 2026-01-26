@@ -13,7 +13,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 
 
-public class GltfMesh : INamedObject
+public class GltfMesh : IGltfNamedObject
 {
 
 	/// <summary>

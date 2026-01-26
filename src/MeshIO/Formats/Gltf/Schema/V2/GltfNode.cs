@@ -13,23 +13,23 @@ using System.Linq;
 using System.Runtime.Serialization;
 
 
-public class GltfNode : INamedObject
+public class GltfNode : IGltfNamedObject
 {
 
 	/// <summary>
 	/// Backing field for Camera.
 	/// </summary>
-	private System.Nullable<int> _camera;
+	private string _camera;
 
 	/// <summary>
 	/// Backing field for Children.
 	/// </summary>
-	private int[] _children;
+	private string[] _children;
 
 	/// <summary>
 	/// Backing field for Skin.
 	/// </summary>
-	private System.Nullable<int> _skin;
+	private string _skin;
 
 	/// <summary>
 	/// Backing field for Matrix.
@@ -106,7 +106,7 @@ public class GltfNode : INamedObject
 	/// The index of the camera referenced by this node.
 	/// </summary>
 	[Newtonsoft.Json.JsonPropertyAttribute("camera")]
-	public System.Nullable<int> Camera
+	public string Camera
 	{
 		get
 		{
@@ -114,10 +114,6 @@ public class GltfNode : INamedObject
 		}
 		set
 		{
-			if ((value < 0))
-			{
-				throw new System.ArgumentOutOfRangeException("Camera", value, "Expected value to be greater than or equal to 0");
-			}
 			this._camera = value;
 		}
 	}
@@ -126,7 +122,7 @@ public class GltfNode : INamedObject
 	/// The indices of this node's children.
 	/// </summary>
 	[Newtonsoft.Json.JsonPropertyAttribute("children")]
-	public int[] Children
+	public string[] Children
 	{
 		get
 		{
@@ -134,19 +130,6 @@ public class GltfNode : INamedObject
 		}
 		set
 		{
-			if ((value == null))
-			{
-				this._children = value;
-				return;
-			}
-			int index = 0;
-			for (index = 0; (index < value.Length); index = (index + 1))
-			{
-				if ((value[index] < 0))
-				{
-					throw new System.ArgumentOutOfRangeException();
-				}
-			}
 			this._children = value;
 		}
 	}
@@ -155,7 +138,7 @@ public class GltfNode : INamedObject
 	/// The index of the skin referenced by this node.
 	/// </summary>
 	[Newtonsoft.Json.JsonPropertyAttribute("skin")]
-	public System.Nullable<int> Skin
+	public string Skin
 	{
 		get
 		{
@@ -163,10 +146,6 @@ public class GltfNode : INamedObject
 		}
 		set
 		{
-			if ((value < 0))
-			{
-				throw new System.ArgumentOutOfRangeException("Skin", value, "Expected value to be greater than or equal to 0");
-			}
 			this._skin = value;
 		}
 	}

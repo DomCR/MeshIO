@@ -46,11 +46,14 @@ public class GltfReaderLocalTest : IOTestsBase
 		if (string.IsNullOrEmpty(test.Path))
 			return;
 
+		Scene scene = null;
 		using (GlbReader reader = new GlbReader(test.Path))
 		{
 			reader.OnNotification += this.onNotification;
-			Assert.Throws<NotSupportedException>(reader.Read);
+			scene = reader.Read();
 		}
+
+		Assert.NotNull(scene);
 	}
 
 	[Theory]

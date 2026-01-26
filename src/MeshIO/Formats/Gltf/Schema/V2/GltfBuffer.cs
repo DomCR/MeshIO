@@ -13,7 +13,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 
 
-public class GltfBuffer : INamedObject
+public class GltfBuffer : IGltfNamedObject
 {
 
 	/// <summary>

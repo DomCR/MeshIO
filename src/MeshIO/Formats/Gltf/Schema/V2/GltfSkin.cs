@@ -13,18 +13,18 @@ using System.Linq;
 using System.Runtime.Serialization;
 
 
-public class GltfSkin : INamedObject
+public class GltfSkin : IGltfNamedObject
 {
 
 	/// <summary>
 	/// Backing field for InverseBindMatrices.
 	/// </summary>
-	private System.Nullable<int> _inverseBindMatrices;
+	private string _inverseBindMatrices;
 
 	/// <summary>
 	/// Backing field for Skeleton.
 	/// </summary>
-	private System.Nullable<int> _skeleton;
+	private string _skeleton;
 
 	/// <summary>
 	/// Backing field for Joints.
@@ -50,7 +50,7 @@ public class GltfSkin : INamedObject
 	/// The index of the accessor containing the floating-point 4x4 inverse-bind matrices.  The default is that each matrix is a 4x4 identity matrix, which implies that inverse-bind matrices were pre-applied.
 	/// </summary>
 	[Newtonsoft.Json.JsonPropertyAttribute("inverseBindMatrices")]
-	public System.Nullable<int> InverseBindMatrices
+	public string InverseBindMatrices
 	{
 		get
 		{
@@ -58,10 +58,6 @@ public class GltfSkin : INamedObject
 		}
 		set
 		{
-			if ((value < 0))
-			{
-				throw new System.ArgumentOutOfRangeException("InverseBindMatrices", value, "Expected value to be greater than or equal to 0");
-			}
 			this._inverseBindMatrices = value;
 		}
 	}
@@ -70,7 +66,7 @@ public class GltfSkin : INamedObject
 	/// The index of the node used as a skeleton root.
 	/// </summary>
 	[Newtonsoft.Json.JsonPropertyAttribute("skeleton")]
-	public System.Nullable<int> Skeleton
+	public string Skeleton
 	{
 		get
 		{
@@ -78,10 +74,6 @@ public class GltfSkin : INamedObject
 		}
 		set
 		{
-			if ((value < 0))
-			{
-				throw new System.ArgumentOutOfRangeException("Skeleton", value, "Expected value to be greater than or equal to 0");
-			}
 			this._skeleton = value;
 		}
 	}
@@ -89,7 +81,7 @@ public class GltfSkin : INamedObject
 	/// <summary>
 	/// Indices of skeleton nodes, used as joints in this skin.
 	/// </summary>
-	[Newtonsoft.Json.JsonRequiredAttribute()]
+	//[Newtonsoft.Json.JsonRequiredAttribute()]
 	[Newtonsoft.Json.JsonPropertyAttribute("joints")]
 	public int[] Joints
 	{

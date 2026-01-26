@@ -29,7 +29,7 @@ public class GltfMeshPrimitive
 	/// <summary>
 	/// Backing field for Material.
 	/// </summary>
-	private System.Nullable<int> _material;
+	private string _material;
 
 	/// <summary>
 	/// Backing field for Mode.
@@ -92,7 +92,7 @@ public class GltfMeshPrimitive
 	/// The index of the material to apply to this primitive when rendering.
 	/// </summary>
 	[Newtonsoft.Json.JsonPropertyAttribute("material")]
-	public System.Nullable<int> Material
+	public string Material
 	{
 		get
 		{
@@ -100,10 +100,6 @@ public class GltfMeshPrimitive
 		}
 		set
 		{
-			if ((value < 0))
-			{
-				throw new System.ArgumentOutOfRangeException("Material", value, "Expected value to be greater than or equal to 0");
-			}
 			this._material = value;
 		}
 	}

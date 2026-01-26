@@ -59,7 +59,7 @@ internal class GltfMeshBuilder : GltfObjectBuilder<GltfMesh>
 				}
 			}
 
-			//if (p.Indices.HasValue)
+			if (!string.IsNullOrEmpty(p.Indices))
 			{
 				var accessor = builder.GetBuilder<GltfAccessorBuilder>((p.Indices));
 

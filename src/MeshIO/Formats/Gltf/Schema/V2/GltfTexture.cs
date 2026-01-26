@@ -13,18 +13,18 @@ using System.Linq;
 using System.Runtime.Serialization;
 
 
-public class GltfTexture : INamedObject
+public class GltfTexture : IGltfNamedObject
 {
 
 	/// <summary>
 	/// Backing field for Sampler.
 	/// </summary>
-	private System.Nullable<int> _sampler;
+	private string _sampler;
 
 	/// <summary>
 	/// Backing field for Source.
 	/// </summary>
-	private System.Nullable<int> _source;
+	private string _source;
 
 	/// <summary>
 	/// Backing field for Name.
@@ -45,7 +45,7 @@ public class GltfTexture : INamedObject
 	/// The index of the sampler used by this texture. When undefined, a sampler with repeat wrapping and auto filtering should be used.
 	/// </summary>
 	[Newtonsoft.Json.JsonPropertyAttribute("sampler")]
-	public System.Nullable<int> Sampler
+	public string Sampler
 	{
 		get
 		{
@@ -53,10 +53,6 @@ public class GltfTexture : INamedObject
 		}
 		set
 		{
-			if ((value < 0))
-			{
-				throw new System.ArgumentOutOfRangeException("Sampler", value, "Expected value to be greater than or equal to 0");
-			}
 			this._sampler = value;
 		}
 	}
@@ -65,7 +61,7 @@ public class GltfTexture : INamedObject
 	/// The index of the image used by this texture. When undefined, it is expected that an extension or other mechanism will supply an alternate texture source, otherwise behavior is undefined.
 	/// </summary>
 	[Newtonsoft.Json.JsonPropertyAttribute("source")]
-	public System.Nullable<int> Source
+	public string Source
 	{
 		get
 		{
@@ -73,10 +69,6 @@ public class GltfTexture : INamedObject
 		}
 		set
 		{
-			if ((value < 0))
-			{
-				throw new System.ArgumentOutOfRangeException("Source", value, "Expected value to be greater than or equal to 0");
-			}
 			this._source = value;
 		}
 	}

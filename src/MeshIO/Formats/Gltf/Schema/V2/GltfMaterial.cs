@@ -13,7 +13,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 
 
-public class GltfMaterial : INamedObject
+public class GltfMaterial : IGltfNamedObject
 {
 
 	/// <summary>
@@ -241,6 +241,12 @@ public class GltfMaterial : INamedObject
 			this._alphaMode = value;
 		}
 	}
+
+	[Newtonsoft.Json.JsonPropertyAttribute("technique")]
+	public string Technique { get; set; }
+
+	[Newtonsoft.Json.JsonPropertyAttribute("values")]
+	public object Values { get; set; }
 
 	/// <summary>
 	/// The alpha cutoff value of the material.
