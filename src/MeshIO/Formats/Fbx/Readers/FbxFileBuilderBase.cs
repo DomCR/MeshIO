@@ -3,6 +3,7 @@ using MeshIO.Formats.Fbx.Connections;
 using MeshIO.Formats.Fbx.Templates;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace MeshIO.Formats.Fbx.Readers;
 
@@ -362,11 +363,26 @@ internal abstract class FbxFileBuilderBase
 				case FbxFileToken.Geometry:
 					template = this.readGeometryNode(n);
 					break;
+				case FbxFileToken.NodeAttribute:
+					var type = n.Properties.LastOrDefault().ToString();
+					switch (type)
+					{
+						case FbxFileToken.Camera:
+							template = new FbxCameraBuilder(n);
+							break;
+						case FbxFileToken.Light:
+						default:
+							this.Notify($"[{node.Name}] unknown node sub-type: {type}", NotificationType.NotImplemented);
+							continue;
+					}
+					break;
+				default:
+					this.Notify($"[{node.Name}] unknown node: {n}", NotificationType.NotImplemented);
+					continue;
 			}
 
-			if (template == null)
+			if(template == null)
 			{
-				this.Notify($"[{node.Name}] unknown node: {n}", NotificationType.NotImplemented);
 				continue;
 			}
 

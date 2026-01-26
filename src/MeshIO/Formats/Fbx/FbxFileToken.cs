@@ -32,12 +32,15 @@ public class FbxFileToken
 	public const string RootNode = "RootNode";
 
 	public const string Mesh = "Mesh";
+	public const string Camera = "Camera";
+	public const string Light = "Light";
 
 	public const string Model = "Model";
 	public const string Shading = "Shading";
 	public const string CullingOff = "CullingOff";
 
 	public const string Geometry = "Geometry";
+	public const string NodeAttribute = "NodeAttribute";
 	public const string Material = "Material";
 
 	public static string GetPropertiesName(FbxVersion version)
