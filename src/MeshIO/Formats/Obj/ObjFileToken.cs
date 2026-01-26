@@ -8,6 +8,10 @@ internal enum ObjFileToken
 	/// </summary>
 	Object,
 	/// <summary>
+	/// g
+	/// </summary>
+	Group,
+	/// <summary>
 	/// v
 	/// </summary>
 	Vertice,
@@ -23,6 +27,10 @@ internal enum ObjFileToken
 	/// f
 	/// </summary>
 	Face,
+	/// <summary>
+	/// s
+	/// </summary>
+	SmoothShading,
 	/// <summary>
 	/// #
 	/// </summary>

@@ -1,4 +1,5 @@
 ﻿using CSMath;
+using CSUtilities.Extensions;
 using MeshIO.Entities.Geometries;
 using System;
 using System.Collections.Generic;
@@ -8,32 +9,44 @@ using System.Text.RegularExpressions;
 
 namespace MeshIO.Formats.Obj;
 
+/// <summary>
+/// Provides functionality to read and parse Wavefront OBJ files into a scene representation.
+/// </summary>
+/// <remarks>Use ObjReader to import 3D geometry from OBJ files or streams into a Scene object. The reader
+/// supports standard OBJ features, including vertices, normals, texture coordinates, and faces. Notification events can
+/// be supplied to receive warnings or informational messages during parsing.</remarks>
 public class ObjReader : SceneReader<ObjReaderOptions>
 {
 	private readonly Regex _matchNoneWhiteSpaces;
+
 	private readonly StreamReader _reader;
 
-	/// <summary>
-	/// Initializes a new instance of the <see cref="ObjReader"/> class for the specified file.
-	/// </summary>
-	/// <param name="path">The complete file path to read from</param>
+	/// <inheritdoc/>
 	public ObjReader(string path, ObjReaderOptions options = null, NotificationEventHandler notification = null)
-		: base(path, options, notification) { }
+		: base(path, options, notification)
+	{
+		_reader = new StreamReader(this._stream.Stream);
+		_matchNoneWhiteSpaces = new Regex(@"\s+", RegexOptions.Compiled);
+	}
 
-	/// <summary>
-	/// Initializes a new instance of the <see cref="ObjReader"/> class for the specified stream.
-	/// </summary>
-	/// <param name="stream">The stream to read from</param>
+	/// <inheritdoc/>
 	public ObjReader(Stream stream, ObjReaderOptions options = null, NotificationEventHandler notification = null)
 		: base(stream, options, notification)
 	{
-		_reader = new StreamReader(stream);
+		_reader = new StreamReader(this._stream.Stream);
 		_matchNoneWhiteSpaces = new Regex(@"\s+", RegexOptions.Compiled);
 	}
 
 	/// <summary>
-	/// Read the Obj file
+	/// Reads and parses the contents of the underlying OBJ file stream, constructing a new scene representation from its
+	/// data.
 	/// </summary>
+	/// <remarks>This method processes the OBJ file sequentially from the current stream position to the end. The
+	/// resulting scene includes all objects, vertices, normals, texture coordinates, and faces encountered in the file. The
+	/// method does not modify the stream position after reading. Thread safety is not guaranteed; concurrent access to the
+	/// underlying stream or reader may result in undefined behavior.</remarks>
+	/// <returns>A <see cref="Scene"/> object containing the geometry, normals, texture coordinates, and faces defined in the OBJ
+	/// file. The returned scene will be empty if the stream contains no valid OBJ data.</returns>
 	public override Scene Read()
 	{
 		ObjData data = new ObjData();
@@ -49,6 +62,7 @@ public class ObjReader : SceneReader<ObjReaderOptions>
 
 			switch (token)
 			{
+				case ObjFileToken.Group:
 				case ObjFileToken.Object:
 					data.CreateIndexer(values);
 					break;
@@ -64,6 +78,9 @@ public class ObjReader : SceneReader<ObjReaderOptions>
 				case ObjFileToken.Face:
 					this.parseFace(values, data);
 					break;
+				case ObjFileToken.SmoothShading:
+					//TODO Smooth shading
+					break;
 			}
 		}
 
@@ -73,16 +90,27 @@ public class ObjReader : SceneReader<ObjReaderOptions>
 		return scene;
 	}
 
-	private void processData(ObjData data, Scene scene)
+	protected Polygon createPolygon(List<int> arr)
 	{
-		foreach (ObjTemplate item in data.Templates)
+		//Check if the arr are faces or quads
+		if (arr.Count % 3 == 0)
 		{
-			Mesh mesh = item.CreateMesh();
-			Node node = new Node(item.Name);
-			node.Entities.Add(mesh);
-
-			scene.RootNode.Nodes.Add(node);
+			return new Triangle(arr[0], arr[1], arr[2]);
 		}
+		//Quads
+		else if (arr.Count % 4 == 0)
+		{
+			return new Triangle(arr[0], arr[1], arr[2]);
+		}
+		else
+		{
+			throw new ArgumentException();
+		}
+	}
+
+	private bool isComment(string line)
+	{
+		return line.StartsWith("#");
 	}
 
 	private T parse<T>(string line)
@@ -119,16 +147,15 @@ public class ObjReader : SceneReader<ObjReaderOptions>
 			//vertex_index/texture_index/normal_index
 			vertices.Add(int.Parse(indices[0]));
 
-			//TODO: Needs fix
-			//if (indices.TryGet(1, out string texture))
-			//{
-			//	textures.Add(int.Parse(texture));
-			//}
+			if (indices.TryGet(1, out string texture))
+			{
+				textures.Add(int.Parse(texture));
+			}
 
-			//if (indices.TryGet(2, out string normal))
-			//{
-			//	normals.Add(int.Parse(normal));
-			//}
+			if (indices.TryGet(2, out string normal))
+			{
+				normals.Add(int.Parse(normal));
+			}
 		}
 
 		objdata.Placeholder.MeshPolygons.Add(createPolygon(vertices));
@@ -136,22 +163,16 @@ public class ObjReader : SceneReader<ObjReaderOptions>
 		objdata.Placeholder.NormalPolygons.Add(createPolygon(normals));
 	}
 
-	protected Polygon createPolygon(List<int> arr)
+	private XYZ parseNormal(string line)
 	{
-		//Check if the arr are faces or quads
-		if (arr.Count % 3 == 0)
-		{
-			return new Triangle(arr[0], arr[1], arr[2]);
-		}
-		//Quads
-		else if (arr.Count % 4 == 0)
-		{
-			return new Triangle(arr[0], arr[1], arr[2]);
-		}
-		else
-		{
-			throw new ArgumentException();
-		}
+		XYZ v = new XYZ();
+		string[] arr = line.Split(' ');
+
+		v.X = double.Parse(arr[0]);
+		v.Y = double.Parse(arr[1]);
+		v.Z = double.Parse(arr[2]);
+
+		return v;
 	}
 
 	private XYZM parseVertex(string line)
@@ -175,16 +196,16 @@ public class ObjReader : SceneReader<ObjReaderOptions>
 		return v;
 	}
 
-	private XYZ parseNormal(string line)
+	private void processData(ObjData data, Scene scene)
 	{
-		XYZ v = new XYZ();
-		string[] arr = line.Split(' ');
+		foreach (ObjTemplate item in data.Templates)
+		{
+			Mesh mesh = item.CreateMesh();
+			Node node = new Node(item.Name);
+			node.Entities.Add(mesh);
 
-		v.X = double.Parse(arr[0]);
-		v.Y = double.Parse(arr[1]);
-		v.Z = double.Parse(arr[2]);
-
-		return v;
+			scene.RootNode.Nodes.Add(node);
+		}
 	}
 
 	private bool processLine(string line, out ObjFileToken token, out string values)
@@ -222,10 +243,5 @@ public class ObjReader : SceneReader<ObjReaderOptions>
 		}
 
 		return true;
-	}
-
-	private bool isComment(string line)
-	{
-		return line.StartsWith("#");
 	}
 }
