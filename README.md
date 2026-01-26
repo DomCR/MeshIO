@@ -23,7 +23,7 @@ GLB V1  |                          |   :heavy_check_mark:     |        |    :x: 
 GLB V2  |                          |   :heavy_check_mark:     |        |    :construction:    |
 GLTF V1 |    :construction:    |        |    :x:    |        |
 GLTF V2 |    :construction:    |        |    :construction:    |        |
-OBJ     |    :construction:    |        |    :x:    |        |
+OBJ     |    :heavy_check_mark:    |        |    :construction:    |        |
 
 The goal of this project is to give full support for all the formats in the table.
 

@@ -8,18 +8,18 @@ using Xunit.Abstractions;
 
 namespace MeshIO.Tests.Formats.Stl;
 
-public class StlReaderTest : IOTestsBase
+public class StlReaderTests : IOTestsBase
 {
 	public static TheoryData<FileModel> StlAsciiFiles { get; } = new();
 	public static TheoryData<FileModel> StlBinaryFiles { get; } = new();
 
-	static StlReaderTest()
+	static StlReaderTests()
 	{
 		loadSamples("stl", "_ascii", "stl", StlAsciiFiles);
 		loadSamples("stl", "_binary", "stl", StlBinaryFiles);
 	}
 
-	public StlReaderTest(ITestOutputHelper output) : base(output)
+	public StlReaderTests(ITestOutputHelper output) : base(output)
 	{
 	}
 

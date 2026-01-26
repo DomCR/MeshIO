@@ -8,11 +8,17 @@ internal class ObjFileParser
 
 		switch (text.ToLower())
 		{
+			case "g":
+				token = ObjFileToken.Group;
+				return true;
 			case "o":
 				token = ObjFileToken.Object;
 				return true;
 			case "v":
 				token = ObjFileToken.Vertice;
+				return true;
+			case "s":
+				token = ObjFileToken.SmoothShading;
 				return true;
 			case "f":
 				token = ObjFileToken.Face;
