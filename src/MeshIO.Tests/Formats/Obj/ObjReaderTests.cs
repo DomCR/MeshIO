@@ -1,24 +1,23 @@
 ﻿using MeshIO.Formats.Obj;
 using MeshIO.Tests.Common;
 using MeshIO.Tests.TestModels;
-using System.IO;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace MeshIO.OBJ.Tests;
+namespace MeshIO.Tests.Formats.Obj;
 
-public class ObjReaderTest : IOTestsBase
+public class ObjReaderTests : IOTestsBase
 {
 	public static TheoryData<FileModel> ObjFiles { get; } = new();
 
-	static ObjReaderTest()
+	static ObjReaderTests()
 	{
 		loadSamples("obj", "obj", ObjFiles);
 	}
 
-	public ObjReaderTest(ITestOutputHelper output) : base(output) { }
+	public ObjReaderTests(ITestOutputHelper output) : base(output) { }
 
-	[Theory(Skip = "not implemented")]
+	[Theory]
 	[MemberData(nameof(ObjFiles))]
 	public void ReadTest(FileModel test)
 	{
