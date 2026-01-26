@@ -73,10 +73,8 @@ public class GlbReader : SceneReader<GltfReaderOptions>
 		IGlbFileBuilder reader;
 		switch (header.Version)
 		{
-			case 1:
-				//reader = new GlbV1FileBuilder(header);
-				//break;
-			case 2:
+			case GltfVersion.V1:
+			case GltfVersion.V2:
 				reader = new GlbFileBuilder(header);
 				break;
 			default:

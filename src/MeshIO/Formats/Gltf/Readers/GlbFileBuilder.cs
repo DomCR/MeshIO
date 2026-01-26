@@ -73,7 +73,7 @@ internal class GlbFileBuilder : IGlbFileBuilder
 		for (int i = 0; i < this._root.Buffers.Length; i++)
 		{
 			var gltf = this._root.Buffers[i];
-			if (this._header.Version == 1)
+			if (this._header.Version == GltfVersion.V1)
 			{
 				_buffers.Add(gltf.Name, gltf);
 			}
@@ -85,7 +85,7 @@ internal class GlbFileBuilder : IGlbFileBuilder
 		for (int i = 0; i < this._root.BufferViews.Length; i++)
 		{
 			var gltf = this._root.BufferViews[i];
-			if (this._header.Version == 1)
+			if (this._header.Version == GltfVersion.V1)
 			{
 				_bufferViews.Add(gltf.Name, gltf);
 			}
@@ -185,7 +185,7 @@ internal class GlbFileBuilder : IGlbFileBuilder
 			Builder builder = new();
 			builder.GltfObject = gltf;
 
-			if (this._header.Version == 1)
+			if (this._header.Version == GltfVersion.V1)
 			{
 				collection.Add(builder.GltfObject.Name, builder);
 			}

@@ -17,7 +17,7 @@ internal class GlbHeader
 
 	public uint Magic { get; set; }
 
-	public uint Version { get; set; }
+	public GltfVersion Version { get; set; }
 
 	public static GlbHeader Read(Stream stream)
 	{
@@ -28,15 +28,15 @@ internal class GlbHeader
 		//magic equals 0x46546C67. It is ASCII string glTF, and can be used to identify data as Binary glTF.
 		header.Magic = reader.ReadUInt<LittleEndianConverter>();
 		//version indicates the version of the Binary glTF container format. This specification defines version 2.
-		header.Version = reader.ReadUInt<LittleEndianConverter>();
+		header.Version = (GltfVersion)reader.ReadUInt<LittleEndianConverter>();
 		//length is the total length of the Binary glTF, including Header and all Chunks, in bytes.
 		header.Length = reader.ReadUInt<LittleEndianConverter>();
 
-		if (header.Version == 1)
+		if (header.Version == GltfVersion.V1)
 		{
 			readV1Header(header, reader);
 		}
-		else if (header.Version == 2)
+		else if (header.Version == GltfVersion.V2)
 		{
 			readV2Heder(header, reader);
 		}
@@ -50,7 +50,7 @@ internal class GlbHeader
 
 	public GltfRoot GetRoot()
 	{
-		if (this.Version == 1)
+		if (this.Version == GltfVersion.V1)
 		{
 			string json = Encoding.UTF8.GetString(JsonData);
 			var map = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
