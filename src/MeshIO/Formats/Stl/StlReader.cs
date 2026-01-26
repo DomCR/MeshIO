@@ -97,12 +97,6 @@ public class StlReader : SceneReader<StlReaderOptions>
 	}
 
 	/// <inheritdoc/>
-	public override void Dispose()
-	{
-		this._stream.Dispose();
-	}
-
-	/// <inheritdoc/>
 	public override Scene Read()
 	{
 		Scene scene = new Scene();

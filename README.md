@@ -21,7 +21,7 @@ FBX7000 |    :heavy_check_mark:    |   :heavy_check_mark:     |    :heavy_check_
 STL     |    :heavy_check_mark:    |   :heavy_check_mark:     |    :heavy_check_mark:    |    :heavy_check_mark:    |
 GLB     |                          |   :heavy_check_mark:     |        |    :construction:    |
 GLTF    |    :construction:    |        |    :construction:    |        |
-OBJ     |    :construction:    |        |    :x:    |        |
+OBJ     |    :heavy_check_mark:    |        |    :construction:    |        |
 
 The goal of this project is to give full support for all the formats in the table.
 
