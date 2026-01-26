@@ -357,7 +357,7 @@ MigrationBackup/
 
 # Exceptions
 !MeshIO.OBJ
-!src/samples/in/obj/
-!src/samples/in/obj/*.obj
+!samples/in/obj/
+!samples/in/obj/*.obj
 !src/MeshIO/Formats/Obj
 !src/MeshIO.Tests/Formats/Obj
