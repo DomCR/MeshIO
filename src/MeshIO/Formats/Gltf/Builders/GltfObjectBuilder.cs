@@ -16,7 +16,7 @@ internal abstract class GltfObjectBuilder<R> : IGltfObjectBuilder
 		GltfObject = gltfObject;
 	}
 
-	public virtual void Build(GlbV2FileBuilder builder)
+	public virtual void Build(GlbFileBuilder builder)
 	{
 		HasBeenBuilt = true;
 	}

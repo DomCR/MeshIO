@@ -14,7 +14,7 @@ internal class GltfSceneBuilder : GltfObjectBuilder<GltfScene>
 	{
 	}
 
-	public override void Build(GlbV2FileBuilder builder)
+	public override void Build(GlbFileBuilder builder)
 	{
 		base.Build(builder);
 

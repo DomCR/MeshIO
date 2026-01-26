@@ -77,7 +77,7 @@ public class GlbReader : SceneReader<GltfReaderOptions>
 				//reader = new GlbV1FileBuilder(header);
 				//break;
 			case 2:
-				reader = new GlbV2FileBuilder(header);
+				reader = new GlbFileBuilder(header);
 				break;
 			default:
 				throw new NotSupportedException($"Version {this._header.Version} not supported.");

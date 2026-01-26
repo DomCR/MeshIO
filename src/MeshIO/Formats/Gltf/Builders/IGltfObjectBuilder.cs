@@ -6,5 +6,5 @@ internal interface IGltfObjectBuilder
 {
 	public bool HasBeenBuilt { get; }
 
-	public void Build(GlbV2FileBuilder builder);
+	public void Build(GlbFileBuilder builder);
 }

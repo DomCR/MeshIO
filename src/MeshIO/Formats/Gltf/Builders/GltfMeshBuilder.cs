@@ -15,7 +15,7 @@ internal class GltfMeshBuilder : GltfObjectBuilder<GltfMesh>
 
 	public List<Mesh> Meshes { get; } = new();
 
-	public override void Build(GlbV2FileBuilder builder)
+	public override void Build(GlbFileBuilder builder)
 	{
 		base.Build(builder);
 

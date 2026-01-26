@@ -9,7 +9,7 @@ internal class GltfNodeBuilder : GltfObjectBuilder<GltfNode>
 {
 	public Node Node { get; private set; }
 
-	public override void Build(GlbV2FileBuilder builder)
+	public override void Build(GlbFileBuilder builder)
 	{
 		base.Build(builder);
 
