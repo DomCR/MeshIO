@@ -19,8 +19,10 @@ MeshIO allows to read or create 3D files using .Net and also extract or modify e
 FBX6000 |    :heavy_check_mark:    |   :heavy_check_mark:     |    :heavy_check_mark:    |    :heavy_check_mark:    |
 FBX7000 |    :heavy_check_mark:    |   :heavy_check_mark:     |    :heavy_check_mark:    |    :heavy_check_mark:    |
 STL     |    :heavy_check_mark:    |   :heavy_check_mark:     |    :heavy_check_mark:    |    :heavy_check_mark:    |
-GLB     |                          |   :heavy_check_mark:     |        |    :construction:    |
-GLTF    |    :construction:    |        |    :construction:    |        |
+GLB V1  |                          |   :heavy_check_mark:     |        |    :x:    |
+GLB V2  |                          |   :heavy_check_mark:     |        |    :construction:    |
+GLTF V1 |    :construction:    |        |    :x:    |        |
+GLTF V2 |    :construction:    |        |    :construction:    |        |
 OBJ     |    :construction:    |        |    :x:    |        |
 
 The goal of this project is to give full support for all the formats in the table.
