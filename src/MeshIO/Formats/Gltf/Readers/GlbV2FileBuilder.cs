@@ -13,17 +13,21 @@ internal class GlbV2FileBuilder : IGlbFileBuilder
 {
 	public event NotificationEventHandler OnNotification;
 
-	public Dictionary<int, GltfAccessorBuilder> Accessors { get; } = new();
+	public Dictionary<string, GltfAccessorBuilder> Accessors { get; } = new();
 
-	public Dictionary<int, GltfMeshBuilder> Meshes { get; } = new();
+	public Dictionary<string, GltfMeshBuilder> Meshes { get; } = new();
 
-	public Dictionary<int, GltfNodeBuilder> Nodes { get; } = new();
+	public Dictionary<string, GltfNodeBuilder> Nodes { get; } = new();
 
-	public Dictionary<int, GltfSceneBuilder> Scenes { get; } = new();
+	public Dictionary<string, GltfSceneBuilder> Scenes { get; } = new();
 
-	private Dictionary<int, GltfCameraBuilder> Cameras { get; } = new();
+	private Dictionary<string, GltfBuffer> Buffers { get; } = new();
 
-	private Dictionary<int, GltfMaterialBuilder> Materials { get; } = new();
+	private Dictionary<string, GltfBufferView> BufferViews { get; } = new();
+
+	private Dictionary<string, GltfCameraBuilder> Cameras { get; } = new();
+
+	private Dictionary<string, GltfMaterialBuilder> Materials { get; } = new();
 
 	private readonly GlbHeader _header;
 
@@ -36,7 +40,7 @@ internal class GlbV2FileBuilder : IGlbFileBuilder
 
 	public Scene Build()
 	{
-		_root = this._header.GetRoot<GltfRoot>();
+		_root = this._header.GetRoot();
 
 		foreach (var item in _root.Buffers)
 		{
@@ -66,6 +70,32 @@ internal class GlbV2FileBuilder : IGlbFileBuilder
 		this.createBuilders(Accessors, this._root.Accessors);
 		this.createBuilders(Materials, this._root.Materials);
 
+
+		for (int i = 0; i < this._root.Buffers.Length; i++)
+		{
+			var gltf = this._root.Buffers[i];
+			if (this._header.Version == 1)
+			{
+				Buffers.Add(gltf.Name, gltf);
+			}
+			else
+			{
+				Buffers.Add(i.ToString(), gltf);
+			}
+		}
+		for (int i = 0; i < this._root.BufferViews.Length; i++)
+		{
+			var gltf = this._root.BufferViews[i];
+			if (this._header.Version == 1)
+			{
+				BufferViews.Add(gltf.Name, gltf);
+			}
+			else
+			{
+				BufferViews.Add(i.ToString(), gltf);
+			}
+		}
+
 		sceneBuilder.Build(this);
 
 		return sceneBuilder.Scene;
@@ -73,8 +103,8 @@ internal class GlbV2FileBuilder : IGlbFileBuilder
 
 	public StreamIO GetBufferStream(GltfAccessor accessor)
 	{
-		GltfBufferView bufferView = _root.BufferViews[accessor.BufferView.Value];
-		GltfBuffer buffer = _root.Buffers[bufferView.Buffer];
+		GltfBufferView bufferView = this.BufferViews[accessor.BufferView];
+		GltfBuffer buffer = this.Buffers[bufferView.Buffer];
 
 		StreamIO stream = new StreamIO(_header.BinData);
 		stream.Position = bufferView.ByteOffset + accessor.ByteOffset;
@@ -82,42 +112,42 @@ internal class GlbV2FileBuilder : IGlbFileBuilder
 		return stream;
 	}
 
-	public T GetBuilder<T>(int index)
-				where T : IGltfObjectBuilder
+	public T GetBuilder<T>(string id)
+		where T : IGltfObjectBuilder
 	{
-		Dictionary<int, T> dict;
+		Dictionary<string, T> dict;
 
 		var builderType = typeof(T);
 		if (builderType == typeof(GltfAccessorBuilder))
 		{
-			dict = this.Accessors as Dictionary<int, T>;
+			dict = this.Accessors as Dictionary<string, T>;
 		}
 		else if (builderType == typeof(GltfMeshBuilder))
 		{
-			dict = this.Meshes as Dictionary<int, T>;
+			dict = this.Meshes as Dictionary<string, T>;
 		}
 		else if (builderType == typeof(GltfNodeBuilder))
 		{
-			dict = this.Nodes as Dictionary<int, T>;
+			dict = this.Nodes as Dictionary<string, T>;
 		}
 		else if (builderType == typeof(GltfSceneBuilder))
 		{
-			dict = this.Scenes as Dictionary<int, T>;
+			dict = this.Scenes as Dictionary<string, T>;
 		}
 		else if (builderType == typeof(GltfCameraBuilder))
 		{
-			dict = this.Cameras as Dictionary<int, T>;
+			dict = this.Cameras as Dictionary<string, T>;
 		}
 		else if (builderType == typeof(GltfMaterialBuilder))
 		{
-			dict = this.Materials as Dictionary<int, T>;
+			dict = this.Materials as Dictionary<string, T>;
 		}
 		else
 		{
 			throw new InvalidOperationException();
 		}
 
-		var value = dict[index];
+		var value = dict[id];
 		value.Build(this);
 		return value;
 	}
@@ -127,8 +157,9 @@ internal class GlbV2FileBuilder : IGlbFileBuilder
 		this.OnNotification?.Invoke(this, new NotificationEventArgs(message, notificationType, ex));
 	}
 
-	private void createBuilders<Builder, Gltf>(Dictionary<int, Builder> collection, Gltf[] gltfArray)
-				where Builder : GltfObjectBuilder<Gltf>, new()
+	private void createBuilders<Builder, Gltf>(Dictionary<string, Builder> collection, Gltf[] gltfArray)
+		where Builder : GltfObjectBuilder<Gltf>, new()
+		where Gltf : INamedObject
 	{
 		if (gltfArray == null)
 		{
@@ -140,7 +171,15 @@ internal class GlbV2FileBuilder : IGlbFileBuilder
 			var gltf = gltfArray[i];
 			Builder builder = new();
 			builder.GltfObject = gltf;
-			collection.Add(i, builder);
+
+			if (this._header.Version == 1)
+			{
+				collection.Add(builder.GltfObject.Name, builder);
+			}
+			else
+			{
+				collection.Add(i.ToString(), builder);
+			}
 		}
 	}
 }

@@ -1,11 +1,9 @@
-﻿using CSUtilities.Extensions;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace MeshIO.Formats.Gltf.Schema.V1;
 
-internal class GltfRoot
+internal class GltfV1Root
 {
 	public Dictionary<string, GltfAccessor> Accessors { get; } = new();
 
@@ -45,7 +43,7 @@ internal class GltfRoot
 
 	public Dictionary<string, object> Textures { get; } = new();
 
-	public GltfRoot(Dictionary<string, object> map)
+	public GltfV1Root(Dictionary<string, object> map)
 	{
 		var local = new Dictionary<string, object>(map, StringComparer.InvariantCultureIgnoreCase);
 		foreach (var item in local)

@@ -50,20 +50,26 @@ internal class GltfNodeBuilder : GltfObjectBuilder<GltfNode>
 
 		if (gltfNode.Mesh.HasValue)
 		{
-			var mesh = builder.GetBuilder<GltfMeshBuilder>(gltfNode.Mesh.Value);
+			var mesh = builder.GetBuilder<GltfMeshBuilder>(gltfNode.Mesh.Value.ToString());
+			Node.Entities.AddRange(mesh.Meshes);
+			Node.Materials.AddRange(mesh.Materials);
+		}
+		foreach (var m in gltfNode.Meshes)
+		{
+			var mesh = builder.GetBuilder<GltfMeshBuilder>(m);
 			Node.Entities.AddRange(mesh.Meshes);
 			Node.Materials.AddRange(mesh.Materials);
 		}
 
 		if (gltfNode.Camera.HasValue)
 		{
-			var camera = builder.GetBuilder<GltfCameraBuilder>(gltfNode.Camera.Value);
+			var camera = builder.GetBuilder<GltfCameraBuilder>(gltfNode.Camera.Value.ToString());
 			Node.Entities.Add(camera.Camera);
 		}
 
 		gltfNode.Children?.ToList().ForEach((i) =>
 		{
-			var c = builder.GetBuilder<GltfNodeBuilder>(i);
+			var c = builder.GetBuilder<GltfNodeBuilder>(i.ToString());
 			Node.Nodes.Add(c.Node);
 		});
 	}

@@ -1,5 +1,7 @@
 ﻿using CSUtilities.Converters;
 using CSUtilities.IO;
+using MeshIO.Formats.Gltf.Schema.V2;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
@@ -46,10 +48,20 @@ internal class GlbHeader
 		return header;
 	}
 
-	public T GetRoot<T>()
+	public GltfRoot GetRoot()
 	{
-		string json = Encoding.UTF8.GetString(JsonData);
-		return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(json);
+		if (this.Version == 1)
+		{
+			string json = Encoding.UTF8.GetString(JsonData);
+			var map = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+
+			return new GltfRoot(map);
+		}
+		else
+		{
+			string json = Encoding.UTF8.GetString(JsonData);
+			return Newtonsoft.Json.JsonConvert.DeserializeObject<GltfRoot>(json);
+		}
 	}
 
 	private static void readV1Header(GlbHeader header, StreamIO reader)
@@ -64,18 +76,14 @@ internal class GlbHeader
 		int binLength = (int)totalLength - paddedLength;
 
 		int readJson = reader.Stream.Read(header.JsonData, 0, jsonLength);
-		if (readJson != jsonLength)
-		{
-			throw new System.NotSupportedException();
-		}
 
 		if (paddedLength > paddedOffset)
 		{
 			reader.Stream.Seek(paddedLength - paddedOffset, SeekOrigin.Current);
 		}
 
-		byte[] binBytes = new byte[binLength];
-		reader.Stream.Read(binBytes, 0, binLength);
+		header.BinData = new byte[binLength];
+		reader.Stream.Read(header.BinData, 0, binLength);
 	}
 
 	private static void readV2Heder(GlbHeader header, StreamIO reader)

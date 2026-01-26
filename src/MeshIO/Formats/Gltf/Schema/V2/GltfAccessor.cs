@@ -12,13 +12,13 @@ namespace MeshIO.Formats.Gltf.Schema.V2;
 
 using System.Linq;
 using System.Runtime.Serialization;
-public class GltfAccessor
+public class GltfAccessor : INamedObject
 {
 
 	/// <summary>
 	/// Backing field for BufferView.
 	/// </summary>
-	private System.Nullable<int> _bufferView;
+	private string _bufferView;
 
 	/// <summary>
 	/// Backing field for ByteOffset.
@@ -79,7 +79,7 @@ public class GltfAccessor
 	/// The index of the bufferView.
 	/// </summary>
 	[Newtonsoft.Json.JsonPropertyAttribute("bufferView")]
-	public System.Nullable<int> BufferView
+	public string BufferView
 	{
 		get
 		{
@@ -87,10 +87,6 @@ public class GltfAccessor
 		}
 		set
 		{
-			if ((value < 0))
-			{
-				throw new System.ArgumentOutOfRangeException("BufferView", value, "Expected value to be greater than or equal to 0");
-			}
 			this._bufferView = value;
 		}
 	}

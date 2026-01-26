@@ -104,26 +104,6 @@ internal class GltfAccessorBuilder : GltfObjectBuilder<GltfAccessor>
 			default:
 				throw new NotSupportedException();
 		}
-
-		switch (GltfObject.Type)
-		{
-			case GltfAccessor.TypeEnum.SCALAR:
-				break;
-			case GltfAccessor.TypeEnum.VEC2:
-				break;
-			case GltfAccessor.TypeEnum.VEC3:
-				break;
-			case GltfAccessor.TypeEnum.VEC4:
-				break;
-			case GltfAccessor.TypeEnum.MAT2:
-				break;
-			case GltfAccessor.TypeEnum.MAT3:
-				break;
-			case GltfAccessor.TypeEnum.MAT4:
-				break;
-			default:
-				break;
-		}
 	}
 
 	public bool TryMapTriangles(out IEnumerable<Triangle> triangles)

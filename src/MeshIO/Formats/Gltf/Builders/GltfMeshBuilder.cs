@@ -59,9 +59,9 @@ internal class GltfMeshBuilder : GltfObjectBuilder<GltfMesh>
 				}
 			}
 
-			if (p.Indices.HasValue)
+			//if (p.Indices.HasValue)
 			{
-				var accessor = builder.GetBuilder<GltfAccessorBuilder>(p.Indices.Value);
+				var accessor = builder.GetBuilder<GltfAccessorBuilder>((p.Indices));
 
 				switch (p.Mode)
 				{
@@ -82,14 +82,14 @@ internal class GltfMeshBuilder : GltfObjectBuilder<GltfMesh>
 				}
 			}
 
-			if (p.Material.HasValue)
-			{
-				var materialBuilder = builder.GetBuilder<GltfMaterialBuilder>(p.Material.Value);
-				this.Materials.Add(materialBuilder.Material);
+			//if (p.Material.HasValue)
+			//{
+			//	var materialBuilder = builder.GetBuilder<GltfMaterialBuilder>(p.Material.Value);
+			//	this.Materials.Add(materialBuilder.Material);
 
-				var layer = new LayerElementMaterial();
-				mesh.Layers.Add(layer);
-			}
+			//	var layer = new LayerElementMaterial();
+			//	mesh.Layers.Add(layer);
+			//}
 		}
 	}
 

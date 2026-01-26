@@ -20,7 +20,7 @@ internal class GltfSceneBuilder : GltfObjectBuilder<GltfScene>
 
 		var rootScene = this.GltfObject;
 		Scene = new Scene(rootScene.Name);
-		foreach (int nodeIndex in rootScene.Nodes)
+		foreach (var nodeIndex in rootScene.Nodes)
 		{
 			var node = builder.GetBuilder<GltfNodeBuilder>(nodeIndex);
 			Scene.RootNode.Nodes.Add(node.Node);
