@@ -55,7 +55,7 @@ public class GltfNode : IGltfNamedObject
 	/// <summary>
 	/// Backing field for Mesh.
 	/// </summary>
-	private System.Nullable<int> _mesh;
+	private string _mesh;
 
 	/// <summary>
 	/// Backing field for Rotation.
@@ -178,7 +178,7 @@ public class GltfNode : IGltfNamedObject
 	/// The index of the mesh in this node.
 	/// </summary>
 	[Newtonsoft.Json.JsonPropertyAttribute("mesh")]
-	public System.Nullable<int> Mesh
+	public string Mesh
 	{
 		get
 		{
@@ -186,10 +186,6 @@ public class GltfNode : IGltfNamedObject
 		}
 		set
 		{
-			if ((value < 0))
-			{
-				throw new System.ArgumentOutOfRangeException("Mesh", value, "Expected value to be greater than or equal to 0");
-			}
 			this._mesh = value;
 		}
 	}

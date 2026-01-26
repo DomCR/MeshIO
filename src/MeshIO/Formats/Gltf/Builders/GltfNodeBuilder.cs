@@ -13,18 +13,18 @@ internal class GltfNodeBuilder : GltfObjectBuilder<GltfNode>
 	{
 		base.Build(builder);
 
-		Node = new Node(GltfObject.Name);
+		this.Node = new Node(this.GltfObject.Name);
 
 		if (this.GltfObject.Matrix != null)
 		{
 			//Matrix is organized by columns
-			Node.Transform = new Transform(new Matrix4(this.GltfObject.Matrix.Select(f => (double)f).ToArray()).Transpose());
+			this.Node.Transform = new Transform(new Matrix4(this.GltfObject.Matrix.Select(f => (double)f).ToArray()).Transpose());
 		}
 
 		if (this.GltfObject.Translation != null)
 		{
 			var tranlation = this.GltfObject.Translation.Select(f => (double)f).ToArray();
-			Node.Transform.Translation = new XYZ(tranlation[0], tranlation[1], tranlation[2]);
+			this.Node.Transform.Translation = new XYZ(tranlation[0], tranlation[1], tranlation[2]);
 		}
 
 		if (this.GltfObject.Rotation != null)
@@ -36,37 +36,40 @@ internal class GltfNodeBuilder : GltfObjectBuilder<GltfNode>
 		if (this.GltfObject.Scale != null)
 		{
 			var scale = this.GltfObject.Scale.Select(f => (double)f).ToArray();
-			Node.Transform.Scale = new XYZ(scale[0], scale[1], scale[2]);
+			this.Node.Transform.Scale = new XYZ(scale[0], scale[1], scale[2]);
 		}
 
 		if (this.GltfObject.Weights != null)
 		{
+			builder.Notify($"Weights not implemented for node.", NotificationType.NotImplemented);
 		}
 
-		if (this.GltfObject.Mesh.HasValue)
+		if (builder.TryGetBuilder<GltfMeshBuilder>(this.GltfObject.Mesh, out var mesh))
 		{
-			var mesh = builder.GetBuilder<GltfMeshBuilder>(this.GltfObject.Mesh.Value.ToString());
-			Node.Entities.AddRange(mesh.Meshes);
-			Node.Materials.AddRange(mesh.Materials);
-		}
-		foreach (var m in this.GltfObject.Meshes)
-		{
-			var mesh = builder.GetBuilder<GltfMeshBuilder>(m);
-			Node.Entities.AddRange(mesh.Meshes);
-			Node.Materials.AddRange(mesh.Materials);
+			this.Node.Entities.AddRange(mesh.Meshes);
+			this.Node.Materials.AddRange(mesh.Materials);
 		}
 
-		var camera = builder.GetBuilder<GltfCameraBuilder>(this.GltfObject.Camera);
-		if (camera != null)
+		foreach (var meshId in this.GltfObject.Meshes)
 		{
-			Node.Entities.Add(camera.Camera);
+			if (builder.TryGetBuilder<GltfMeshBuilder>(meshId, out var m))
+			{
+				this.Node.Entities.AddRange(m.Meshes);
+				this.Node.Materials.AddRange(m.Materials);
+			}
 		}
 
+		if (builder.TryGetBuilder<GltfCameraBuilder>(this.GltfObject.Camera, out var camera))
+		{
+			this.Node.Entities.Add(camera.Camera);
+		}
 
 		this.GltfObject.Children?.ToList().ForEach((i) =>
 		{
-			var c = builder.GetBuilder<GltfNodeBuilder>(i.ToString());
-			Node.Nodes.Add(c.Node);
+			if (builder.TryGetBuilder<GltfNodeBuilder>(i.ToString(), out var c))
+			{
+				this.Node.Nodes.Add(c.Node);
+			}
 		});
 	}
 }

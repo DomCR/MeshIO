@@ -26,7 +26,10 @@ internal class GltfMeshBuilder : GltfObjectBuilder<GltfMesh>
 
 			foreach (var att in p.Attributes)
 			{
-				var accessor = builder.GetBuilder<GltfAccessorBuilder>(att.Value);
+				if (!builder.TryGetBuilder<GltfAccessorBuilder>(att.Value, out var accessor))
+				{
+					continue;
+				}
 
 				switch (att.Key)
 				{
@@ -59,14 +62,12 @@ internal class GltfMeshBuilder : GltfObjectBuilder<GltfMesh>
 				}
 			}
 
-			if (!string.IsNullOrEmpty(p.Indices))
+			if (builder.TryGetBuilder<GltfAccessorBuilder>(p.Indices, out var indices))
 			{
-				var accessor = builder.GetBuilder<GltfAccessorBuilder>((p.Indices));
-
 				switch (p.Mode)
 				{
 					case GltfMeshPrimitive.ModeEnum.TRIANGLES:
-						if (accessor.TryMapTriangles(out IEnumerable<Triangle> triangles))
+						if (indices.TryMapTriangles(out IEnumerable<Triangle> triangles))
 						{
 							mesh.Polygons.AddRange(triangles);
 						}
@@ -82,14 +83,14 @@ internal class GltfMeshBuilder : GltfObjectBuilder<GltfMesh>
 				}
 			}
 
-			//if (p.Material.HasValue)
-			//{
-			//	var materialBuilder = builder.GetBuilder<GltfMaterialBuilder>(p.Material.Value);
-			//	this.Materials.Add(materialBuilder.Material);
+			if (builder.TryGetBuilder<GltfMaterialBuilder>(p.Material, out var material))
+			{
+				this.Materials.Add(material.Material);
+				var layer = new LayerElementMaterial();
+				mesh.Layers.Add(layer);
 
-			//	var layer = new LayerElementMaterial();
-			//	mesh.Layers.Add(layer);
-			//}
+				builder.Notify($"Material not implemented for mesh.", NotificationType.NotImplemented);
+			}
 		}
 	}
 

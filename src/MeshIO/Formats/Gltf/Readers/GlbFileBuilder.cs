@@ -111,54 +111,13 @@ internal class GlbFileBuilder : IGlbFileBuilder
 		return stream;
 	}
 
-	[Obsolete]
-	public T GetBuilder<T>(string id)
-		where T : IGltfObjectBuilder
+	public void Notify(string message, NotificationType notificationType = NotificationType.Information, Exception ex = null)
 	{
-		if (string.IsNullOrEmpty(id))
-		{
-			return default;
-		}
-
-		Dictionary<string, T> dict;
-
-		var builderType = typeof(T);
-		if (builderType == typeof(GltfAccessorBuilder))
-		{
-			dict = this._accessors as Dictionary<string, T>;
-		}
-		else if (builderType == typeof(GltfMeshBuilder))
-		{
-			dict = this._meshes as Dictionary<string, T>;
-		}
-		else if (builderType == typeof(GltfNodeBuilder))
-		{
-			dict = this._nodes as Dictionary<string, T>;
-		}
-		else if (builderType == typeof(GltfSceneBuilder))
-		{
-			dict = this._scenes as Dictionary<string, T>;
-		}
-		else if (builderType == typeof(GltfCameraBuilder))
-		{
-			dict = this._cameras as Dictionary<string, T>;
-		}
-		else if (builderType == typeof(GltfMaterialBuilder))
-		{
-			dict = this._materials as Dictionary<string, T>;
-		}
-		else
-		{
-			throw new InvalidOperationException();
-		}
-
-		var value = dict[id];
-		value.Build(this);
-		return value;
+		this.OnNotification?.Invoke(this, new NotificationEventArgs(message, notificationType, ex));
 	}
 
-	public bool TryGetBuilder<T>(string id, out T builder)
-	where T : IGltfObjectBuilder
+	public bool TryGetBuilder<T>(string id, out T builder, bool notify = true)
+		where T : IGltfObjectBuilder
 	{
 		if (string.IsNullOrEmpty(id))
 		{
@@ -198,14 +157,17 @@ internal class GlbFileBuilder : IGlbFileBuilder
 			throw new InvalidOperationException();
 		}
 
-		builder = dict[id];
-		builder.Build(this);
-		return true;
-	}
+		if (dict.TryGetValue(id, out builder))
+		{
+			builder.Build(this);
+			return true;
+		}
+		else if (notify)
+		{
+			this.Notify($"[{typeof(T)}] with id {id} not found.", NotificationType.Warning);
+		}
 
-	public void Notify(string message, NotificationType notificationType = NotificationType.Information, Exception ex = null)
-	{
-		this.OnNotification?.Invoke(this, new NotificationEventArgs(message, notificationType, ex));
+		return false;
 	}
 
 	private void createBuilders<Builder, Gltf>(Dictionary<string, Builder> collection, Gltf[] gltfArray)
