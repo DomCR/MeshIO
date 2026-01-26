@@ -351,17 +351,13 @@ MigrationBackup/
 
 # Custom folders
 /.packages
+/local
 /samples/out
-/file_samples
-/Utils
-/samples/fbx/old
+/samples/in/fbx/old
 
 # Exceptions
 !MeshIO.OBJ
-/local
-/src/Tests/outFiles
-!src/Tests/inFiles/obj/
-!src/Tests/inFiles/obj/*.obj
+!src/Tests/in/obj/
+!src/Tests/in/obj/*.obj
 !src/MeshIO/Formats/Obj
 !src/MeshIO.Tests/Formats/Obj
-/samples/in/fbx/old
