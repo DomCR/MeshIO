@@ -14,19 +14,19 @@ public class GltfReaderTests : IOTestsBase
 
 	static GltfReaderTests()
 	{
-		loadSamples("glb-gltf", "glb", GlbFiles);
-		loadSamples("glb-gltf", "gltf", GltfFiles);
+		loadSamples("glb", "glb", GlbFiles);
+		loadSamples("gltf", "gltf", GltfFiles);
 	}
 
 	public GltfReaderTests(ITestOutputHelper output) : base(output)
 	{
 	}
 
-	[Theory(Skip = "Gltf not implemented")]
+	[Theory]
 	[MemberData(nameof(GlbFiles))]
 	public void ReadGlb(FileModel test)
 	{
-		using (GltfReader reader = new GltfReader(test.Path))
+		using (GlbReader reader = new GlbReader(test.Path))
 		{
 			reader.OnNotification += this.onNotification;
 			reader.Read();
@@ -37,7 +37,7 @@ public class GltfReaderTests : IOTestsBase
 	[MemberData(nameof(GltfFiles))]
 	public void ReadGltf(FileModel test)
 	{
-		using (GltfReader reader = new GltfReader(test.Path))
+		using (GlbReader reader = new GlbReader(test.Path))
 		{
 			reader.OnNotification += this.onNotification;
 			reader.Read();
