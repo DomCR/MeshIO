@@ -19,10 +19,19 @@ public class Camera : Entity
 
 	public XYZ LookAt { get; set; }
 
+	/// <summary>
+	/// Gets or sets the position represented by this instance.
+	/// </summary>
 	public XYZ Position { get; set; }
 
 	public ProjectionType ProjectionType { get; set; }
 
+	/// <summary>
+	/// Gets or sets the up direction vector for the coordinate system.
+	/// </summary>
+	/// <remarks>The up vector typically defines the vertical orientation in 3D space and is used in calculations
+	/// involving camera orientation, object alignment, or coordinate transformations. Changing this value affects how 'up'
+	/// is interpreted in related operations.</remarks>
 	public XYZ UpVector { get; set; }
 
 	public Camera() : base()
