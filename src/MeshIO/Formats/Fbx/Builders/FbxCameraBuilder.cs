@@ -19,40 +19,23 @@ internal class FbxCameraBuilder : FbxObjectBuilder<Camera>
 	public override void Build(FbxFileBuilderBase builder)
 	{
 		base.Build(builder);
-
-		this.assignValue("Position", (n) =>
-		{
-			this._element.Position = new CSMath.XYZ(
-				n.GetProperty<double>(0),
-				n.GetProperty<double>(1),
-				n.GetProperty<double>(2)
-				);
-		});
-
-		this.assignValue("Up", (n) =>
-		{
-			this._element.UpVector = new CSMath.XYZ(
-				n.GetProperty<double>(0),
-				n.GetProperty<double>(1),
-				n.GetProperty<double>(2)
-				).Normalize();
-		});
-
-		this.assignValue("LookAt", (n) =>
-		{
-			this._element.LookAt = new CSMath.XYZ(
-				n.GetProperty<double>(0),
-				n.GetProperty<double>(1),
-				n.GetProperty<double>(2)
-				).Normalize();
-		});
 	}
 
-	protected void assignValue(string name, Action<FbxNode> assign)
+	protected override bool setValue(FbxFileBuilderBase builder, FbxNode node)
 	{
-		if (this.FbxNode.TryGetNode(name, out FbxNode node))
+		switch (node.Name)
 		{
-			assign.Invoke(node);
+			case FbxFileToken.Position:
+				this._element.Position = this.nodeToXYZ(node);
+				return true;
+			case FbxFileToken.Up:
+				this._element.UpVector = this.nodeToXYZ(node).Normalize();
+				return true;
+			case FbxFileToken.LookAt:
+				this._element.LookAt = this.nodeToXYZ(node).Normalize();
+				return true;
+			default:
+				return base.setValue(builder, node);
 		}
 	}
 }

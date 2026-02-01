@@ -8,6 +8,7 @@ using MeshIO.Formats.Fbx.Connections;
 using MeshIO.Formats.Fbx.Readers;
 using MeshIO.Shaders;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace MeshIO.Formats.Fbx.Builders;
 
@@ -15,10 +16,11 @@ internal class FbxNodeBuilder : FbxObjectBuilder<Node>
 {
 	public override string FbxObjectName { get { return FbxFileToken.Model; } }
 
-	public override string FbxTypeName { get { return FbxFileToken.Mesh; } }
+	public override string FbxTypeName { get; }
 
 	public FbxNodeBuilder(FbxNode node) : base(node, new Node())
 	{
+		this.FbxTypeName = node.Properties.Last().ToString();
 	}
 
 	public FbxNodeBuilder(Node root) : base(root)
@@ -29,7 +31,7 @@ internal class FbxNodeBuilder : FbxObjectBuilder<Node>
 	{
 		base.Build(builder);
 
-		if (builder.Version < FbxVersion.v7000 
+		if (builder.Is6000Fbx
 			&& this.FbxNode.TryGetNode("NodeAttributeName", out var nameNode)
 			&& nameNode.Value.ToString().StartsWith("Geometry::"))
 		{
@@ -39,6 +41,26 @@ internal class FbxNodeBuilder : FbxObjectBuilder<Node>
 		}
 
 		buildChildren(builder);
+	}
+
+	protected override bool setValue(FbxFileBuilderBase builder, FbxNode node)
+	{
+		switch (node.Name)
+		{
+			case FbxFileToken.Layer when builder.Is6000Fbx:
+			case FbxFileToken.LayerElementNormal when builder.Is6000Fbx:
+			case FbxFileToken.LayerElementBinormal when builder.Is6000Fbx:
+			case FbxFileToken.LayerElementTangent when builder.Is6000Fbx:
+			case FbxFileToken.LayerElementMaterial when builder.Is6000Fbx:
+			case FbxFileToken.LayerElementUV when builder.Is6000Fbx:
+			case FbxFileToken.LayerElementSmoothing when builder.Is6000Fbx:
+			case FbxFileToken.Vertices when builder.Is6000Fbx:
+			case FbxFileToken.Edges when builder.Is6000Fbx:
+			case FbxFileToken.PolygonVertexIndex when builder.Is6000Fbx:
+				return true;
+			default:
+				return base.setValue(builder, node);
+		}
 	}
 
 	protected void addChild(Element3D element)

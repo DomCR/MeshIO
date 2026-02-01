@@ -4,6 +4,7 @@ using MeshIO.Formats.Fbx.Templates;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml.Linq;
 
 namespace MeshIO.Formats.Fbx.Readers;
 
@@ -16,6 +17,8 @@ internal abstract class FbxFileBuilderBase
 	public FbxRootNode Root { get; }
 
 	public FbxVersion Version { get { return this.Root.Version; } }
+
+	public bool Is6000Fbx { get { return this.Version < FbxVersion.v7000; } }
 
 	protected readonly Dictionary<string, List<FbxConnection>> _connections = new();
 
@@ -346,6 +349,25 @@ internal abstract class FbxFileBuilderBase
 		}
 	}
 
+	protected IFbxObjectBuilder readModelFbx6000(FbxNode n)
+	{
+		if (!n.TryGetProperty(1, out string fbxType))
+		{
+			return null;
+		}
+
+		switch (fbxType)
+		{
+			case FbxFileToken.Mesh:
+				return new FbxNodeBuilder(n);
+			case FbxFileToken.Camera:
+				return new FbxCameraBuilder(n);
+			default:
+				this.Notify($"[{n.Name}:{fbxType}] unknown subtype node: {n}", NotificationType.NotImplemented);
+				return null;
+		}
+	}
+
 	protected void readObjects(FbxNode node)
 	{
 		foreach (FbxNode n in node)
@@ -358,7 +380,14 @@ internal abstract class FbxFileBuilderBase
 					this.readGlobalSettings(n);
 					continue; ;
 				case FbxFileToken.Model:
-					template = new FbxNodeBuilder(n);
+					if (Is6000Fbx)
+					{
+						template = this.readModelFbx6000(n);
+					}
+					else
+					{
+						template = new FbxNodeBuilder(n);
+					}
 					break;
 				case FbxFileToken.Geometry:
 					template = this.readGeometryNode(n);
@@ -381,7 +410,7 @@ internal abstract class FbxFileBuilderBase
 					continue;
 			}
 
-			if(template == null)
+			if (template == null)
 			{
 				continue;
 			}
