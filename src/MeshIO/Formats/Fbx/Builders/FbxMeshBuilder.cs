@@ -32,7 +32,7 @@ internal class FbxMeshBuilder : FbxGeometryBuilder<Mesh>
 				_element.Edges.AddRange(toArr<int>(getArrayValue(builder.Version, node)));
 				return true;
 			case FbxFileToken.PolygonVertexIndex:
-				_element.Polygons = mapPolygons(toArr<int>(getArrayValue(builder.Version, node)).ToArray());
+				_element.Polygons.AddRange(mapPolygons(toArr<int>(getArrayValue(builder.Version, node)).ToArray()));
 				return true;
 			default:
 				return base.setValue(builder, node);
