@@ -51,6 +51,14 @@ internal class FbxCameraBuilder : FbxObjectBuilder<Camera>
 	{
 		switch (node.Name)
 		{
+			//Ignore
+			case "ShowInfoOnMoving":
+			case "ShowAudio":
+			case "AudioColor":
+				return true;
+			case FbxFileToken.CameraOrthoZoom:
+				_element.OrtographicZoom = new XY(node.GetValue<double>());
+				return true;
 			case FbxFileToken.Position:
 				this._element.Position = this.nodeToXYZ(node);
 				return true;

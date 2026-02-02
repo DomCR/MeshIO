@@ -6,6 +6,8 @@ public class FbxFileToken
 {
 	public const string Camera = "Camera";
 
+	public const string CameraOrthoZoom = "CameraOrthoZoom";
+
 	public const string Connections = "Connections";
 
 	public const string Count = "Count";
