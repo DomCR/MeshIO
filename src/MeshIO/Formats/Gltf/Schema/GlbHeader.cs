@@ -53,14 +53,14 @@ internal class GlbHeader
 		if (this.Version == GltfVersion.V1)
 		{
 			string json = Encoding.UTF8.GetString(JsonData);
-			var map = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+			var map = JsonUtils.Deserialize<Dictionary<string, object>>(json);
 
 			return new GltfRoot(map);
 		}
 		else
 		{
 			string json = Encoding.UTF8.GetString(JsonData);
-			return Newtonsoft.Json.JsonConvert.DeserializeObject<GltfRoot>(json);
+			return JsonUtils.Deserialize<GltfRoot>(json);
 		}
 	}
 

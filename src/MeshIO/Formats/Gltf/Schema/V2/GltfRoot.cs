@@ -568,7 +568,7 @@ internal class GltfRoot
 					//setMap(item.Value, ref this._animations);
 					break;
 				case "asset":
-					Asset = Newtonsoft.Json.JsonConvert.DeserializeObject<GltfAsset>(item.Value.ToString());
+					Asset = JsonUtils.Deserialize<GltfAsset>(item.Value.ToString());
 					break;
 				case "buffers":
 					setMap(item.Value, ref this._buffers);
@@ -583,7 +583,7 @@ internal class GltfRoot
 					setMap(item.Value, ref this._textures);
 					break;
 				case "extensionsused":
-					ExtensionsUsed = Newtonsoft.Json.JsonConvert.DeserializeObject<string[]>(item.Value.ToString());
+					ExtensionsUsed = JsonUtils.Deserialize<string[]>(item.Value.ToString());
 					break;
 				case "images":
 					setMap(item.Value, ref this._images);
@@ -628,7 +628,7 @@ internal class GltfRoot
 	public Dictionary<string, object> Techniques { get; } = new();
 	private Dictionary<string, object> getMap(string json)
 	{
-		return Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+		return JsonUtils.Deserialize<Dictionary<string, object>>(json);
 	}
 
 	private void setMap<T>(object obj, Dictionary<string, T> arr)
@@ -638,7 +638,7 @@ internal class GltfRoot
 		{
 			var name = item.Key.ToLower();
 			var json = item.Value.ToString();
-			T t = Newtonsoft.Json.JsonConvert.DeserializeObject<T>(item.Value.ToString());
+			T t = JsonUtils.Deserialize<T>(item.Value.ToString());
 			arr.Add(name, t);
 		}
 	}
@@ -652,7 +652,7 @@ internal class GltfRoot
 		{
 			var item = map.ElementAt(i);
 			var json = item.Value.ToString();
-			T entry = Newtonsoft.Json.JsonConvert.DeserializeObject<T>(json);
+			T entry = JsonUtils.Deserialize<T>(json);
 			entry.Name = item.Key;
 			arr[i] = entry;
 		}
