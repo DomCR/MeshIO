@@ -19,33 +19,23 @@ internal class FbxMeshBuilder : FbxGeometryBuilder<Mesh>
 	public override void Build(FbxFileBuilderBase builder)
 	{
 		base.Build(builder);
-
-		readVertices(builder.Version);
-		readPolygons(builder.Version);
-		readEdges(builder.Version);
 	}
 
-	private void readVertices(FbxVersion version)
+	protected override bool setValue(FbxFileBuilderBase builder, FbxNode node)
 	{
-		if (FbxNode.TryGetNode("Vertices", out FbxNode vertices))
+		switch (node.Name)
 		{
-			_element.Vertices.AddRange(arrToXYZ(arrToDoubleArray(getArrayValue(version, vertices))));
-		}
-	}
-
-	private void readEdges(FbxVersion version)
-	{
-		if (FbxNode.TryGetNode("Edges", out FbxNode edges))
-		{
-			_element.Edges.AddRange(toArr<int>(getArrayValue(version, edges)));
-		}
-	}
-
-	private void readPolygons(FbxVersion version)
-	{
-		if (FbxNode.TryGetNode("PolygonVertexIndex", out FbxNode polygons))
-		{
-			_element.Polygons = mapPolygons(toArr<int>(getArrayValue(version, polygons)).ToArray());
+			case FbxFileToken.Vertices:
+				_element.Vertices.AddRange(arrToXYZ(arrToDoubleArray(getArrayValue(builder.Version, node))));
+				return true;
+			case FbxFileToken.Edges:
+				_element.Edges.AddRange(toArr<int>(getArrayValue(builder.Version, node)));
+				return true;
+			case FbxFileToken.PolygonVertexIndex:
+				_element.Polygons = mapPolygons(toArr<int>(getArrayValue(builder.Version, node)).ToArray());
+				return true;
+			default:
+				return base.setValue(builder, node);
 		}
 	}
 

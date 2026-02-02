@@ -10,17 +10,17 @@ namespace MeshIO.Formats.Fbx;
 public class FbxNode : FbxNodeCollection
 {
 	/// <summary>
+	/// Whether the node is empty of data
+	/// </summary>
+	public bool IsEmpty => string.IsNullOrEmpty(Name) && Properties.Count == 0 && Nodes.Count == 0;
+
+	/// <summary>
 	/// The node name, which is often a class type
 	/// </summary>
 	/// <remarks>
 	/// The name must be smaller than 256 characters to be written to a binary stream
 	/// </remarks>
 	public string Name { get; set; }
-
-	/// <summary>
-	/// Whether the node is empty of data
-	/// </summary>
-	public bool IsEmpty => string.IsNullOrEmpty(Name) && Properties.Count == 0 && Nodes.Count == 0;
 
 	/// <summary>
 	/// The list of properties associated with the node
@@ -51,7 +51,7 @@ public class FbxNode : FbxNodeCollection
 	public FbxNode() : base() { }
 
 	/// <summary>
-	/// 
+	///
 	/// </summary>
 	/// <param name="name"></param>
 	public FbxNode(string name) : base()
@@ -69,6 +69,29 @@ public class FbxNode : FbxNodeCollection
 		Properties = new List<object>(properties);
 	}
 
+	public T GetProperty<T>(int index)
+	{
+		object value = this.Properties.ElementAtOrDefault(index);
+		return (T)Convert.ChangeType(value, typeof(T));
+	}
+
+	public T GetValue<T>()
+	{
+		if (this.Value != null)
+		{
+			return (T)Convert.ChangeType(this.Value, typeof(T));
+		}
+		else
+		{
+			return default;
+		}
+	}
+
+	public override string ToString()
+	{
+		return $"{Name}:{Value}";
+	}
+
 	public bool TryGetProperty<T>(int index, out T value)
 	{
 		var v = this.Properties.ElementAtOrDefault(index);
@@ -82,16 +105,5 @@ public class FbxNode : FbxNodeCollection
 			value = default;
 			return false;
 		}
-	}
-
-	public T GetProperty<T>(int index)
-	{
-		object value = this.Properties.ElementAtOrDefault(index);
-		return (T)Convert.ChangeType(value, typeof(T));
-	}
-
-	public override string ToString()
-	{
-		return $"{Name}:{Value}";
 	}
 }

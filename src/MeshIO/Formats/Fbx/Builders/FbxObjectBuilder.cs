@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using CSMath;
 using MeshIO.Formats.Fbx.Readers;
 
 namespace MeshIO.Formats.Fbx.Builders;
@@ -41,8 +42,6 @@ internal abstract class FbxObjectBuilder<T> : IFbxObjectBuilder
 
 	public virtual void Build(FbxFileBuilderBase builder)
 	{
-		FbxPropertyBuilder template = builder.GetProperties(FbxObjectName);
-
 		if (builder.Version < FbxVersion.v7000)
 		{
 			_element.Id = IdUtils.CreateId();
@@ -54,7 +53,8 @@ internal abstract class FbxObjectBuilder<T> : IFbxObjectBuilder
 		}
 
 		Dictionary<string, FbxProperty> nodeProp = builder.ReadProperties(FbxNode);
-		foreach (var t in template.Properties)
+		FbxPropertyBuilder propBuilder = builder.GetProperties(FbxObjectName);
+		foreach (var t in propBuilder.Properties)
 		{
 			if (nodeProp.ContainsKey(t.Key))
 			{
@@ -65,6 +65,43 @@ internal abstract class FbxObjectBuilder<T> : IFbxObjectBuilder
 		}
 
 		buildProperties(nodeProp);
+
+		foreach (var n in this.FbxNode)
+		{
+			if (!this.setValue(builder, n))
+			{
+				builder.Notify($"[{Prefix}{this.FbxTypeName}] Fbx value {n.Name} not assigned.", NotificationType.Warning);
+			}
+		}
+	}
+
+	protected virtual bool setValue(FbxFileBuilderBase builder, FbxNode node)
+	{
+		switch (node.Name)
+		{
+			//Ignore
+			case FbxFileToken.Properties60:
+			case FbxFileToken.Properties70:
+			case FbxFileToken.GeometryVersion:
+			case FbxFileToken.Version:
+			case FbxFileToken.TypeFlags:
+			case FbxFileToken.Culling:
+			case FbxFileToken.Shading:
+				return true;
+			case FbxFileToken.NodeAttributeName:
+				//this._element.Name = node.GetValue<string>();
+				return true;
+			default:
+				return false;
+		}
+	}
+
+	protected XYZ nodeToXYZ(FbxNode n)
+	{
+		return new XYZ(
+			n.GetProperty<double>(0),
+			n.GetProperty<double>(1),
+			n.GetProperty<double>(2));
 	}
 
 	protected string removePrefix(string fullname)
