@@ -10,7 +10,7 @@
 	<PropertyGroup>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<Version>2.2.4-beta</Version>
+		<Version>2.2.5-beta</Version>
 		<PackageOutputPath>../nupkg</PackageOutputPath>
 		<SignAssembly>True</SignAssembly>
 		<AssemblyOriginatorKeyFile>../MeshIO.snk</AssemblyOriginatorKeyFile>
