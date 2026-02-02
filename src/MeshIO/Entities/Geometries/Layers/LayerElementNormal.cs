@@ -47,7 +47,7 @@ public class LayerElementNormal : LayerElement
 		layer.MappingMode = MappingMode.ByPolygon;
 		layer.ReferenceMode = ReferenceMode.Direct;
 
-		foreach (Polygon item in mesh.Polygons)
+		foreach (var item in mesh.Polygons)
 		{
 			XYZ normal = XYZ.FindNormal(
 				mesh.Vertices[item.ToArray()[0]],
@@ -70,7 +70,7 @@ public class LayerElementNormal : LayerElement
 		this.MappingMode = MappingMode.ByPolygon;
 		this.ReferenceMode = ReferenceMode.Direct;
 
-		foreach (Polygon item in mesh.Polygons)
+		foreach (var item in mesh.Polygons)
 		{
 			XYZ normal = XYZ.FindNormal(
 				mesh.Vertices[item.ToArray()[0]],

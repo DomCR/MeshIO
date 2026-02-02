@@ -9,7 +9,7 @@ public class Mesh : Geometry
 {
 	public List<int> Edges { get; set; } = new List<int>();
 
-	public List<Polygon> Polygons { get; set; } = new List<Polygon>();
+	public List<IPolygon> Polygons { get; } = new();
 
 	public Mesh() : base() { }
 
