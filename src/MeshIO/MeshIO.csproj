@@ -27,7 +27,6 @@
 
 	<Import Project="..\CSUtilities\CSUtilities\CSUtilities.projitems" Label="Shared" />
 
-	<!--<ItemGroup Condition="'$(TargetFramework)' == 'net48' OR '$(TargetFramework)' == 'netstandard2.1' OR '$(TargetFramework)' == 'netstandard2.0'">-->
 	<ItemGroup>
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
 	</ItemGroup>

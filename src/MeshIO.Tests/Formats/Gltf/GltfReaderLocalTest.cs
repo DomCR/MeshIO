@@ -10,9 +10,13 @@ namespace MeshIO.Tests.Formats.Gltf;
 
 public class GltfReaderLocalTest : IOTestsBase
 {
-	public static readonly TheoryData<FileModel> V1Files = new();
+	public static readonly TheoryData<FileModel> GlbV1Files = new();
 
-	public static readonly TheoryData<FileModel> V2Files = new();
+	public static readonly TheoryData<FileModel> GlbV2Files = new();
+
+	public static readonly TheoryData<FileModel> GltfV1Files = new();
+
+	public static readonly TheoryData<FileModel> GltfV2Files = new();
 
 	private const string _samplesFolder = "..\\..\\..\\..\\..\\..\\glTF-Sample-Models";
 
@@ -20,27 +24,46 @@ public class GltfReaderLocalTest : IOTestsBase
 	{
 		if (!Directory.Exists(_samplesFolder))
 		{
-			V1Files.Add(new FileModel());
-			V2Files.Add(new FileModel());
+			GlbV1Files.Add(new FileModel());
+			GlbV2Files.Add(new FileModel());
 			return;
 		}
 
 		foreach (string file in Directory.GetFiles(Path.Combine(_samplesFolder, "1.0"), "*.glb", SearchOption.AllDirectories))
 		{
 			FileModel model = new FileModel(file);
-			V1Files.Add(model);
+			GlbV1Files.Add(model);
+		}
+
+		foreach (string file in Directory.GetFiles(Path.Combine(_samplesFolder, "1.0"), "*.gltf", SearchOption.AllDirectories))
+		{
+			if (file.Contains("glTF-Embedded"))
+				continue;
+
+			FileModel model = new FileModel(file);
+			GltfV1Files.Add(model);
 		}
 
 		foreach (string file in Directory.GetFiles(Path.Combine(_samplesFolder, "2.0"), "*.glb", SearchOption.AllDirectories))
 		{
-			V2Files.Add(new FileModel(file));
+			GlbV2Files.Add(new FileModel(file));
+		}
+
+		foreach (string file in Directory.GetFiles(Path.Combine(_samplesFolder, "2.0"), "*.gltf", SearchOption.AllDirectories))
+		{
+			if (file.Contains("Draco") || file.Contains("glTF-Embedded"))
+				continue;
+
+			GltfV2Files.Add(new FileModel(file));
 		}
 	}
 
-	public GltfReaderLocalTest(ITestOutputHelper output) : base(output) { }
+	public GltfReaderLocalTest(ITestOutputHelper output) : base(output)
+	{
+	}
 
 	[Theory]
-	[MemberData(nameof(V1Files))]
+	[MemberData(nameof(GlbV1Files))]
 	public void ReadGlbV1(FileModel test)
 	{
 		if (string.IsNullOrEmpty(test.Path))
@@ -57,13 +80,44 @@ public class GltfReaderLocalTest : IOTestsBase
 	}
 
 	[Theory]
-	[MemberData(nameof(V2Files))]
+	[MemberData(nameof(GlbV2Files))]
 	public void ReadGlbV2(FileModel test)
 	{
 		if (string.IsNullOrEmpty(test.Path))
 			return;
 
 		using (GlbReader reader = new GlbReader(test.Path))
+		{
+			reader.OnNotification += this.onNotification;
+			reader.Read();
+		}
+	}
+
+	[Theory]
+	[MemberData(nameof(GltfV1Files))]
+	public void ReadGltfV1(FileModel test)
+	{
+		if (string.IsNullOrEmpty(test.Path))
+			return;
+
+		Scene scene = null;
+		using (GltfReader reader = new GltfReader(test.Path))
+		{
+			reader.OnNotification += this.onNotification;
+			scene = reader.Read();
+		}
+
+		Assert.NotNull(scene);
+	}
+
+	[Theory]
+	[MemberData(nameof(GltfV2Files))]
+	public void ReadGltfV2(FileModel test)
+	{
+		if (string.IsNullOrEmpty(test.Path))
+			return;
+
+		using (GltfReader reader = new GltfReader(test.Path))
 		{
 			reader.OnNotification += this.onNotification;
 			reader.Read();

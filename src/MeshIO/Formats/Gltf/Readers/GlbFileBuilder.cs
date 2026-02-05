@@ -21,7 +21,7 @@ internal class GlbFileBuilder : IGlbFileBuilder
 
 	private readonly Dictionary<string, GltfCameraBuilder> _cameras = new();
 
-	private readonly GlbHeader _header;
+	private readonly GltfHeader _header;
 
 	private readonly Dictionary<string, GltfMaterialBuilder> _materials = new();
 
@@ -33,7 +33,7 @@ internal class GlbFileBuilder : IGlbFileBuilder
 
 	private GltfRoot _root;
 
-	public GlbFileBuilder(GlbHeader header)
+	public GlbFileBuilder(GltfHeader header)
 	{
 		this._header = header;
 	}
@@ -181,7 +181,7 @@ internal class GlbFileBuilder : IGlbFileBuilder
 
 		for (int i = 0; i < gltfArray.Length; i++)
 		{
-			var gltf = gltfArray[i];
+			Gltf gltf = gltfArray[i];
 			Builder builder = new();
 			builder.GltfObject = gltf;
 
