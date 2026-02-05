@@ -26,6 +26,8 @@ public class GltfReaderLocalTest : IOTestsBase
 		{
 			GlbV1Files.Add(new FileModel());
 			GlbV2Files.Add(new FileModel());
+			GltfV1Files.Add(new FileModel());
+			GltfV2Files.Add(new FileModel());
 			return;
 		}
 
