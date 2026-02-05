@@ -58,12 +58,6 @@ public class GlbReader : SceneReader<GltfReaderOptions>
 	}
 
 	/// <inheritdoc/>
-	public override void Dispose()
-	{
-		base.Dispose();
-	}
-
-	/// <inheritdoc/>
 	public override Scene Read()
 	{
 		GltfHeader header = GltfHeader.Read(_stream);
