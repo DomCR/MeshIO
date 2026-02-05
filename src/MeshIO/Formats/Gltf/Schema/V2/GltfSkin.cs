@@ -49,7 +49,11 @@ public class GltfSkin : IGltfNamedObject
 	/// <summary>
 	/// The index of the accessor containing the floating-point 4x4 inverse-bind matrices.  The default is that each matrix is a 4x4 identity matrix, which implies that inverse-bind matrices were pre-applied.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("inverseBindMatrices")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("inverseBindMatrices")]
+#endif
 	public string InverseBindMatrices
 	{
 		get
@@ -65,7 +69,11 @@ public class GltfSkin : IGltfNamedObject
 	/// <summary>
 	/// The index of the node used as a skeleton root.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("skeleton")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("skeleton")]
+#endif
 	public string Skeleton
 	{
 		get
@@ -82,7 +90,11 @@ public class GltfSkin : IGltfNamedObject
 	/// Indices of skeleton nodes, used as joints in this skin.
 	/// </summary>
 	//[Newtonsoft.Json.JsonRequiredAttribute()]
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("joints")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("joints")]
+#endif
 	public int[] Joints
 	{
 		get
@@ -115,7 +127,11 @@ public class GltfSkin : IGltfNamedObject
 	/// <summary>
 	/// The user-defined name of this object.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("name")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("name")]
+#endif
 	public string Name
 	{
 		get
@@ -131,7 +147,11 @@ public class GltfSkin : IGltfNamedObject
 	/// <summary>
 	/// Dictionary object with extension-specific objects.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("extensions")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("extensions")]
+#endif
 	public System.Collections.Generic.Dictionary<string, object> Extensions
 	{
 		get
@@ -147,7 +167,11 @@ public class GltfSkin : IGltfNamedObject
 	/// <summary>
 	/// Application-specific data.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("extras")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("extras")]
+#endif
 	public GltfExtras Extras
 	{
 		get

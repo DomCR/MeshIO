@@ -44,7 +44,11 @@ public class GltfBuffer : IGltfNamedObject
 	/// <summary>
 	/// The uri of the buffer.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("uri")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("uri")]
+#endif
 	public string Uri
 	{
 		get
@@ -60,8 +64,15 @@ public class GltfBuffer : IGltfNamedObject
 	/// <summary>
 	/// The length of the buffer in bytes.
 	/// </summary>
+#if NET
+#if NET7_0_OR_GREATER
+	[System.Text.Json.Serialization.JsonRequired]
+#endif
+	[System.Text.Json.Serialization.JsonPropertyName("byteLength")]
+#else
 	[Newtonsoft.Json.JsonRequiredAttribute()]
 	[Newtonsoft.Json.JsonPropertyAttribute("byteLength")]
+#endif
 	public int ByteLength
 	{
 		get
@@ -81,7 +92,11 @@ public class GltfBuffer : IGltfNamedObject
 	/// <summary>
 	/// The user-defined name of this object.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("name")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("name")]
+#endif
 	public string Name
 	{
 		get
@@ -97,7 +112,11 @@ public class GltfBuffer : IGltfNamedObject
 	/// <summary>
 	/// Dictionary object with extension-specific objects.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("extensions")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("extensions")]
+#endif
 	public System.Collections.Generic.Dictionary<string, object> Extensions
 	{
 		get
@@ -113,7 +132,11 @@ public class GltfBuffer : IGltfNamedObject
 	/// <summary>
 	/// Application-specific data.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("extras")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("extras")]
+#endif
 	public GltfExtras Extras
 	{
 		get

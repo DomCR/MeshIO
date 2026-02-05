@@ -105,7 +105,11 @@ public class GltfNode : IGltfNamedObject
 	/// <summary>
 	/// The index of the camera referenced by this node.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("camera")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("camera")]
+#endif
 	public string Camera
 	{
 		get
@@ -121,7 +125,11 @@ public class GltfNode : IGltfNamedObject
 	/// <summary>
 	/// The indices of this node's children.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("children")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("children")]
+#endif
 	public string[] Children
 	{
 		get
@@ -137,7 +145,11 @@ public class GltfNode : IGltfNamedObject
 	/// <summary>
 	/// The index of the skin referenced by this node.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("skin")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("skin")]
+#endif
 	public string Skin
 	{
 		get
@@ -153,7 +165,11 @@ public class GltfNode : IGltfNamedObject
 	/// <summary>
 	/// A floating-point 4x4 transformation matrix stored in column-major order.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("matrix")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("matrix")]
+#endif
 	public float[] Matrix
 	{
 		get
@@ -177,7 +193,11 @@ public class GltfNode : IGltfNamedObject
 	/// <summary>
 	/// The index of the mesh in this node.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("mesh")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("mesh")]
+#endif
 	public string Mesh
 	{
 		get
@@ -190,13 +210,21 @@ public class GltfNode : IGltfNamedObject
 		}
 	}
 
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("meshes")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("meshes")]
+#endif
 	public string[] Meshes { get; set; } = new string[0];
 
 	/// <summary>
 	/// The node's unit quaternion rotation in the order (x, y, z, w), where w is the scalar.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("rotation")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("rotation")]
+#endif
 	public float[] Rotation
 	{
 		get
@@ -235,7 +263,11 @@ public class GltfNode : IGltfNamedObject
 	/// <summary>
 	/// The node's non-uniform scale, given as the scaling factors along the x, y, and z axes.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("scale")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("scale")]
+#endif
 	public float[] Scale
 	{
 		get
@@ -259,7 +291,11 @@ public class GltfNode : IGltfNamedObject
 	/// <summary>
 	/// The node's translation along the x, y, and z axes.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("translation")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("translation")]
+#endif
 	public float[] Translation
 	{
 		get
@@ -283,7 +319,11 @@ public class GltfNode : IGltfNamedObject
 	/// <summary>
 	/// The weights of the instantiated Morph Target. Number of elements must match number of Morph Targets of used mesh.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("weights")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("weights")]
+#endif
 	public float[] Weights
 	{
 		get
@@ -308,7 +348,11 @@ public class GltfNode : IGltfNamedObject
 	/// <summary>
 	/// The user-defined name of this object.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("name")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("name")]
+#endif
 	public string Name
 	{
 		get
@@ -324,7 +368,11 @@ public class GltfNode : IGltfNamedObject
 	/// <summary>
 	/// Dictionary object with extension-specific objects.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("extensions")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("extensions")]
+#endif
 	public System.Collections.Generic.Dictionary<string, object> Extensions
 	{
 		get
@@ -340,7 +388,11 @@ public class GltfNode : IGltfNamedObject
 	/// <summary>
 	/// Application-specific data.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("extras")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("extras")]
+#endif
 	public GltfExtras Extras
 	{
 		get

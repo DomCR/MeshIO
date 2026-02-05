@@ -43,8 +43,15 @@ namespace MeshIO.Formats.Gltf.Schema.V2;
         /// <summary>
         /// The index of the texture.
         /// </summary>
+#if NET
+#if NET7_0_OR_GREATER
+        [System.Text.Json.Serialization.JsonRequired]
+#endif
+        [System.Text.Json.Serialization.JsonPropertyName("index")]
+#else
         [Newtonsoft.Json.JsonRequiredAttribute()]
         [Newtonsoft.Json.JsonPropertyAttribute("index")]
+#endif
         public int Index {
             get {
                 return this._index;
@@ -60,7 +67,11 @@ namespace MeshIO.Formats.Gltf.Schema.V2;
         /// <summary>
         /// The set index of texture's TEXCOORD attribute used for texture coordinate mapping.
         /// </summary>
+#if NET
+        [System.Text.Json.Serialization.JsonPropertyName("texCoord")]
+#else
         [Newtonsoft.Json.JsonPropertyAttribute("texCoord")]
+#endif
         public int TexCoord {
             get {
                 return this._texCoord;
@@ -76,7 +87,11 @@ namespace MeshIO.Formats.Gltf.Schema.V2;
         /// <summary>
         /// The scalar multiplier applied to each normal vector of the normal texture.
         /// </summary>
+#if NET
+        [System.Text.Json.Serialization.JsonPropertyName("scale")]
+#else
         [Newtonsoft.Json.JsonPropertyAttribute("scale")]
+#endif
         public float Scale {
             get {
                 return this._scale;
@@ -89,7 +104,11 @@ namespace MeshIO.Formats.Gltf.Schema.V2;
         /// <summary>
         /// Dictionary object with extension-specific objects.
         /// </summary>
+#if NET
+        [System.Text.Json.Serialization.JsonPropertyName("extensions")]
+#else
         [Newtonsoft.Json.JsonPropertyAttribute("extensions")]
+#endif
         public System.Collections.Generic.Dictionary<string, object> Extensions {
             get {
                 return this._extensions;
@@ -102,7 +121,11 @@ namespace MeshIO.Formats.Gltf.Schema.V2;
         /// <summary>
         /// Application-specific data.
         /// </summary>
+#if NET
+        [System.Text.Json.Serialization.JsonPropertyName("extras")]
+#else
         [Newtonsoft.Json.JsonPropertyAttribute("extras")]
+#endif
         public GltfExtras Extras {
             get {
                 return this._extras;

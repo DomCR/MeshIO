@@ -12,6 +12,7 @@ namespace MeshIO.Formats.Gltf.Schema.V2;
 
 using System.Linq;
 using System.Runtime.Serialization;
+
 public class GltfAccessor : IGltfNamedObject
 {
 
@@ -78,7 +79,11 @@ public class GltfAccessor : IGltfNamedObject
 	/// <summary>
 	/// The index of the bufferView.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("bufferView")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("bufferView")]
+#endif
 	public string BufferView
 	{
 		get
@@ -94,7 +99,11 @@ public class GltfAccessor : IGltfNamedObject
 	/// <summary>
 	/// The offset relative to the start of the bufferView in bytes.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("byteOffset")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("byteOffset")]
+#endif
 	public int ByteOffset
 	{
 		get
@@ -114,8 +123,15 @@ public class GltfAccessor : IGltfNamedObject
 	/// <summary>
 	/// The datatype of components in the attribute.
 	/// </summary>
+#if NET
+#if NET7_0_OR_GREATER
+	[System.Text.Json.Serialization.JsonRequired]
+#endif
+	[System.Text.Json.Serialization.JsonPropertyName("componentType")]
+#else
 	[Newtonsoft.Json.JsonRequiredAttribute()]
 	[Newtonsoft.Json.JsonPropertyAttribute("componentType")]
+#endif
 	public ComponentTypeEnum ComponentType
 	{
 		get
@@ -131,7 +147,11 @@ public class GltfAccessor : IGltfNamedObject
 	/// <summary>
 	/// Specifies whether integer data values should be normalized.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("normalized")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("normalized")]
+#endif
 	public bool Normalized
 	{
 		get
@@ -147,8 +167,15 @@ public class GltfAccessor : IGltfNamedObject
 	/// <summary>
 	/// The number of attributes referenced by this accessor.
 	/// </summary>
+#if NET
+#if NET7_0_OR_GREATER
+	[System.Text.Json.Serialization.JsonRequired]
+#endif
+	[System.Text.Json.Serialization.JsonPropertyName("count")]
+#else
 	[Newtonsoft.Json.JsonRequiredAttribute()]
 	[Newtonsoft.Json.JsonPropertyAttribute("count")]
+#endif
 	public int Count
 	{
 		get
@@ -168,9 +195,17 @@ public class GltfAccessor : IGltfNamedObject
 	/// <summary>
 	/// Specifies if the attribute is a scalar, vector, or matrix.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
+#if NET7_0_OR_GREATER
+	[System.Text.Json.Serialization.JsonRequired]
+#endif
+	[System.Text.Json.Serialization.JsonPropertyName("type")]
+#else
 	[Newtonsoft.Json.JsonConverterAttribute(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
 	[Newtonsoft.Json.JsonRequiredAttribute()]
 	[Newtonsoft.Json.JsonPropertyAttribute("type")]
+#endif
 	public TypeEnum Type
 	{
 		get
@@ -186,7 +221,11 @@ public class GltfAccessor : IGltfNamedObject
 	/// <summary>
 	/// Maximum value of each component in this attribute.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("max")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("max")]
+#endif
 	public float[] Max
 	{
 		get
@@ -215,7 +254,11 @@ public class GltfAccessor : IGltfNamedObject
 	/// <summary>
 	/// Minimum value of each component in this attribute.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("min")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("min")]
+#endif
 	public float[] Min
 	{
 		get
@@ -244,7 +287,11 @@ public class GltfAccessor : IGltfNamedObject
 	/// <summary>
 	/// Sparse storage of attributes that deviate from their initialization value.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("sparse")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("sparse")]
+#endif
 	public GltfAccessorSparse Sparse
 	{
 		get
@@ -260,7 +307,11 @@ public class GltfAccessor : IGltfNamedObject
 	/// <summary>
 	/// The user-defined name of this object.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("name")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("name")]
+#endif
 	public string Name
 	{
 		get
@@ -276,7 +327,11 @@ public class GltfAccessor : IGltfNamedObject
 	/// <summary>
 	/// Dictionary object with extension-specific objects.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("extensions")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("extensions")]
+#endif
 	public System.Collections.Generic.Dictionary<string, object> Extensions
 	{
 		get
@@ -292,7 +347,11 @@ public class GltfAccessor : IGltfNamedObject
 	/// <summary>
 	/// Application-specific data.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("extras")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("extras")]
+#endif
 	public GltfExtras Extras
 	{
 		get

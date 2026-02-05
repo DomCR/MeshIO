@@ -119,7 +119,11 @@ internal class GltfRoot
 	/// <summary>
 	/// Names of glTF extensions used somewhere in this asset.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("extensionsUsed")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("extensionsUsed")]
+#endif
 	public string[] ExtensionsUsed
 	{
 		get
@@ -135,7 +139,11 @@ internal class GltfRoot
 	/// <summary>
 	/// Names of glTF extensions required to properly load this asset.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("extensionsRequired")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("extensionsRequired")]
+#endif
 	public string[] ExtensionsRequired
 	{
 		get
@@ -160,7 +168,11 @@ internal class GltfRoot
 	/// <summary>
 	/// An array of accessors.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("accessors")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("accessors")]
+#endif
 	public GltfAccessor[] Accessors
 	{
 		get
@@ -185,7 +197,11 @@ internal class GltfRoot
 	/// <summary>
 	/// An array of keyframe animations.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("animations")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("animations")]
+#endif
 	public GltfAnimation[] Animations
 	{
 		get
@@ -210,8 +226,15 @@ internal class GltfRoot
 	/// <summary>
 	/// Metadata about the glTF asset.
 	/// </summary>
+#if NET
+#if NET7_0_OR_GREATER
+	[System.Text.Json.Serialization.JsonRequired]
+#endif
+	[System.Text.Json.Serialization.JsonPropertyName("asset")]
+#else
 	[Newtonsoft.Json.JsonRequiredAttribute()]
 	[Newtonsoft.Json.JsonPropertyAttribute("asset")]
+#endif
 	public GltfAsset Asset
 	{
 		get
@@ -227,7 +250,11 @@ internal class GltfRoot
 	/// <summary>
 	/// An array of buffers.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("buffers")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("buffers")]
+#endif
 	public GltfBuffer[] Buffers
 	{
 		get
@@ -252,7 +279,11 @@ internal class GltfRoot
 	/// <summary>
 	/// An array of bufferViews.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("bufferViews")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("bufferViews")]
+#endif
 	public GltfBufferView[] BufferViews
 	{
 		get
@@ -277,7 +308,11 @@ internal class GltfRoot
 	/// <summary>
 	/// An array of cameras.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("cameras")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("cameras")]
+#endif
 	public GltfCamera[] Cameras
 	{
 		get
@@ -302,7 +337,11 @@ internal class GltfRoot
 	/// <summary>
 	/// An array of images.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("images")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("images")]
+#endif
 	public GltfImage[] Images
 	{
 		get
@@ -327,7 +366,11 @@ internal class GltfRoot
 	/// <summary>
 	/// An array of materials.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("materials")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("materials")]
+#endif
 	public GltfMaterial[] Materials
 	{
 		get
@@ -352,7 +395,11 @@ internal class GltfRoot
 	/// <summary>
 	/// An array of meshes.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("meshes")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("meshes")]
+#endif
 	public GltfMesh[] Meshes
 	{
 		get
@@ -377,7 +424,11 @@ internal class GltfRoot
 	/// <summary>
 	/// An array of nodes.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("nodes")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("nodes")]
+#endif
 	public GltfNode[] Nodes
 	{
 		get
@@ -402,7 +453,11 @@ internal class GltfRoot
 	/// <summary>
 	/// An array of samplers.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("samplers")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("samplers")]
+#endif
 	public GltfSampler[] Samplers
 	{
 		get
@@ -427,7 +482,11 @@ internal class GltfRoot
 	/// <summary>
 	/// The index of the default scene.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("scene")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("scene")]
+#endif
 	public System.Nullable<int> Scene
 	{
 		get
@@ -447,7 +506,11 @@ internal class GltfRoot
 	/// <summary>
 	/// An array of scenes.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("scenes")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("scenes")]
+#endif
 	public GltfScene[] Scenes
 	{
 		get
@@ -472,7 +535,11 @@ internal class GltfRoot
 	/// <summary>
 	/// An array of skins.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("skins")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("skins")]
+#endif
 	public GltfSkin[] Skins
 	{
 		get
@@ -497,7 +564,11 @@ internal class GltfRoot
 	/// <summary>
 	/// An array of textures.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("textures")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("textures")]
+#endif
 	public GltfTexture[] Textures
 	{
 		get
@@ -522,7 +593,11 @@ internal class GltfRoot
 	/// <summary>
 	/// Dictionary object with extension-specific objects.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("extensions")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("extensions")]
+#endif
 	public System.Collections.Generic.Dictionary<string, object> Extensions
 	{
 		get
@@ -538,7 +613,11 @@ internal class GltfRoot
 	/// <summary>
 	/// Application-specific data.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("extras")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("extras")]
+#endif
 	public GltfExtras Extras
 	{
 		get

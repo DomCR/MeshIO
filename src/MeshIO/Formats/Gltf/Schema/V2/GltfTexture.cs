@@ -44,7 +44,11 @@ public class GltfTexture : IGltfNamedObject
 	/// <summary>
 	/// The index of the sampler used by this texture. When undefined, a sampler with repeat wrapping and auto filtering should be used.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("sampler")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("sampler")]
+#endif
 	public string Sampler
 	{
 		get
@@ -60,7 +64,11 @@ public class GltfTexture : IGltfNamedObject
 	/// <summary>
 	/// The index of the image used by this texture. When undefined, it is expected that an extension or other mechanism will supply an alternate texture source, otherwise behavior is undefined.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("source")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("source")]
+#endif
 	public string Source
 	{
 		get
@@ -76,7 +84,11 @@ public class GltfTexture : IGltfNamedObject
 	/// <summary>
 	/// The user-defined name of this object.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("name")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("name")]
+#endif
 	public string Name
 	{
 		get
@@ -92,7 +104,11 @@ public class GltfTexture : IGltfNamedObject
 	/// <summary>
 	/// Dictionary object with extension-specific objects.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("extensions")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("extensions")]
+#endif
 	public System.Collections.Generic.Dictionary<string, object> Extensions
 	{
 		get
@@ -108,7 +124,11 @@ public class GltfTexture : IGltfNamedObject
 	/// <summary>
 	/// Application-specific data.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("extras")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("extras")]
+#endif
 	public GltfExtras Extras
 	{
 		get

@@ -43,8 +43,15 @@ namespace MeshIO.Formats.Gltf.Schema.V2;
         /// <summary>
         /// Number of entries stored in the sparse array.
         /// </summary>
+#if NET
+#if NET7_0_OR_GREATER
+        [System.Text.Json.Serialization.JsonRequired]
+#endif
+        [System.Text.Json.Serialization.JsonPropertyName("count")]
+#else
         [Newtonsoft.Json.JsonRequiredAttribute()]
         [Newtonsoft.Json.JsonPropertyAttribute("count")]
+#endif
         public int Count {
             get {
                 return this._count;
@@ -60,8 +67,15 @@ namespace MeshIO.Formats.Gltf.Schema.V2;
         /// <summary>
         /// Index array of size `count` that points to those accessor attributes that deviate from their initialization value. Indices must strictly increase.
         /// </summary>
+#if NET
+#if NET7_0_OR_GREATER
+        [System.Text.Json.Serialization.JsonRequired]
+#endif
+        [System.Text.Json.Serialization.JsonPropertyName("indices")]
+#else
         [Newtonsoft.Json.JsonRequiredAttribute()]
         [Newtonsoft.Json.JsonPropertyAttribute("indices")]
+#endif
         public GltfAccessorSparseIndices Indices {
             get {
                 return this._indices;
@@ -74,8 +88,15 @@ namespace MeshIO.Formats.Gltf.Schema.V2;
         /// <summary>
         /// Array of size `count` times number of components, storing the displaced accessor attributes pointed by `indices`. Substituted values must have the same `componentType` and number of components as the base accessor.
         /// </summary>
+#if NET
+#if NET7_0_OR_GREATER
+        [System.Text.Json.Serialization.JsonRequired]
+#endif
+        [System.Text.Json.Serialization.JsonPropertyName("values")]
+#else
         [Newtonsoft.Json.JsonRequiredAttribute()]
         [Newtonsoft.Json.JsonPropertyAttribute("values")]
+#endif
         public GltfAccessorSparseValues Values {
             get {
                 return this._values;
@@ -88,7 +109,11 @@ namespace MeshIO.Formats.Gltf.Schema.V2;
         /// <summary>
         /// Dictionary object with extension-specific objects.
         /// </summary>
+#if NET
+        [System.Text.Json.Serialization.JsonPropertyName("extensions")]
+#else
         [Newtonsoft.Json.JsonPropertyAttribute("extensions")]
+#endif
         public System.Collections.Generic.Dictionary<string, object> Extensions {
             get {
                 return this._extensions;
@@ -101,7 +126,11 @@ namespace MeshIO.Formats.Gltf.Schema.V2;
         /// <summary>
         /// Application-specific data.
         /// </summary>
+#if NET
+        [System.Text.Json.Serialization.JsonPropertyName("extras")]
+#else
         [Newtonsoft.Json.JsonPropertyAttribute("extras")]
+#endif
         public GltfExtras Extras {
             get {
                 return this._extras;

@@ -38,7 +38,11 @@ namespace MeshIO.Formats.Gltf.Schema.V2;
         /// <summary>
         /// The index of the node to target.
         /// </summary>
+#if NET
+        [System.Text.Json.Serialization.JsonPropertyName("node")]
+#else
         [Newtonsoft.Json.JsonPropertyAttribute("node")]
+#endif
         public System.Nullable<int> Node {
             get {
                 return this._node;
@@ -54,9 +58,17 @@ namespace MeshIO.Formats.Gltf.Schema.V2;
         /// <summary>
         /// The name of the node's TRS property to modify, or the "weights" of the Morph Targets it instantiates. For the "translation" property, the values that are provided by the sampler are the translation along the x, y, and z axes. For the "rotation" property, the values are a quaternion in the order (x, y, z, w), where w is the scalar. For the "scale" property, the values are the scaling factors along the x, y, and z axes.
         /// </summary>
+#if NET
+        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
+#if NET7_0_OR_GREATER
+        [System.Text.Json.Serialization.JsonRequired]
+#endif
+        [System.Text.Json.Serialization.JsonPropertyName("path")]
+#else
         [Newtonsoft.Json.JsonConverterAttribute(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         [Newtonsoft.Json.JsonRequiredAttribute()]
         [Newtonsoft.Json.JsonPropertyAttribute("path")]
+#endif
         public PathEnum Path {
             get {
                 return this._path;
@@ -69,7 +81,11 @@ namespace MeshIO.Formats.Gltf.Schema.V2;
         /// <summary>
         /// Dictionary object with extension-specific objects.
         /// </summary>
+#if NET
+        [System.Text.Json.Serialization.JsonPropertyName("extensions")]
+#else
         [Newtonsoft.Json.JsonPropertyAttribute("extensions")]
+#endif
         public System.Collections.Generic.Dictionary<string, object> Extensions {
             get {
                 return this._extensions;
@@ -82,7 +98,11 @@ namespace MeshIO.Formats.Gltf.Schema.V2;
         /// <summary>
         /// Application-specific data.
         /// </summary>
+#if NET
+        [System.Text.Json.Serialization.JsonPropertyName("extras")]
+#else
         [Newtonsoft.Json.JsonPropertyAttribute("extras")]
+#endif
         public GltfExtras Extras {
             get {
                 return this._extras;

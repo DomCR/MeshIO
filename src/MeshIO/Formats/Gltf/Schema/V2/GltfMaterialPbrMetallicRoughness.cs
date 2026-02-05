@@ -57,7 +57,11 @@ namespace MeshIO.Formats.Gltf.Schema.V2;
         /// <summary>
         /// The material's base color factor.
         /// </summary>
+#if NET
+        [System.Text.Json.Serialization.JsonPropertyName("baseColorFactor")]
+#else
         [Newtonsoft.Json.JsonPropertyAttribute("baseColorFactor")]
+#endif
         public float[] BaseColorFactor {
             get {
                 return this._baseColorFactor;
@@ -87,7 +91,11 @@ namespace MeshIO.Formats.Gltf.Schema.V2;
         /// <summary>
         /// The base color texture.
         /// </summary>
+#if NET
+        [System.Text.Json.Serialization.JsonPropertyName("baseColorTexture")]
+#else
         [Newtonsoft.Json.JsonPropertyAttribute("baseColorTexture")]
+#endif
         public GltfTextureInfo BaseColorTexture {
             get {
                 return this._baseColorTexture;
@@ -100,7 +108,11 @@ namespace MeshIO.Formats.Gltf.Schema.V2;
         /// <summary>
         /// The metalness of the material.
         /// </summary>
+#if NET
+        [System.Text.Json.Serialization.JsonPropertyName("metallicFactor")]
+#else
         [Newtonsoft.Json.JsonPropertyAttribute("metallicFactor")]
+#endif
         public float MetallicFactor {
             get {
                 return this._metallicFactor;
@@ -119,7 +131,11 @@ namespace MeshIO.Formats.Gltf.Schema.V2;
         /// <summary>
         /// The roughness of the material.
         /// </summary>
+#if NET
+        [System.Text.Json.Serialization.JsonPropertyName("roughnessFactor")]
+#else
         [Newtonsoft.Json.JsonPropertyAttribute("roughnessFactor")]
+#endif
         public float RoughnessFactor {
             get {
                 return this._roughnessFactor;
@@ -138,7 +154,11 @@ namespace MeshIO.Formats.Gltf.Schema.V2;
         /// <summary>
         /// The metallic-roughness texture.
         /// </summary>
+#if NET
+        [System.Text.Json.Serialization.JsonPropertyName("metallicRoughnessTexture")]
+#else
         [Newtonsoft.Json.JsonPropertyAttribute("metallicRoughnessTexture")]
+#endif
         public GltfTextureInfo MetallicRoughnessTexture {
             get {
                 return this._metallicRoughnessTexture;
@@ -151,7 +171,11 @@ namespace MeshIO.Formats.Gltf.Schema.V2;
         /// <summary>
         /// Dictionary object with extension-specific objects.
         /// </summary>
+#if NET
+        [System.Text.Json.Serialization.JsonPropertyName("extensions")]
+#else
         [Newtonsoft.Json.JsonPropertyAttribute("extensions")]
+#endif
         public System.Collections.Generic.Dictionary<string, object> Extensions {
             get {
                 return this._extensions;
@@ -164,7 +188,11 @@ namespace MeshIO.Formats.Gltf.Schema.V2;
         /// <summary>
         /// Application-specific data.
         /// </summary>
+#if NET
+        [System.Text.Json.Serialization.JsonPropertyName("extras")]
+#else
         [Newtonsoft.Json.JsonPropertyAttribute("extras")]
+#endif
         public GltfExtras Extras {
             get {
                 return this._extras;

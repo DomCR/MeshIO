@@ -39,7 +39,11 @@ public class GltfScene : IGltfNamedObject
 	/// <summary>
 	/// The indices of each root node.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("nodes")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("nodes")]
+#endif
 	public string[] Nodes
 	{
 		get
@@ -64,7 +68,11 @@ public class GltfScene : IGltfNamedObject
 	/// <summary>
 	/// The user-defined name of this object.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("name")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("name")]
+#endif
 	public string Name
 	{
 		get
@@ -80,7 +88,11 @@ public class GltfScene : IGltfNamedObject
 	/// <summary>
 	/// Dictionary object with extension-specific objects.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("extensions")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("extensions")]
+#endif
 	public System.Collections.Generic.Dictionary<string, object> Extensions
 	{
 		get
@@ -96,7 +108,11 @@ public class GltfScene : IGltfNamedObject
 	/// <summary>
 	/// Application-specific data.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("extras")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("extras")]
+#endif
 	public GltfExtras Extras
 	{
 		get

@@ -48,7 +48,11 @@ namespace MeshIO.Formats.Gltf.Schema.V2;
         /// <summary>
         /// The floating-point aspect ratio of the field of view.
         /// </summary>
+#if NET
+        [System.Text.Json.Serialization.JsonPropertyName("aspectRatio")]
+#else
         [Newtonsoft.Json.JsonPropertyAttribute("aspectRatio")]
+#endif
         public System.Nullable<float> AspectRatio {
             get {
                 return this._aspectRatio;
@@ -64,8 +68,15 @@ namespace MeshIO.Formats.Gltf.Schema.V2;
         /// <summary>
         /// The floating-point vertical field of view in radians.
         /// </summary>
+#if NET
+#if NET7_0_OR_GREATER
+        [System.Text.Json.Serialization.JsonRequired]
+#endif
+        [System.Text.Json.Serialization.JsonPropertyName("yfov")]
+#else
         [Newtonsoft.Json.JsonRequiredAttribute()]
         [Newtonsoft.Json.JsonPropertyAttribute("yfov")]
+#endif
         public float Yfov {
             get {
                 return this._yfov;
@@ -81,7 +92,11 @@ namespace MeshIO.Formats.Gltf.Schema.V2;
         /// <summary>
         /// The floating-point distance to the far clipping plane.
         /// </summary>
+#if NET
+        [System.Text.Json.Serialization.JsonPropertyName("zfar")]
+#else
         [Newtonsoft.Json.JsonPropertyAttribute("zfar")]
+#endif
         public System.Nullable<float> Zfar {
             get {
                 return this._zfar;
@@ -97,8 +112,15 @@ namespace MeshIO.Formats.Gltf.Schema.V2;
         /// <summary>
         /// The floating-point distance to the near clipping plane.
         /// </summary>
+#if NET
+#if NET7_0_OR_GREATER
+        [System.Text.Json.Serialization.JsonRequired]
+#endif
+        [System.Text.Json.Serialization.JsonPropertyName("znear")]
+#else
         [Newtonsoft.Json.JsonRequiredAttribute()]
         [Newtonsoft.Json.JsonPropertyAttribute("znear")]
+#endif
         public float Znear {
             get {
                 return this._znear;
@@ -114,7 +136,11 @@ namespace MeshIO.Formats.Gltf.Schema.V2;
         /// <summary>
         /// Dictionary object with extension-specific objects.
         /// </summary>
+#if NET
+        [System.Text.Json.Serialization.JsonPropertyName("extensions")]
+#else
         [Newtonsoft.Json.JsonPropertyAttribute("extensions")]
+#endif
         public System.Collections.Generic.Dictionary<string, object> Extensions {
             get {
                 return this._extensions;
@@ -127,7 +153,11 @@ namespace MeshIO.Formats.Gltf.Schema.V2;
         /// <summary>
         /// Application-specific data.
         /// </summary>
+#if NET
+        [System.Text.Json.Serialization.JsonPropertyName("extras")]
+#else
         [Newtonsoft.Json.JsonPropertyAttribute("extras")]
+#endif
         public GltfExtras Extras {
             get {
                 return this._extras;

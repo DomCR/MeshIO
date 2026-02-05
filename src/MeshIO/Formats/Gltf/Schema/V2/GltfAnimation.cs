@@ -44,8 +44,15 @@ public class GltfAnimation : IGltfNamedObject
 	/// <summary>
 	/// An array of channels, each of which targets an animation's sampler at a node's property. Different channels of the same animation can't have equal targets.
 	/// </summary>
+#if NET
+#if NET7_0_OR_GREATER
+	[System.Text.Json.Serialization.JsonRequired]
+#endif
+	[System.Text.Json.Serialization.JsonPropertyName("channels")]
+#else
 	[Newtonsoft.Json.JsonRequiredAttribute()]
 	[Newtonsoft.Json.JsonPropertyAttribute("channels")]
+#endif
 	public GltfAnimationChannel[] Channels
 	{
 		get
@@ -70,8 +77,15 @@ public class GltfAnimation : IGltfNamedObject
 	/// <summary>
 	/// An array of samplers that combines input and output accessors with an interpolation algorithm to define a keyframe graph (but not its target).
 	/// </summary>
+#if NET
+#if NET7_0_OR_GREATER
+	[System.Text.Json.Serialization.JsonRequired]
+#endif
+	[System.Text.Json.Serialization.JsonPropertyName("samplers")]
+#else
 	[Newtonsoft.Json.JsonRequiredAttribute()]
 	[Newtonsoft.Json.JsonPropertyAttribute("samplers")]
+#endif
 	public GltfAnimationSampler[] Samplers
 	{
 		get
@@ -96,7 +110,11 @@ public class GltfAnimation : IGltfNamedObject
 	/// <summary>
 	/// The user-defined name of this object.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("name")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("name")]
+#endif
 	public string Name
 	{
 		get
@@ -112,7 +130,11 @@ public class GltfAnimation : IGltfNamedObject
 	/// <summary>
 	/// Dictionary object with extension-specific objects.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("extensions")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("extensions")]
+#endif
 	public System.Collections.Generic.Dictionary<string, object> Extensions
 	{
 		get
@@ -128,7 +150,11 @@ public class GltfAnimation : IGltfNamedObject
 	/// <summary>
 	/// Application-specific data.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("extras")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("extras")]
+#endif
 	public GltfExtras Extras
 	{
 		get

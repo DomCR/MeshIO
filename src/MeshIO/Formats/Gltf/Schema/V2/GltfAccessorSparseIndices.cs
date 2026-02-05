@@ -43,8 +43,15 @@ namespace MeshIO.Formats.Gltf.Schema.V2;
         /// <summary>
         /// The index of the bufferView with sparse indices. Referenced bufferView can't have ARRAY_BUFFER or ELEMENT_ARRAY_BUFFER target.
         /// </summary>
+#if NET
+#if NET7_0_OR_GREATER
+        [System.Text.Json.Serialization.JsonRequired]
+#endif
+        [System.Text.Json.Serialization.JsonPropertyName("bufferView")]
+#else
         [Newtonsoft.Json.JsonRequiredAttribute()]
         [Newtonsoft.Json.JsonPropertyAttribute("bufferView")]
+#endif
         public int BufferView {
             get {
                 return this._bufferView;
@@ -60,7 +67,11 @@ namespace MeshIO.Formats.Gltf.Schema.V2;
         /// <summary>
         /// The offset relative to the start of the bufferView in bytes. Must be aligned.
         /// </summary>
+#if NET
+        [System.Text.Json.Serialization.JsonPropertyName("byteOffset")]
+#else
         [Newtonsoft.Json.JsonPropertyAttribute("byteOffset")]
+#endif
         public int ByteOffset {
             get {
                 return this._byteOffset;
@@ -76,8 +87,15 @@ namespace MeshIO.Formats.Gltf.Schema.V2;
         /// <summary>
         /// The indices data type.
         /// </summary>
+#if NET
+#if NET7_0_OR_GREATER
+        [System.Text.Json.Serialization.JsonRequired]
+#endif
+        [System.Text.Json.Serialization.JsonPropertyName("componentType")]
+#else
         [Newtonsoft.Json.JsonRequiredAttribute()]
         [Newtonsoft.Json.JsonPropertyAttribute("componentType")]
+#endif
         public ComponentTypeEnum ComponentType {
             get {
                 return this._componentType;
@@ -90,7 +108,11 @@ namespace MeshIO.Formats.Gltf.Schema.V2;
         /// <summary>
         /// Dictionary object with extension-specific objects.
         /// </summary>
+#if NET
+        [System.Text.Json.Serialization.JsonPropertyName("extensions")]
+#else
         [Newtonsoft.Json.JsonPropertyAttribute("extensions")]
+#endif
         public System.Collections.Generic.Dictionary<string, object> Extensions {
             get {
                 return this._extensions;
@@ -103,7 +125,11 @@ namespace MeshIO.Formats.Gltf.Schema.V2;
         /// <summary>
         /// Application-specific data.
         /// </summary>
+#if NET
+        [System.Text.Json.Serialization.JsonPropertyName("extras")]
+#else
         [Newtonsoft.Json.JsonPropertyAttribute("extras")]
+#endif
         public GltfExtras Extras {
             get {
                 return this._extras;

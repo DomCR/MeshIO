@@ -39,8 +39,15 @@ public class GltfAnimationChannel
 	/// <summary>
 	/// The index of a sampler in this animation used to compute the value for the target.
 	/// </summary>
+#if NET
+#if NET7_0_OR_GREATER
+	[System.Text.Json.Serialization.JsonRequired]
+#endif
+	[System.Text.Json.Serialization.JsonPropertyName("sampler")]
+#else
 	[Newtonsoft.Json.JsonRequiredAttribute()]
 	[Newtonsoft.Json.JsonPropertyAttribute("sampler")]
+#endif
 	public string Sampler
 	{
 		get
@@ -56,8 +63,15 @@ public class GltfAnimationChannel
 	/// <summary>
 	/// The index of the node and TRS property to target.
 	/// </summary>
+#if NET
+#if NET7_0_OR_GREATER
+	[System.Text.Json.Serialization.JsonRequired]
+#endif
+	[System.Text.Json.Serialization.JsonPropertyName("target")]
+#else
 	[Newtonsoft.Json.JsonRequiredAttribute()]
 	[Newtonsoft.Json.JsonPropertyAttribute("target")]
+#endif
 	public GltfAnimationChannelTarget Target
 	{
 		get
@@ -73,7 +87,11 @@ public class GltfAnimationChannel
 	/// <summary>
 	/// Dictionary object with extension-specific objects.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("extensions")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("extensions")]
+#endif
 	public System.Collections.Generic.Dictionary<string, object> Extensions
 	{
 		get
@@ -89,7 +107,11 @@ public class GltfAnimationChannel
 	/// <summary>
 	/// Application-specific data.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("extras")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("extras")]
+#endif
 	public GltfExtras Extras
 	{
 		get

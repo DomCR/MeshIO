@@ -44,8 +44,15 @@ public class GltfMesh : IGltfNamedObject
 	/// <summary>
 	/// An array of primitives, each defining geometry to be rendered with a material.
 	/// </summary>
+#if NET
+#if NET7_0_OR_GREATER
+	[System.Text.Json.Serialization.JsonRequired]
+#endif
+	[System.Text.Json.Serialization.JsonPropertyName("primitives")]
+#else
 	[Newtonsoft.Json.JsonRequiredAttribute()]
 	[Newtonsoft.Json.JsonPropertyAttribute("primitives")]
+#endif
 	public GltfMeshPrimitive[] Primitives
 	{
 		get
@@ -70,7 +77,11 @@ public class GltfMesh : IGltfNamedObject
 	/// <summary>
 	/// Array of weights to be applied to the Morph Targets.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("weights")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("weights")]
+#endif
 	public float[] Weights
 	{
 		get
@@ -95,7 +106,11 @@ public class GltfMesh : IGltfNamedObject
 	/// <summary>
 	/// The user-defined name of this object.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("name")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("name")]
+#endif
 	public string Name
 	{
 		get
@@ -111,7 +126,11 @@ public class GltfMesh : IGltfNamedObject
 	/// <summary>
 	/// Dictionary object with extension-specific objects.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("extensions")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("extensions")]
+#endif
 	public System.Collections.Generic.Dictionary<string, object> Extensions
 	{
 		get
@@ -127,7 +146,11 @@ public class GltfMesh : IGltfNamedObject
 	/// <summary>
 	/// Application-specific data.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("extras")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("extras")]
+#endif
 	public GltfExtras Extras
 	{
 		get

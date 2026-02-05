@@ -33,7 +33,11 @@ namespace MeshIO.Formats.Gltf.Schema.V2;
         /// <summary>
         /// The user-defined name of this object.
         /// </summary>
+#if NET
+        [System.Text.Json.Serialization.JsonPropertyName("name")]
+#else
         [Newtonsoft.Json.JsonPropertyAttribute("name")]
+#endif
         public string Name {
             get {
                 return this._name;
@@ -46,7 +50,11 @@ namespace MeshIO.Formats.Gltf.Schema.V2;
         /// <summary>
         /// Dictionary object with extension-specific objects.
         /// </summary>
+#if NET
+        [System.Text.Json.Serialization.JsonPropertyName("extensions")]
+#else
         [Newtonsoft.Json.JsonPropertyAttribute("extensions")]
+#endif
         public System.Collections.Generic.Dictionary<string, object> Extensions {
             get {
                 return this._extensions;
@@ -59,7 +67,11 @@ namespace MeshIO.Formats.Gltf.Schema.V2;
         /// <summary>
         /// Application-specific data.
         /// </summary>
+#if NET
+        [System.Text.Json.Serialization.JsonPropertyName("extras")]
+#else
         [Newtonsoft.Json.JsonPropertyAttribute("extras")]
+#endif
         public GltfExtras Extras {
             get {
                 return this._extras;

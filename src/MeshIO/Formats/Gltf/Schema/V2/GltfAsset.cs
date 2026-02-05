@@ -50,7 +50,11 @@ public class GltfAsset
 	/// <summary>
 	/// A copyright message suitable for display to credit the content creator.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("copyright")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("copyright")]
+#endif
 	public string Copyright
 	{
 		get
@@ -66,7 +70,11 @@ public class GltfAsset
 	/// <summary>
 	/// Tool that generated this glTF model.  Useful for debugging.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("generator")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("generator")]
+#endif
 	public string Generator
 	{
 		get
@@ -82,8 +90,15 @@ public class GltfAsset
 	/// <summary>
 	/// The glTF version that this asset targets.
 	/// </summary>
+#if NET
+#if NET7_0_OR_GREATER
+	[System.Text.Json.Serialization.JsonRequired]
+#endif
+	[System.Text.Json.Serialization.JsonPropertyName("version")]
+#else
 	[Newtonsoft.Json.JsonRequiredAttribute()]
 	[Newtonsoft.Json.JsonPropertyAttribute("version")]
+#endif
 	public string Version
 	{
 		get
@@ -99,7 +114,11 @@ public class GltfAsset
 	/// <summary>
 	/// The minimum glTF version that this asset targets.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("minVersion")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("minVersion")]
+#endif
 	public string MinVersion
 	{
 		get
@@ -115,7 +134,11 @@ public class GltfAsset
 	/// <summary>
 	/// Dictionary object with extension-specific objects.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("extensions")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("extensions")]
+#endif
 	public System.Collections.Generic.Dictionary<string, object> Extensions
 	{
 		get
@@ -131,7 +154,11 @@ public class GltfAsset
 	/// <summary>
 	/// Application-specific data.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("extras")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("extras")]
+#endif
 	public GltfExtras Extras
 	{
 		get

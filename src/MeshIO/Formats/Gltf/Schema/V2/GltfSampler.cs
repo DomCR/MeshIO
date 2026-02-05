@@ -54,7 +54,11 @@ public class GltfSampler : IGltfNamedObject
 	/// <summary>
 	/// Magnification filter.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("magFilter")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("magFilter")]
+#endif
 	public System.Nullable<MagFilterEnum> MagFilter
 	{
 		get
@@ -70,7 +74,11 @@ public class GltfSampler : IGltfNamedObject
 	/// <summary>
 	/// Minification filter.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("minFilter")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("minFilter")]
+#endif
 	public System.Nullable<MinFilterEnum> MinFilter
 	{
 		get
@@ -86,7 +94,11 @@ public class GltfSampler : IGltfNamedObject
 	/// <summary>
 	/// s wrapping mode.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("wrapS")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("wrapS")]
+#endif
 	public WrapSEnum WrapS
 	{
 		get
@@ -102,7 +114,11 @@ public class GltfSampler : IGltfNamedObject
 	/// <summary>
 	/// t wrapping mode.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("wrapT")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("wrapT")]
+#endif
 	public WrapTEnum WrapT
 	{
 		get
@@ -118,7 +134,11 @@ public class GltfSampler : IGltfNamedObject
 	/// <summary>
 	/// The user-defined name of this object.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("name")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("name")]
+#endif
 	public string Name
 	{
 		get
@@ -134,7 +154,11 @@ public class GltfSampler : IGltfNamedObject
 	/// <summary>
 	/// Dictionary object with extension-specific objects.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("extensions")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("extensions")]
+#endif
 	public System.Collections.Generic.Dictionary<string, object> Extensions
 	{
 		get
@@ -150,7 +174,11 @@ public class GltfSampler : IGltfNamedObject
 	/// <summary>
 	/// Application-specific data.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("extras")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("extras")]
+#endif
 	public GltfExtras Extras
 	{
 		get

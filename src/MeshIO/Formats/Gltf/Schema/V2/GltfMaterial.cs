@@ -77,7 +77,11 @@ public class GltfMaterial : IGltfNamedObject
 	/// <summary>
 	/// The user-defined name of this object.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("name")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("name")]
+#endif
 	public string Name
 	{
 		get
@@ -93,7 +97,11 @@ public class GltfMaterial : IGltfNamedObject
 	/// <summary>
 	/// Dictionary object with extension-specific objects.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("extensions")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("extensions")]
+#endif
 	public System.Collections.Generic.Dictionary<string, object> Extensions
 	{
 		get
@@ -109,7 +117,11 @@ public class GltfMaterial : IGltfNamedObject
 	/// <summary>
 	/// Application-specific data.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("extras")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("extras")]
+#endif
 	public GltfExtras Extras
 	{
 		get
@@ -125,7 +137,11 @@ public class GltfMaterial : IGltfNamedObject
 	/// <summary>
 	/// A set of parameter values that are used to define the metallic-roughness material model from Physically-Based Rendering (PBR) methodology. When not specified, all the default values of `pbrMetallicRoughness` apply.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("pbrMetallicRoughness")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("pbrMetallicRoughness")]
+#endif
 	public GltfMaterialPbrMetallicRoughness PbrMetallicRoughness
 	{
 		get
@@ -141,7 +157,11 @@ public class GltfMaterial : IGltfNamedObject
 	/// <summary>
 	/// The normal map texture.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("normalTexture")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("normalTexture")]
+#endif
 	public GltfMaterialNormalTextureInfo NormalTexture
 	{
 		get
@@ -157,7 +177,11 @@ public class GltfMaterial : IGltfNamedObject
 	/// <summary>
 	/// The occlusion map texture.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("occlusionTexture")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("occlusionTexture")]
+#endif
 	public GltfMaterialOcclusionTextureInfo OcclusionTexture
 	{
 		get
@@ -173,7 +197,11 @@ public class GltfMaterial : IGltfNamedObject
 	/// <summary>
 	/// The emissive map texture.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("emissiveTexture")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("emissiveTexture")]
+#endif
 	public GltfTextureInfo EmissiveTexture
 	{
 		get
@@ -189,7 +217,11 @@ public class GltfMaterial : IGltfNamedObject
 	/// <summary>
 	/// The emissive color of the material.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("emissiveFactor")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("emissiveFactor")]
+#endif
 	public float[] EmissiveFactor
 	{
 		get
@@ -228,8 +260,13 @@ public class GltfMaterial : IGltfNamedObject
 	/// <summary>
 	/// The alpha rendering mode of the material.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
+	[System.Text.Json.Serialization.JsonPropertyName("alphaMode")]
+#else
 	[Newtonsoft.Json.JsonConverterAttribute(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
 	[Newtonsoft.Json.JsonPropertyAttribute("alphaMode")]
+#endif
 	public AlphaModeEnum AlphaMode
 	{
 		get
@@ -242,16 +279,28 @@ public class GltfMaterial : IGltfNamedObject
 		}
 	}
 
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("technique")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("technique")]
+#endif
 	public string Technique { get; set; }
 
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("values")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("values")]
+#endif
 	public object Values { get; set; }
 
 	/// <summary>
 	/// The alpha cutoff value of the material.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("alphaCutoff")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("alphaCutoff")]
+#endif
 	public float AlphaCutoff
 	{
 		get
@@ -271,7 +320,11 @@ public class GltfMaterial : IGltfNamedObject
 	/// <summary>
 	/// Specifies whether the material is double sided.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("doubleSided")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("doubleSided")]
+#endif
 	public bool DoubleSided
 	{
 		get

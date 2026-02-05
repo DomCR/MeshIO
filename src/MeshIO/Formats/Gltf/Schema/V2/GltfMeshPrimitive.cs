@@ -54,8 +54,15 @@ public class GltfMeshPrimitive
 	/// <summary>
 	/// A dictionary object, where each key corresponds to mesh attribute semantic and each value is the index of the accessor containing attribute's data.
 	/// </summary>
+#if NET
+#if NET7_0_OR_GREATER
+	[System.Text.Json.Serialization.JsonRequired]
+#endif
+	[System.Text.Json.Serialization.JsonPropertyName("attributes")]
+#else
 	[Newtonsoft.Json.JsonRequiredAttribute()]
 	[Newtonsoft.Json.JsonPropertyAttribute("attributes")]
+#endif
 	public System.Collections.Generic.Dictionary<string, string> Attributes
 	{
 		get
@@ -71,7 +78,11 @@ public class GltfMeshPrimitive
 	/// <summary>
 	/// The index of the accessor that contains the indices.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("indices")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("indices")]
+#endif
 	public string Indices
 	{
 		get
@@ -91,7 +102,11 @@ public class GltfMeshPrimitive
 	/// <summary>
 	/// The index of the material to apply to this primitive when rendering.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("material")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("material")]
+#endif
 	public string Material
 	{
 		get
@@ -107,7 +122,11 @@ public class GltfMeshPrimitive
 	/// <summary>
 	/// The type of primitives to render.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("mode")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("mode")]
+#endif
 	public ModeEnum Mode
 	{
 		get
@@ -123,7 +142,11 @@ public class GltfMeshPrimitive
 	/// <summary>
 	/// An array of Morph Targets, each  Morph Target is a dictionary mapping attributes (only `POSITION`, `NORMAL`, and `TANGENT` supported) to their deviations in the Morph Target.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("targets")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("targets")]
+#endif
 	public System.Collections.Generic.Dictionary<string, int>[] Targets
 	{
 		get
@@ -148,7 +171,11 @@ public class GltfMeshPrimitive
 	/// <summary>
 	/// Dictionary object with extension-specific objects.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("extensions")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("extensions")]
+#endif
 	public System.Collections.Generic.Dictionary<string, object> Extensions
 	{
 		get
@@ -164,7 +191,11 @@ public class GltfMeshPrimitive
 	/// <summary>
 	/// Application-specific data.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("extras")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("extras")]
+#endif
 	public GltfExtras Extras
 	{
 		get

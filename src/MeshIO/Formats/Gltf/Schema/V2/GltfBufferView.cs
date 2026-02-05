@@ -59,8 +59,15 @@ public class GltfBufferView : IGltfNamedObject
 	/// <summary>
 	/// The index of the buffer.
 	/// </summary>
+#if NET
+#if NET7_0_OR_GREATER
+	[System.Text.Json.Serialization.JsonRequired]
+#endif
+	[System.Text.Json.Serialization.JsonPropertyName("buffer")]
+#else
 	[Newtonsoft.Json.JsonRequiredAttribute()]
 	[Newtonsoft.Json.JsonPropertyAttribute("buffer")]
+#endif
 	public string Buffer
 	{
 		get
@@ -76,7 +83,11 @@ public class GltfBufferView : IGltfNamedObject
 	/// <summary>
 	/// The offset into the buffer in bytes.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("byteOffset")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("byteOffset")]
+#endif
 	public int ByteOffset
 	{
 		get
@@ -96,8 +107,15 @@ public class GltfBufferView : IGltfNamedObject
 	/// <summary>
 	/// The length of the bufferView in bytes.
 	/// </summary>
+#if NET
+#if NET7_0_OR_GREATER
+	[System.Text.Json.Serialization.JsonRequired]
+#endif
+	[System.Text.Json.Serialization.JsonPropertyName("byteLength")]
+#else
 	[Newtonsoft.Json.JsonRequiredAttribute()]
 	[Newtonsoft.Json.JsonPropertyAttribute("byteLength")]
+#endif
 	public int ByteLength
 	{
 		get
@@ -117,7 +135,11 @@ public class GltfBufferView : IGltfNamedObject
 	/// <summary>
 	/// The stride, in bytes.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("byteStride")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("byteStride")]
+#endif
 	public System.Nullable<int> ByteStride
 	{
 		get
@@ -141,7 +163,11 @@ public class GltfBufferView : IGltfNamedObject
 	/// <summary>
 	/// The target that the GPU buffer should be bound to.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("target")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("target")]
+#endif
 	public System.Nullable<TargetEnum> Target
 	{
 		get
@@ -157,7 +183,11 @@ public class GltfBufferView : IGltfNamedObject
 	/// <summary>
 	/// The user-defined name of this object.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("name")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("name")]
+#endif
 	public string Name
 	{
 		get
@@ -173,7 +203,11 @@ public class GltfBufferView : IGltfNamedObject
 	/// <summary>
 	/// Dictionary object with extension-specific objects.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("extensions")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("extensions")]
+#endif
 	public System.Collections.Generic.Dictionary<string, object> Extensions
 	{
 		get
@@ -189,7 +223,11 @@ public class GltfBufferView : IGltfNamedObject
 	/// <summary>
 	/// Application-specific data.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("extras")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("extras")]
+#endif
 	public GltfExtras Extras
 	{
 		get

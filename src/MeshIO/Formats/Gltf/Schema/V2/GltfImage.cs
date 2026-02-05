@@ -49,7 +49,11 @@ public class GltfImage : IGltfNamedObject
 	/// <summary>
 	/// The uri of the image.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("uri")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("uri")]
+#endif
 	public string Uri
 	{
 		get
@@ -65,8 +69,13 @@ public class GltfImage : IGltfNamedObject
 	/// <summary>
 	/// The image's MIME type. Required if `bufferView` is defined.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
+	[System.Text.Json.Serialization.JsonPropertyName("mimeType")]
+#else
 	[Newtonsoft.Json.JsonConverterAttribute(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
 	[Newtonsoft.Json.JsonPropertyAttribute("mimeType")]
+#endif
 	public System.Nullable<MimeTypeEnum> MimeType
 	{
 		get
@@ -82,7 +91,11 @@ public class GltfImage : IGltfNamedObject
 	/// <summary>
 	/// The index of the bufferView that contains the image. Use this instead of the image's uri property.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("bufferView")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("bufferView")]
+#endif
 	public System.Nullable<int> BufferView
 	{
 		get
@@ -102,7 +115,11 @@ public class GltfImage : IGltfNamedObject
 	/// <summary>
 	/// The user-defined name of this object.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("name")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("name")]
+#endif
 	public string Name
 	{
 		get
@@ -118,7 +135,11 @@ public class GltfImage : IGltfNamedObject
 	/// <summary>
 	/// Dictionary object with extension-specific objects.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("extensions")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("extensions")]
+#endif
 	public System.Collections.Generic.Dictionary<string, object> Extensions
 	{
 		get
@@ -134,7 +155,11 @@ public class GltfImage : IGltfNamedObject
 	/// <summary>
 	/// Application-specific data.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("extras")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("extras")]
+#endif
 	public GltfExtras Extras
 	{
 		get
@@ -186,10 +211,18 @@ public class GltfImage : IGltfNamedObject
 	public enum MimeTypeEnum
 	{
 
+#if NET
+		[System.Text.Json.Serialization.JsonPropertyName("image/jpeg")]
+#else
 		[EnumMember(Value = "image/jpeg")]
+#endif
 		image_jpeg,
 
+#if NET
+		[System.Text.Json.Serialization.JsonPropertyName("image/png")]
+#else
 		[EnumMember(Value = "image/png")]
+#endif
 		image_png,
 	}
 }

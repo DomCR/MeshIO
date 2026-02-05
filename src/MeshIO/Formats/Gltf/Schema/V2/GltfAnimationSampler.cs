@@ -44,8 +44,15 @@ public class GltfAnimationSampler
 	/// <summary>
 	/// The index of an accessor containing keyframe input values, e.g., time.
 	/// </summary>
+#if NET
+#if NET7_0_OR_GREATER
+	[System.Text.Json.Serialization.JsonRequired]
+#endif
+	[System.Text.Json.Serialization.JsonPropertyName("input")]
+#else
 	[Newtonsoft.Json.JsonRequiredAttribute()]
 	[Newtonsoft.Json.JsonPropertyAttribute("input")]
+#endif
 	public int Input
 	{
 		get
@@ -65,8 +72,13 @@ public class GltfAnimationSampler
 	/// <summary>
 	/// Interpolation algorithm.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
+	[System.Text.Json.Serialization.JsonPropertyName("interpolation")]
+#else
 	[Newtonsoft.Json.JsonConverterAttribute(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
 	[Newtonsoft.Json.JsonPropertyAttribute("interpolation")]
+#endif
 	public InterpolationEnum Interpolation
 	{
 		get
@@ -82,8 +94,15 @@ public class GltfAnimationSampler
 	/// <summary>
 	/// The index of an accessor, containing keyframe output values.
 	/// </summary>
+#if NET
+#if NET7_0_OR_GREATER
+	[System.Text.Json.Serialization.JsonRequired]
+#endif
+	[System.Text.Json.Serialization.JsonPropertyName("output")]
+#else
 	[Newtonsoft.Json.JsonRequiredAttribute()]
 	[Newtonsoft.Json.JsonPropertyAttribute("output")]
+#endif
 	public int Output
 	{
 		get
@@ -103,7 +122,11 @@ public class GltfAnimationSampler
 	/// <summary>
 	/// Dictionary object with extension-specific objects.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("extensions")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("extensions")]
+#endif
 	public System.Collections.Generic.Dictionary<string, object> Extensions
 	{
 		get
@@ -119,7 +142,11 @@ public class GltfAnimationSampler
 	/// <summary>
 	/// Application-specific data.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("extras")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("extras")]
+#endif
 	public GltfExtras Extras
 	{
 		get

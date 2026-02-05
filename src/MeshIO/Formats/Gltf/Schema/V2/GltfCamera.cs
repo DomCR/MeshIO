@@ -49,7 +49,11 @@ public class GltfCamera : IGltfNamedObject
 	/// <summary>
 	/// An orthographic camera containing properties to create an orthographic projection matrix.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("orthographic")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("orthographic")]
+#endif
 	public GltfCameraOrthographic Orthographic
 	{
 		get
@@ -65,7 +69,11 @@ public class GltfCamera : IGltfNamedObject
 	/// <summary>
 	/// A perspective camera containing properties to create a perspective projection matrix.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("perspective")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("perspective")]
+#endif
 	public GltfCameraPerspective Perspective
 	{
 		get
@@ -81,9 +89,17 @@ public class GltfCamera : IGltfNamedObject
 	/// <summary>
 	/// Specifies if the camera uses a perspective or orthographic projection.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
+#if NET7_0_OR_GREATER
+	[System.Text.Json.Serialization.JsonRequired]
+#endif
+	[System.Text.Json.Serialization.JsonPropertyName("type")]
+#else
 	[Newtonsoft.Json.JsonConverterAttribute(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
 	[Newtonsoft.Json.JsonRequiredAttribute()]
 	[Newtonsoft.Json.JsonPropertyAttribute("type")]
+#endif
 	public TypeEnum Type
 	{
 		get
@@ -99,7 +115,11 @@ public class GltfCamera : IGltfNamedObject
 	/// <summary>
 	/// The user-defined name of this object.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("name")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("name")]
+#endif
 	public string Name
 	{
 		get
@@ -115,7 +135,11 @@ public class GltfCamera : IGltfNamedObject
 	/// <summary>
 	/// Dictionary object with extension-specific objects.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("extensions")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("extensions")]
+#endif
 	public System.Collections.Generic.Dictionary<string, object> Extensions
 	{
 		get
@@ -131,7 +155,11 @@ public class GltfCamera : IGltfNamedObject
 	/// <summary>
 	/// Application-specific data.
 	/// </summary>
+#if NET
+	[System.Text.Json.Serialization.JsonPropertyName("extras")]
+#else
 	[Newtonsoft.Json.JsonPropertyAttribute("extras")]
+#endif
 	public GltfExtras Extras
 	{
 		get
