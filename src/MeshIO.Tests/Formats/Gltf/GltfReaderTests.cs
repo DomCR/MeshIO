@@ -33,11 +33,11 @@ public class GltfReaderTests : IOTestsBase
 		}
 	}
 
-	[Theory(Skip = "Gltf not implemented")]
+	[Theory]
 	[MemberData(nameof(GltfFiles))]
 	public void ReadGltf(FileModel test)
 	{
-		using (GlbReader reader = new GlbReader(test.Path))
+		using (GltfReader reader = new GltfReader(test.Path))
 		{
 			reader.OnNotification += this.onNotification;
 			reader.Read();

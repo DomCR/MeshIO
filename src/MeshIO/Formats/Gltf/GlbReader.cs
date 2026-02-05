@@ -14,8 +14,6 @@ namespace MeshIO.Formats.Gltf;
 /// the reading process.</remarks>
 public class GlbReader : SceneReader<GltfReaderOptions>
 {
-	private GlbHeader _header;
-
 	/// <inheritdoc/>
 	public GlbReader(string path, GltfReaderOptions options = null, NotificationEventHandler notification = null)
 		: base(path, options, notification) { }
@@ -60,15 +58,9 @@ public class GlbReader : SceneReader<GltfReaderOptions>
 	}
 
 	/// <inheritdoc/>
-	public override void Dispose()
-	{
-		base.Dispose();
-	}
-
-	/// <inheritdoc/>
 	public override Scene Read()
 	{
-		GlbHeader header = GlbHeader.Read(_stream.Stream);
+		GltfHeader header = GltfHeader.Read(_stream);
 
 		IGlbFileBuilder reader;
 		switch (header.Version)
@@ -78,7 +70,7 @@ public class GlbReader : SceneReader<GltfReaderOptions>
 				reader = new GlbFileBuilder(header);
 				break;
 			default:
-				throw new NotSupportedException($"Version {this._header.Version} not supported.");
+				throw new NotSupportedException($"Version {header.Version} not supported.");
 		}
 
 		reader.OnNotification += this.onNotificationEvent;

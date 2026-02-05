@@ -1,4 +1,5 @@
-﻿using CSUtilities.Converters;
+﻿using CSUtilities;
+using CSUtilities.Converters;
 using CSUtilities.IO;
 using MeshIO.Formats.Gltf.Schema.V2;
 using System.Collections.Generic;
@@ -7,7 +8,7 @@ using System.Text;
 
 namespace MeshIO.Formats.Gltf.Schema;
 
-internal class GlbHeader
+internal class GltfHeader
 {
 	public byte[] BinData { get; set; }
 
@@ -17,14 +18,26 @@ internal class GlbHeader
 
 	public uint Magic { get; set; }
 
-	public GltfVersion Version { get; set; }
+	public GltfVersion Version { get; set; } = GltfVersion.Unknown;
 
-	public static GlbHeader Read(Stream stream)
+	private GltfHeader()
 	{
-		var reader = new StreamIO(stream);
+	}
 
+	public static GltfHeader Read(StreamIO json, StreamIO bin)
+	{
+		var header = new GltfHeader();
+
+		header.JsonData = json.ReadBytes((int)json.Stream.Length);
+		header.BinData = bin.ReadBytes((int)bin.Stream.Length);
+
+		return header;
+	}
+
+	public static GltfHeader Read(StreamIO reader)
+	{
 		//The 12-byte header consists of three 4-byte entries:
-		var header = new GlbHeader();
+		var header = new GltfHeader();
 		//magic equals 0x46546C67. It is ASCII string glTF, and can be used to identify data as Binary glTF.
 		header.Magic = reader.ReadUInt<LittleEndianConverter>();
 		//version indicates the version of the Binary glTF container format. This specification defines version 2.
@@ -50,21 +63,30 @@ internal class GlbHeader
 
 	public GltfRoot GetRoot()
 	{
-		if (this.Version == GltfVersion.V1)
-		{
-			string json = Encoding.UTF8.GetString(JsonData);
-			var map = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+		string json = Encoding.UTF8.GetString(JsonData);
 
-			return new GltfRoot(map);
-		}
-		else
+		switch (this.Version)
 		{
-			string json = Encoding.UTF8.GetString(JsonData);
-			return Newtonsoft.Json.JsonConvert.DeserializeObject<GltfRoot>(json);
+			case GltfVersion.Unknown:
+				try
+				{
+					return JsonUtils.Deserialize<GltfRoot>(json);
+				}
+				catch (System.Exception)
+				{
+					return new GltfRoot(JsonUtils.Deserialize<Dictionary<string, object>>(json));
+				}
+			case GltfVersion.V1:
+				return new GltfRoot(JsonUtils.Deserialize<Dictionary<string, object>>(json));
+			case GltfVersion.V2:
+				return JsonUtils.Deserialize<GltfRoot>(json);
+			default:
+				throw new System.NotSupportedException();
 		}
+
 	}
 
-	private static void readV1Header(GlbHeader header, StreamIO reader)
+	private static void readV1Header(GltfHeader header, StreamIO reader)
 	{
 		uint totalLength = header.Length;
 		int jsonLength = reader.ReadInt<LittleEndianConverter>();
@@ -86,7 +108,7 @@ internal class GlbHeader
 		reader.Stream.Read(header.BinData, 0, binLength);
 	}
 
-	private static void readV2Heder(GlbHeader header, StreamIO reader)
+	private static void readV2Heder(GltfHeader header, StreamIO reader)
 	{
 		while (reader.Position < header.Length)
 		{
