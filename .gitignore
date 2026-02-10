@@ -353,6 +353,7 @@ MigrationBackup/
 /.packages
 /local
 /samples/out
+/samples/local
 /samples/in/fbx/old
 
 # Exceptions
