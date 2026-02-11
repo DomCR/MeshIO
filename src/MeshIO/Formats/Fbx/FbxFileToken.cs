@@ -66,6 +66,8 @@ public class FbxFileToken
 
 	public const string Model = "Model";
 
+	public const string MultiLayer = "MultiLayer";
+
 	public const string NodeAttribute = "NodeAttribute";
 
 	public const string NodeAttributeName = "NodeAttributeName";
@@ -89,6 +91,8 @@ public class FbxFileToken
 	public const string Scene = "Scene";
 
 	public const string Shading = "Shading";
+
+	public const string ShadingModel = "ShadingModel";
 
 	public const string TypeFlags = "TypeFlags";
 

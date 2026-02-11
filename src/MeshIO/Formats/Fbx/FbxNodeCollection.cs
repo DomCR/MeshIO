@@ -23,7 +23,7 @@ public abstract class FbxNodeCollection : IEnumerable<FbxNode>
 	/// </summary>
 	/// <param name="name"></param>
 	/// <returns>The child node, or null</returns>
-	public FbxNode this[string name] { get { return this.Nodes.Find(n => n != null && n.Name == name); } }
+	public FbxNode this[string name] { get { return this.Nodes.Find(n => n != null && n.Name.Equals(name, System.StringComparison.InvariantCultureIgnoreCase)); } }
 
 	/// <summary>
 	/// Add a note into the collection

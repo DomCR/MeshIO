@@ -65,6 +65,18 @@ public class Property
 
 		return typed;
 	}
+
+	public T GetValue<T>()
+	{
+		if (Value is T t)
+		{
+			return t;
+		}
+		else
+		{
+			return default;
+		}
+	}
 }
 
 public class Property<T> : Property

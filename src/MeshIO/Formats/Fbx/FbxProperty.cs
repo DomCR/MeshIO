@@ -7,17 +7,6 @@ namespace MeshIO.Formats.Fbx;
 
 public class FbxProperty : Property
 {
-	public static class Geometry
-	{
-		public const string Color = "Color";
-		public const string BBoxMin = "BBoxMin";
-		public const string BBoxMax = "BBoxMax";
-		public const string PrimaryVisibility = "Primary Visibility";
-		public const string CastsShadows = "Casts Shadows";
-
-		//public static FbxProperty<bool> CreatePrimaryVisibility() => new FbxProperty<bool>(PrimaryVisibility, true);
-	}
-
 	/// <summary>
 	/// Fbx equivalent type name
 	/// </summary>

@@ -4,6 +4,7 @@ using MeshIO.Formats.Fbx.Templates;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Xml.Linq;
 
 namespace MeshIO.Formats.Fbx.Readers;
@@ -149,7 +150,7 @@ internal abstract class FbxFileBuilderBase
 
 	public Dictionary<string, FbxProperty> ReadProperties(FbxNode node)
 	{
-		Dictionary<string, FbxProperty> properties = new Dictionary<string, FbxProperty>();
+		Dictionary<string, FbxProperty> properties = new(StringComparer.InvariantCultureIgnoreCase);
 		if (!node.TryGetNode(FbxFileToken.GetPropertiesName(this.Version), out FbxNode propertiesNode))
 		{
 			return properties;
@@ -392,6 +393,9 @@ internal abstract class FbxFileBuilderBase
 				case FbxFileToken.Geometry:
 					template = this.readGeometryNode(n);
 					break;
+				case FbxFileToken.Material:
+					template = this.readMaterial(n);
+					break;
 				case FbxFileToken.NodeAttribute:
 					var type = n.Properties.LastOrDefault().ToString();
 					switch (type)
@@ -422,6 +426,25 @@ internal abstract class FbxFileBuilderBase
 			}
 
 			this._objectTemplates.Add(template.Id, template);
+		}
+	}
+
+	private IFbxObjectBuilder readMaterial(FbxNode node)
+	{
+		if (!node.TryGetNode(FbxFileToken.ShadingModel, out FbxNode matType))
+		{
+			return new FbxShaderMaterialBuilder(node);
+		}
+
+		string name = matType.GetValue<string>().ToLower();
+		switch (name)
+		{
+			case "unknown":
+				return new FbxShaderMaterialBuilder(node);
+			case "phong":
+				return new FbxPhongMaterialBuilder(node);
+			default:
+				throw new System.NotImplementedException();
 		}
 	}
 
