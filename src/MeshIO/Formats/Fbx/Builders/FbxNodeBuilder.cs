@@ -6,7 +6,7 @@ using CSMath;
 using MeshIO.Entities;
 using MeshIO.Formats.Fbx.Connections;
 using MeshIO.Formats.Fbx.Readers;
-using MeshIO.Shaders;
+using MeshIO.Materials;
 using System.Collections.Generic;
 using System.Linq;
 

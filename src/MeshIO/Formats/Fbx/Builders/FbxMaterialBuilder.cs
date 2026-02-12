@@ -1,7 +1,7 @@
 ﻿using MeshIO.Formats.Fbx.Readers;
-using MeshIO.Shaders;
 using System.Collections.Generic;
 using CSUtilities.Extensions;
+using MeshIO.Materials;
 
 namespace MeshIO.Formats.Fbx.Builders;
 

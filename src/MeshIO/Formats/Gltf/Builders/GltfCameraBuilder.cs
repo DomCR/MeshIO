@@ -11,9 +11,9 @@ internal class GltfCameraBuilder : GltfObjectBuilder<GltfCamera>
 
 	public override void Build(GlbFileBuilder builder)
 	{
-		base.Build(builder);
-
 		this.Camera = new Camera(this.GltfObject.Name);
+
+		base.Build(builder);
 
 		switch (this.GltfObject.Type)
 		{
@@ -51,6 +51,6 @@ internal class GltfCameraBuilder : GltfObjectBuilder<GltfCamera>
 		this.Camera.ProjectionType = ProjectionType.Orthographic;
 		this.Camera.NearPlane = gltfCamera.Znear;
 		this.Camera.FarPlane = gltfCamera.Zfar;
-		this.Camera.OrtographicZoom = new XY(gltfCamera.Xmag, gltfCamera.Ymag);
+		this.Camera.OrthographicZoom = new XY(gltfCamera.Xmag, gltfCamera.Ymag);
 	}
 }

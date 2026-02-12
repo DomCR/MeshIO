@@ -3,7 +3,7 @@ using MeshIO.Entities.Geometries;
 using MeshIO.Entities.Geometries.Layers;
 using MeshIO.Formats.Gltf.Readers;
 using MeshIO.Formats.Gltf.Schema.V2;
-using MeshIO.Shaders;
+using MeshIO.Materials;
 using System;
 using System.Collections.Generic;
 
@@ -88,8 +88,6 @@ internal class GltfMeshBuilder : GltfObjectBuilder<GltfMesh>
 				this.Materials.Add(material.Material);
 				var layer = new LayerElementMaterial();
 				mesh.Layers.Add(layer);
-
-				builder.Notify($"Material not implemented for mesh.", NotificationType.NotImplemented);
 			}
 		}
 	}

@@ -1,4 +1,4 @@
-﻿namespace MeshIO.Shaders;
+﻿namespace MeshIO.Materials;
 
 public abstract class Material : Element3D
 {

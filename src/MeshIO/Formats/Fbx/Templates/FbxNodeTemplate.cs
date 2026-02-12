@@ -4,7 +4,7 @@ using CSUtilities.Extensions;
 
 using MeshIO.Entities;
 using MeshIO.Formats.Fbx.Writers;
-using MeshIO.Shaders;
+using MeshIO.Materials;
 
 namespace MeshIO.Formats.Fbx.Templates;
 

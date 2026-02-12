@@ -13,6 +13,10 @@ internal class GlbFileBuilder : IGlbFileBuilder
 {
 	public event NotificationEventHandler OnNotification;
 
+	public Dictionary<string, GltfImage> Images { get; } = new();
+
+	public Dictionary<string, GltfSampler> Samplers { get; } = new();
+
 	private readonly Dictionary<string, GltfAccessorBuilder> _accessors = new();
 
 	private readonly Dictionary<string, GltfBuffer> _buffers = new();
@@ -30,6 +34,8 @@ internal class GlbFileBuilder : IGlbFileBuilder
 	private readonly Dictionary<string, GltfNodeBuilder> _nodes = new();
 
 	private readonly Dictionary<string, GltfSceneBuilder> _scenes = new();
+
+	private readonly Dictionary<string, GltfTextureBuilder> _textures = new();
 
 	private GltfRoot _root;
 
@@ -69,31 +75,13 @@ internal class GlbFileBuilder : IGlbFileBuilder
 		this.createBuilders(_cameras, this._root.Cameras);
 		this.createBuilders(_accessors, this._root.Accessors);
 		this.createBuilders(_materials, this._root.Materials);
+		this.createBuilders(_textures, this._root.Textures);
 
-		for (int i = 0; i < this._root.Buffers.Length; i++)
-		{
-			var gltf = this._root.Buffers[i];
-			if (this._header.Version == GltfVersion.V1)
-			{
-				_buffers.Add(gltf.Name, gltf);
-			}
-			else
-			{
-				_buffers.Add(i.ToString(), gltf);
-			}
-		}
-		for (int i = 0; i < this._root.BufferViews.Length; i++)
-		{
-			var gltf = this._root.BufferViews[i];
-			if (this._header.Version == GltfVersion.V1)
-			{
-				_bufferViews.Add(gltf.Name, gltf);
-			}
-			else
-			{
-				_bufferViews.Add(i.ToString(), gltf);
-			}
-		}
+		mapCollection(this._buffers, this._root.Buffers);
+		mapCollection(this._bufferViews, this._root.BufferViews);
+
+		mapCollection(this.Samplers, this._root.Samplers);
+		mapCollection(this.Images, this._root.Images);
 
 		sceneBuilder.Build(this);
 
@@ -152,6 +140,10 @@ internal class GlbFileBuilder : IGlbFileBuilder
 		{
 			dict = this._materials as Dictionary<string, T>;
 		}
+		else if (builderType == typeof(GltfTextureBuilder))
+		{
+			dict = this._textures as Dictionary<string, T>;
+		}
 		else
 		{
 			throw new InvalidOperationException();
@@ -192,6 +184,23 @@ internal class GlbFileBuilder : IGlbFileBuilder
 			else
 			{
 				collection.Add(i.ToString(), builder);
+			}
+		}
+	}
+
+	private void mapCollection<T>(Dictionary<string, T> map, T[] values)
+						where T : IGltfNamedObject
+	{
+		for (int i = 0; i < values.Length; i++)
+		{
+			var gltf = values[i];
+			if (this._header.Version == GltfVersion.V1)
+			{
+				map.Add(gltf.Name, gltf);
+			}
+			else
+			{
+				map.Add(i.ToString(), gltf);
 			}
 		}
 	}

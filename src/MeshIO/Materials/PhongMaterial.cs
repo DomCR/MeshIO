@@ -1,4 +1,4 @@
-﻿namespace MeshIO.Shaders;
+﻿namespace MeshIO.Materials;
 
 public class PhongMaterial : Material
 {

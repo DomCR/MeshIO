@@ -37,7 +37,7 @@ public class Camera : Entity
 	/// too low may result in rendering artifacts due to depth buffer precision limitations.</remarks>
 	public double NearPlane { get; set; } = 0;
 
-	public XY OrtographicZoom { get; set; }
+	public XY OrthographicZoom { get; set; }
 
 	/// <summary>
 	/// Gets or sets the position represented by this instance.

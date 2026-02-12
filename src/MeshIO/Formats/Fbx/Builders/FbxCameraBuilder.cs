@@ -41,7 +41,7 @@ internal class FbxCameraBuilder : FbxObjectBuilder<Camera>
 
 		if (properties.Remove("OrthoZoom", out FbxProperty orthoZoom))
 		{
-			_element.OrtographicZoom = new XY((double)orthoZoom.ToProperty().Value);
+			_element.OrthographicZoom = new XY((double)orthoZoom.ToProperty().Value);
 		}
 
 		base.buildProperties(properties);
@@ -57,7 +57,7 @@ internal class FbxCameraBuilder : FbxObjectBuilder<Camera>
 			case "AudioColor":
 				return true;
 			case FbxFileToken.CameraOrthoZoom:
-				_element.OrtographicZoom = new XY(node.GetValue<double>());
+				_element.OrthographicZoom = new XY(node.GetValue<double>());
 				return true;
 			case FbxFileToken.Position:
 				this._element.Position = this.nodeToXYZ(node);
