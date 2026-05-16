@@ -5,34 +5,43 @@ using System.Collections.Generic;
 
 namespace MeshIO.Entities.Primitives;
 
+/// <summary>
+/// The base class of all primitives, which can be converted to mesh. It is also an entity, so it has a name and can be added to a scene.
+/// </summary>
 public abstract class Primitive : Entity
 {
-	/// <summary>
-	/// The geometry is visible or not
-	/// </summary>
-	public bool IsVisible { get; set; } = true;
-
 	/// <summary>
 	/// This geometry can cast shadow or not
 	/// </summary>
 	public bool CastShadows { get; set; } = true;
 
 	/// <summary>
+	/// The geometry is visible or not
+	/// </summary>
+	public bool IsVisible { get; set; } = true;
+
+	/// <summary>
 	/// This geometry can receive shadow or not
 	/// </summary>
 	public bool ReceiveShadows { get; set; } = true;
 
+	protected Primitive(string name) : base(name)
+	{
+	}
+
 	/// <summary>
-	/// Process this primitive into a mesh
+	/// Convert this primitive to mesh. The mesh will be added to the scene, and the primitive will be removed from the scene. So after calling this method, the primitive will not exist in the scene, but the mesh will exist in the scene. If you want to keep the primitive in the scene, you can call this method and then add the primitive back to the scene.
 	/// </summary>
+	/// <remarks>
+	/// The current implementation returns a mesh with no shared vertices and the following layers:<br/>
+	/// <see cref="LayerElementNormal"/><br/>
+	/// <see cref="LayerElementUV"/><br/>
+	/// configured with <see cref="MappingMode.ByVertex"/> and <see cref=" ReferenceMode.Direct"/>
+	/// </remarks>
 	/// <returns></returns>
 	public abstract Mesh ToMesh();
 
-	public Primitive() : this(string.Empty) { }
-
-	public Primitive(string name) : base(name) { }
-
-	protected Mesh createMesh(List<XYZ> vertices, List<XYZ> normals, List<XY> uvs, List<Polygon> polygons)
+	protected Mesh createMesh(IEnumerable<XYZ> vertices, IEnumerable<XYZ> normals, IEnumerable<XY> uvs, IEnumerable<Polygon> polygons)
 	{
 		Mesh mesh = new Mesh(this.Name);
 

@@ -1,5 +1,5 @@
 ﻿namespace MeshIO.Entities;
 
-    public class Light : Entity
-    {
-    }
+public class Light : Entity
+{
+}
