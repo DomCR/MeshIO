@@ -16,6 +16,9 @@ public class Camera : Entity
 	/// </summary>
 	public double AspectRatio { get; set; }
 
+	/// <summary>
+	/// Gets or sets the distance to the far clipping plane for the camera or view frustum.
+	/// </summary>
 	public double FarPlane { get; set; } = 1;
 
 	/// <summary>
@@ -37,6 +40,9 @@ public class Camera : Entity
 	/// too low may result in rendering artifacts due to depth buffer precision limitations.</remarks>
 	public double NearPlane { get; set; } = 0;
 
+	/// <summary>
+	/// Gets or sets the orthographic zoom level for the view.
+	/// </summary>
 	public XY OrthographicZoom { get; set; }
 
 	/// <summary>

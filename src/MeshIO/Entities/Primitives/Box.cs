@@ -6,6 +6,9 @@ using System.Linq;
 
 namespace MeshIO.Entities.Primitives;
 
+/// <summary>
+/// Represents a three-dimensional box defined by its center point and dimensions along the X, Y, and Z axes.
+/// </summary>
 public class Box : Primitive
 {
 	/// <summary>
@@ -64,12 +67,6 @@ public class Box : Primitive
 	}
 
 	/// <inheritdoc/>
-	/// <remarks>
-	/// The current implementation returns a mesh with no shared vertices and the following layers:<br/>
-	/// <see cref="LayerElementNormal"/><br/>
-	/// <see cref="LayerElementUV"/><br/>
-	/// configured with <see cref="MappingMode.ByVertex"/> and <see cref=" ReferenceMode.Direct"/>
-	/// </remarks>
 	public override Mesh ToMesh()
 	{
 		List<XYZ> vertices = new List<XYZ>();
@@ -86,16 +83,16 @@ public class Box : Primitive
 		this.createFace(0, 1, 2, 1, -1, this.LengthX, this.LengthY, this.LengthZ, vertices, normals, uvs, polygons, ref currQuad);
 		this.createFace(0, 1, 2, -1, -1, this.LengthX, this.LengthY, 0.0 - this.LengthZ, vertices, normals, uvs, polygons, ref currQuad);
 
-		return this.createMesh(vertices, normals, uvs, polygons.Cast<Polygon>().ToList());
+		return this.createMesh(vertices, normals, uvs, polygons);
 	}
 
 	private void createFace(
 		int index0, int index1, int index2,
 		int dir1, int dir2,
 		double length, double height, double width,
-		List<XYZ> vertices, 
-		List<XYZ> normals, 
-		List<XY> uvs, 
+		List<XYZ> vertices,
+		List<XYZ> normals,
+		List<XY> uvs,
 		List<Quad> polygons,
 		ref int currQuad)
 	{
